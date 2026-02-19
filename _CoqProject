@@ -1,0 +1,28 @@
+-R . "DoubleGluing"
+
+-arg "-w -notation-overridden"
+
+preliminaries.v
+double_pullbacks.v
+natural_contraction.v
+
+double_gluing/double_gluing.v
+
+double_gluing/monoidal/tensor_unit.v
+double_gluing/monoidal/left_unitor.v
+double_gluing/monoidal/right_unitor.v
+double_gluing/monoidal/associator.v
+double_gluing/monoidal/monoidal_data.v
+double_gluing/monoidal/monoidal_laws.v
+double_gluing/monoidal/monoidal.v
+double_gluing/monoidal/symmetry.v
+
+double_gluing/closed/internal_hom.v
+double_gluing/closed/adjunction.v
+double_gluing/closed/closed.v
+
+double_gluing/linear_cat/bang.v
+double_gluing/linear_cat/bang_sym_mon_fun.v
+double_gluing/linear_cat/bang_comonad.v
+double_gluing/linear_cat/linear_cat.v
+
