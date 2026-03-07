@@ -31,7 +31,6 @@ Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.Semantics.LinearLogic.LinearCategory.
-Require Import UniMath.Semantics.LinearLogic.LinearNonLinear.
 Require Import UniMath.CategoryTheory.Monads.Comonads.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.Monoidal.FunctorCategories.
@@ -60,6 +59,7 @@ Require Import double_gluing.closed.internal_hom.
 Require Import double_gluing.closed.adjunction.
 Require Import double_gluing.closed.closed.
 
+Require Import double_gluing.linear_cat.linear_functor.
 Require Import double_gluing.linear_cat.bang.
 Require Import double_gluing.linear_cat.bang_sym_mon_fun.
 Require Import double_gluing.linear_cat.bang_comonad.
@@ -121,7 +121,6 @@ Proof.
   simpl.
   destruct dr as ((U, l), (X, l')).
   simpl.
-  show_id_type.
   rewrite <- (linear_category_counit_nat l).
   rewrite 2 assoc'.
   apply maponpaths.
@@ -208,14 +207,13 @@ Proof.
   apply maponpaths.
   apply linear_category_counit_coalgebra_mor.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_comonoid_mor_counit.
-  simpl.
-  (*
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_counit.
   refine (! functor_comp K _ _ @ _).
+  simpl.
   apply maponpaths.
-  apply linear_category_counit_comonoid_mor_counit.
+  apply linear_category_comult_comonoid_mor_counit.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_comonoid_mor_comult.
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_comult.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (_ @ assoc (C:=E) _ _ _).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
@@ -230,7 +228,7 @@ Proof.
   refine (! functor_comp K _ _ @ _).
   apply maponpaths.
   rewrite assoc'.
-  apply linear_category_counit_comonoid_mor_comult.
+  apply linear_category_comult_comonoid_mor_comult.
   intros (R, dr).
   apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_coassoc.
   refine (assoc' (C:=E) _ _ _ @ _).
@@ -405,43 +403,700 @@ Proof.
   apply (maponpaths (postcompose _)).
   exact (bifunctor_equalwhiskers E _ _ _ _ _ _).
   refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose _) (assoc' (C:=E) _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc (C:=E) _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' (C:=E) _ _ _) @ _).
-  refine (assoc (C:=E) _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f) · _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _) · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f · _) · _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _) · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _) · _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrL _ _ _ _ _ _ _).
+  refine (_ @ assoc' (C:=E) _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrL _ _ _ _ _ _ _).
+  refine (assoc (C:=E) _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrL _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _  @ assoc _ _ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrL _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrL _ _ _ _ _ _ _).
+  refine (_ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (! internal_postcomp_comp _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ internal_lam_natural _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrL _ _ _ _ _ _ _).
+  unfold monoidal_cat_tensor_mor; now rewrite (when_bifunctor_becomes_rightwhiskering E).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  apply internal_lam_natural.
+  unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
+  refine (internal_lam_postcomp _ _ @ _).
+  apply maponpaths.
+  refine (internal_lam_natural _ _ @ _).
+  unfold monoidal_cat_tensor_mor; now rewrite (when_bifunctor_becomes_rightwhiskering E).
+  apply internal_lam_uncurry.
+  refine (_ @ internal_lam_precomp _ _ @ _).
+  apply cancel_postcomposition.
+  apply internal_lam_postcomp.
+  refine (_ @ assoc' _ _ _).
+  refine (_ @ ! internal_lam_natural _ _).
+  apply maponpaths.
+  unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
+  simpl.
+  unfold monoidal_cat_tensor_pt.
+  do 2 refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
+  refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
+  refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
+  refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (monoidal_associatorinvnatright E).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers E).  
+  refine (_ @ assoc _ _ _ @ _).
+  2 : {
+    apply cancel_postcomposition.
+    apply pathsinv0.
+    apply (bifunctor_rightcomp E).
+  }
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  
-  (_ (_ pr11)) _
-  (* refine (! maponpaths (λ f, _ · (_ · f) · _) (internal_postcomp_comp _ _ _) @ _). *)
-  admit.
+  apply maponpaths.
+  refine (maponpaths (λ f, f · _) _ @ _).
+  now do 5 refine (assoc _ _ _ @ _).
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (pr12 k).
+  do 3 refine (_ @ assoc' _ _ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply maponpaths.
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+  apply maponpaths.
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply (bifunctor_equalwhiskers E).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (monoidal_braiding_naturality_right E).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.  
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (pr12 k).
+  apply cancel_postcomposition.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  apply maponpaths.
+  refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
+  refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (pr12 k).
+  apply cancel_postcomposition.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply (bifunctor_equalwhiskers E).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (monoidal_braiding_naturality_right E).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (pr12 k).
+  apply cancel_postcomposition.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (compose _) _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (pr12 k).
+  apply cancel_postcomposition.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  do 5 refine (assoc _ _ _ @ _).
+  refine (_ @ assoc _ _ _).
+  apply maponpaths.
+  apply (bifunctor_leftcomp E).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (compose _) _ @ _).
+  apply (natural_contraction_composed k).
+  refine (_ @ ! maponpaths (compose _)
+            (natural_contraction_extranatural k (linear_category_bang_functor C R2) _ _
+               (linear_category_comult C R1)) @ _).
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  2 : {
+    refine (assoc _ _ _ @ _).
+    apply cancel_postcomposition.
+    refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _ @ assoc _ _ _).
+    2 : {
+      apply cancel_postcomposition.
+      apply pathsinv0.
+      apply (bifunctor_equalwhiskers E).
+    }
+    apply maponpaths.
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (λ f, f · _) _).
+    2 : {
+      refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+      apply maponpaths.
+      apply (functor_comp K).
+    }
+    refine (_ @ monoidal_braiding_naturality_right E _ _ _ _).
+    refine (assoc' _ _ _ @ _).
+    apply maponpaths.
+    refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+    apply maponpaths.
+    refine (! functor_comp K _ _ @ _).
+    apply maponpaths.
+    refine (_ @ ! linear_category_comult_preserves_tensor _ _).
+    apply assoc.
+  }
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply (monoidal_associatorinvnatleft E).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers E).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (bifunctor_leftcomp E).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers E).
+  do 2 refine (assoc _ _ _ @ _).
+  refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
+  2 : {
+    apply maponpaths.
+    refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+    apply maponpaths.
+    apply (bifunctor_equalwhiskers E).
+  }
+  apply map_on_two_paths.
+  refine (_ @ assoc' _ _ _ @ _).
+  2 : {
+    apply maponpaths.
+    apply pathsinv0.
+    apply (monoidal_braiding_naturality_left E).
+  }
+  refine (_ @ maponpaths (λ f, f · _) _).
+  2 : {
+    refine (_ @ bifunctor_leftcomp E _ _ _ _ _ _).
+    refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+    apply maponpaths.
+    refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _ @ assoc _ _ _).
+    2 : {
+      apply maponpaths.
+      apply pathsinv0.
+      apply (pr122 L).
+    }
+    apply cancel_postcomposition.
+    apply pathsinv0.
+    apply linear_category_comult_nat.
+  }
+  do 7 refine (assoc' _ _ _ @ _).
+  refine (_ @ assoc _ _ _).
+  apply maponpaths.
+  refine (_ @ assoc _ _ _ @ _).
+  2 : {
+    apply cancel_postcomposition.
+    refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+    apply maponpaths.
+    unfold monoidal_cat_tensor_mor.
+    apply assoc'.
+  }
+  refine (_ @ assoc' _ _ _ @ _).
+  2 :  {
+    apply maponpaths.
+    apply (monoidal_braiding_naturality_left E).
+  }
+  do 6 refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  do 2 refine (assoc' _ _ _ @ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply (bifunctor_equalwhiskers E).
+  apply cancel_postcomposition.
+  refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (monoidal_associatorinvnatleftright E).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (monoidal_associatorinvnatleft E).
+  apply cancel_postcomposition.
+  refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  refine (_ @ assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply maponpaths.
+  apply (bifunctor_leftcomp E).
+  apply cancel_postcomposition.
+  refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
+  apply cancel_postcomposition.
+  apply (bifunctor_rightcomp E).
+  apply maponpaths.
+  apply (bifunctor_equalwhiskers E).
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (_ @ ! sym_mon_tensor_lassociator E _ _ _).
+  refine (assoc _ _ _ @ _).
+  do 2 refine (_ @ assoc _ _ _).
+  unfold monoidal_cat_tensor_mor;
+    rewrite (when_bifunctor_becomes_rightwhiskering E), (when_bifunctor_becomes_leftwhiskering E).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply (sym_mon_hexagon_rassociator1 E).
+  apply maponpaths.
+  refine (! functor_comp K _ _ @ _).
+  apply maponpaths.
+  unfold SymmetricDiagonal.inner_swap, monoidal_cat_tensor_mor, monoidal_cat_tensor_pt.
+  refine (_ @ assoc' _ _ _).
+  do 5 refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  do 3 refine (assoc' _ _ _ @ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply monoidal_associatornatleft.
+  apply maponpaths.
+  apply maponpaths.
+  do 2 refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (_ @ ! bifunctor_leftcomp C _ _ _ _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (bifunctor_leftcomp C).
+  apply maponpaths.
+  apply assoc'. (* completes subgoal *)
+  refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  simpl.
+  unfold monoidal_cat_tensor_pt.
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (_ @ assoc' _ _ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (map_on_two_paths (compose (C:=E)) _ _ @ _).
+  apply pathsinv0.
+  apply (functor_comp K).
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (! functor_comp K _ _ @ _).
+  apply maponpaths.
+  refine (_ @ ! linear_category_comult_preserves_tensor _ _).
+  unfold monoidal_cat_tensor_mor, SymmetricDiagonal.inner_swap.  
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+  apply maponpaths.
+  unfold monoidal_cat_tensor_pt.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply assoc.
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  now repeat rewrite assoc. (* completes subgoal *)
   refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (λ f, _ · f) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f) (assoc' _ _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  admit.
-  admit.
-  (* apply linear_category_comult_preserves_tensor. *)
+  refine (maponpaths (compose _) _ @ _).
+  refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrR _ _ _ _ _ _ _).
+  refine (_ @ assoc' (C:=E) _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrR _ _ _ _ _ _ _).
+  refine (assoc (C:=E) _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrR _ _ _ _ _ _ _).
+  simpl.
+  unfold postcompose.
+  apply internal_lam_natural.
+  refine (internal_lam_natural _ _ @ _).
+  refine (_ @ assoc' _ _ _).
+  refine (_ @ ! internal_lam_natural _ _).
+  apply maponpaths.
+  unfold monoidal_cat_tensor_mor;
+    rewrite 2 (when_bifunctor_becomes_rightwhiskering E).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (_ @ internal_lam_tensor_eval _).
+  apply cancel_postcomposition.
+  apply maponpaths.
+  apply internal_lam_precomp.
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (_ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (_ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply (bifunctor_rightcomp E).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers E).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  simpl.  
+  refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
+  refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  apply cancel_postcomposition.
+  refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers E).
+  refine (assoc' _ _ _ @ _).
+  rewrite (when_bifunctor_becomes_rightwhiskering E).
+  refine (_ @ assoc _ _ _ @ _).
+  2 : {
+    apply cancel_postcomposition.
+    apply pathsinv0.
+    apply (bifunctor_rightcomp E).
+  }
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (pr12 k).
+  do 3 refine (_ @ assoc' _ _ _).
+  set (keq := natural_contraction_extranatural k (linear_category_bang_functor C R1) _ _ (linear_category_comult C R2)).
+  refine (_ @ maponpaths (compose _) (! keq) @ _); clear keq.
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (_ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply (monoidal_braiding_naturality_right E).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ _).
+  apply maponpaths.
+  refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  refine (_ @ ! functor_comp K _ _).
+  apply (cancel_postcomposition (C:=E)).
+  apply pathsinv0.
+  apply (functor_comp K).
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers E).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ _).
+  apply maponpaths.
+  refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (functor_comp K).
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers E).
+  refine (_ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _ @ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (bifunctor_leftcomp E).
+  apply pathsinv0.
+  apply (monoidal_braiding_naturality_left E).
+  refine (_ @ assoc _ _ _).
+  apply maponpaths.
+  refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (_ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  refine (_ @ assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply (maponpaths (compose _)).
+  apply (bifunctor_leftcomp E).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
+  apply cancel_postcomposition.
+  apply (bifunctor_rightcomp E).
+  apply maponpaths.
+  apply (bifunctor_equalwhiskers E).
+  apply assoc.
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply linear_category_comult_nat.
+  refine (_ @ assoc _ _ _).
+  apply maponpaths.
+  refine (assoc' _ _ _ @ _).
+  apply pathsinv0.
+  apply (pr122 L).
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply (bifunctor_equalwhiskers E).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
+  apply maponpaths.
+  apply (monoidal_braiding_naturality_right E).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (bifunctor_rightcomp E).
+  refine (_ @ assoc _ _ _ @ _).
+  2 : {
+    apply cancel_postcomposition.
+    refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
+    apply cancel_postcomposition.
+    apply (bifunctor_rightcomp E).
+    apply maponpaths.
+    apply (bifunctor_equalwhiskers E).
+  }
+  apply map_on_two_paths.
+  apply maponpaths.
+  refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
+  apply maponpaths.
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+  apply maponpaths.
+  apply pathsinv0.
+  apply (monoidal_braiding_naturality_left C).
+  refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (monoidal_braiding_naturality_right C).
+  refine (_ @ assoc _ _ _).
+  apply maponpaths.
+  refine (_ @ ! linear_category_comult_preserves_tensor _ _).
+  refine (_ @ assoc' _ _ _ @ _).
+  apply cancel_postcomposition.
+  refine (assoc _ _ _ @ _).
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  apply (bifunctor_equalwhiskers C).
+  apply maponpaths.
+  refine (_ @ assoc _ _ _ ).
+  apply maponpaths.
+  apply assoc'.
+  apply (monoidal_braiding_naturality_left E). (* completes subgoal *)
+  (* linear_category_comult_preserves_unit : *)
   apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_unit.
   refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
@@ -883,8 +1538,7 @@ Proof.
   refine (_ @ functor_id K _).
   apply maponpaths.
   apply linear_category_counit_preserves_unit.
-*)
-Admitted.
+Qed.
 
 Definition double_glued_total_linear_category {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
   (k : natural_contraction C E L K) : linear_category.

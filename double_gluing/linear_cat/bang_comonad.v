@@ -13,8 +13,6 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
 Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations.
 Require Import UniMath.CategoryTheory.DisplayedCats.Total.
 Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction.
-Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.Monics.
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
 Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
 Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
@@ -31,7 +29,6 @@ Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.Semantics.LinearLogic.LinearCategory.
-Require Import UniMath.Semantics.LinearLogic.LinearNonLinear.
 Require Import UniMath.CategoryTheory.Monads.Comonads.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.Monoidal.FunctorCategories.
@@ -60,6 +57,8 @@ Require Import double_gluing.closed.internal_hom.
 Require Import double_gluing.closed.adjunction.
 Require Import double_gluing.closed.closed.
 
+
+Require Import double_gluing.linear_cat.linear_functor.
 Require Import double_gluing.linear_cat.bang.
 Require Import double_gluing.linear_cat.bang_sym_mon_fun.
 
@@ -67,20 +66,21 @@ Require Import double_gluing.linear_cat.bang_sym_mon_fun.
 
 Lemma double_glued_total_bang_comonad_comult_eq1 {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R):
-  (pr111 (pr12 (linear_category_bang E))) (pr11 dr)
-  · (# (pr111 (linear_category_bang E)) (# (pr111 (linear_category_bang E)) (pr21 dr) · (pr121 L) R) · (pr121 L) ((pr111 (linear_category_bang C)) R)) =
-    # (pr111 (linear_category_bang E)) (pr21 dr) · (pr121 L) R · # L ((pr111 (pr12 (linear_category_bang C))) R).
+  (pr11 (pr12 (linear_category_bang E))) (pr11 dr)
+  · (# (linear_category_bang_functor E) (# (linear_category_bang_functor E) (pr21 dr) · (pr121 L) R) · (pr121 L) ((pr111 (linear_category_bang C)) R)) =
+    # (linear_category_bang_functor E) (pr21 dr) · (pr121 L) R · # L ((pr11 (pr12 (linear_category_bang C))) R).
 Proof.
   destruct dr as ((U, l), (X, l')).
-  simpl.
+  simpl. (* necessary *)
   refine (maponpaths (λ f, _ · (f · _)) (functor_comp _ _ _) @ _).
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   rewrite assoc.
   refine (! maponpaths (λ f, f · _) ((pr211 (pr12 (linear_category_bang E))) _ _ l) @ _).
   repeat rewrite assoc'.
   apply maponpaths.
-  admit.
-Admitted.
+  refine (assoc _ _ _ @ _).
+  exact (pr21 (pr222 L) R).  (* (L, κ^{L}) is a comonad-morphism. *)
+Qed.
 
 Lemma double_glued_total_bang_comonad_comult_is_nat_trans {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E)
   {K : functor C (E^opp)} (k : natural_contraction C E L K) :
@@ -128,7 +128,8 @@ Proof.
   refine (! (pr221 (pr12 (linear_category_bang E))) _ _ _ @ _).
   refine (_ @ assoc _ _ _).
   apply maponpaths.
-Admitted.
+  apply (pr1 (pr222 L)).
+Qed.
 
 Lemma double_glued_total_bang_comonad_counit_is_nat_trans {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E)
   {K : functor C (E^opp)} (k : natural_contraction C E L K):
@@ -410,7 +411,8 @@ Proof.
   refine (! maponpaths (λ f, f · _) ((pr211 (pr12 (linear_category_bang E))) _ _ l1) @ _).
   rewrite assoc'.
   apply maponpaths.
-  admit. (* One of the axioms that needs to be added : L is a morphisms of comonads *)
+  refine (assoc _ _ _ @ _).
+  apply (pr21 (pr222 L)). (* L is a morphisms of comonads *)
   exact (! functor_comp K _ _ ).
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
@@ -503,7 +505,8 @@ Proof.
   refine (! maponpaths (λ f, f · _) ((pr211 (pr12 (linear_category_bang E))) _ _ l2) @ _).
   rewrite assoc'.
   apply maponpaths.
-  admit. (* One of the axioms that needs to be added : L is a morphisms of comonads *)
+  refine (assoc _ _ _ @ _).
+  apply (pr21 (pr222 L)). (* L is a morphisms of comonads *)
   refine (! functor_comp K _ _ @ _).
   apply maponpaths.
   rewrite assoc.
@@ -601,7 +604,7 @@ Proof.
   refine (! pr2 (ε (linear_category_bang E)) _ _ l1 @ _).
   rewrite assoc'.
   apply maponpaths.
-  admit. (* that's one of the axioms that need to be added : L is a comonad-morphism *)
+  apply (pr11 (pr222 L)). (* L is a comonad-morphism *)
   refine (_ @ ! maponpaths (compose _) (internal_postcomp_id _ _)).
   rewrite id_right.
   rewrite internal_postcomp_comp.
@@ -678,7 +681,8 @@ Proof.
   refine (_ @ pr2 (ε (linear_category_bang E)) _ _ l2).
   rewrite assoc'.
   apply maponpaths.
-  admit. (* again one of the things that needs to be added as axiom *)
+  apply pathsinv0.
+  apply (pr11 (pr222 L)). (* again one of the things that needs to be added as axiom *)
   simpl; unfold postcompose.
   refine (assoc' (C:=E) _ _ _ @ _).
   rewrite (doublePullbackArrow_PrL dpb).
@@ -738,7 +742,8 @@ Proof.
   refine (_ @ pr2 (ε (linear_category_bang E)) _ _ l1).
   rewrite assoc'.
   apply maponpaths.
-  admit. (* one of the axioms again *)
+  apply pathsinv0.
+  apply (pr11 (pr222 L)).
   simpl; unfold postcompose.
   refine (assoc' (C:=E) _ _ _ @ _).
   rewrite (doublePullbackArrow_PrM dpb).
@@ -830,7 +835,8 @@ Proof.
   refine (_ @ pr2 (ε (linear_category_bang E)) _ _ l2).
   rewrite assoc'.
   apply maponpaths.
-  admit. (* one of the axioms again *)
+  apply pathsinv0.
+  apply (pr11 (pr222 L)). (* one of the axioms again *)
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (maponpaths (compose _) (doublePullbackArrow_PrL dpb _ _ _ _ _ _) @ _).
   rewrite assoc.
@@ -861,7 +867,7 @@ Proof.
   rewrite <- (functor_id K).
   apply maponpaths.
   apply (pr2 (pr222 (linear_category_bang C))).
-Admitted.
+Qed.
 
 Definition double_glued_total_bang {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
   (k : natural_contraction C E L K) : sym_monoidal_cmd (double_glued_total_sym_mon_closed_cat pb k).
