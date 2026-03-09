@@ -13,8 +13,6 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
 Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations.
 Require Import UniMath.CategoryTheory.DisplayedCats.Total.
 Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction.
-Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.Monics.
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
 Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
 Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
@@ -153,11 +151,17 @@ Proof.
   exact (double_glued_total_linear_category_counit pb L k).
 Defined.
 
-Lemma double_glued_total_linear_category_laws {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : linear_category_laws (double_glued_total_linear_category_data pb L k).
+Lemma double_glued_total_linear_category_comult_nat {C E : linear_category} (pb : Pullbacks E)
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K)
+  {A B : double_glued_total_linear_category_data pb L k}
+  (f : double_glued_total_linear_category_data pb L k ⟦ A, B ⟧) :
+  # (linear_category_bang (double_glued_total_linear_category_data pb L k)) f
+  · linear_category_comult (double_glued_total_linear_category_data pb L k) B =
+  linear_category_comult (double_glued_total_linear_category_data pb L k) A
+  · monoidal_cat_tensor_mor
+      (# (linear_category_bang (double_glued_total_linear_category_data pb L k)) f)
+      (# (linear_category_bang (double_glued_total_linear_category_data pb L k)) f).
 Proof.
-  split13.
-  intros (R1, dr1) (R2, dr2) (f, df).
   apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_nat.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (_ @ assoc (C:=E) _ _ _).
@@ -173,122 +177,30 @@ Proof.
   apply maponpaths.
   rewrite assoc'.
   apply linear_category_comult_nat.
-  intros (R1, dr1) (R2, dr2) (f, df).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_nat.
-  refine (! functor_comp K _ _ @ _).
-  apply (maponpaths (# K)).
-  apply linear_category_counit_nat.
-  intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_coalgebra_mor.
-  refine (assoc (C:=E) _ _ _ @ _ @ functor_comp K _ _).
-  refine (assoc _ _ _ @ _).
-  refine (maponpaths (compose (C:=E) _) (assoc' (C:=E) _ _ _) @ _).
-  simpl.
-  unfold double_glued_rightwhiskering_comp2, double_glued_leftwhiskering_comp2, postcompose; simpl.
-  do 2 refine (maponpaths (compose _) (assoc (C:=E) _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (assoc' (C:=E) _ _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, _ · (_ · f) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
-  refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (compose (C:=E) f _)) (! functor_comp K _ _) @ _).
-  refine (maponpaths (compose (C:=E) _) (! functor_comp K _ _) @ _).
-  refine (! functor_comp K _ _ @ _).
-  apply maponpaths.
-  apply linear_category_comult_coalgebra_mor.
-  intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_coalgebra_mor.
-  simpl.
-  refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
-  apply maponpaths.
-  apply linear_category_counit_coalgebra_mor.
-  intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_counit.
-  refine (! functor_comp K _ _ @ _).
-  simpl.
-  apply maponpaths.
-  apply linear_category_comult_comonoid_mor_counit.
-  intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_comult.
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (_ @ assoc (C:=E) _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
-  refine (_ @ assoc' (C:=E) _ _ _).
-  refine (_ @ ! maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
-  repeat rewrite assoc'.
-  apply maponpaths.
-  refine (_ @ maponpaths (compose (C:=E) _) (functor_comp K _ _)).
-  refine (_ @ functor_comp K _ _).
-  refine (! functor_comp K _ _ @ _).
-  apply maponpaths.
-  rewrite assoc'.
-  apply linear_category_comult_comonoid_mor_comult.
-  intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_coassoc.
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose (C:=E) _) (assoc (C:=E) _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose (C:=E) _) (assoc' (C:=E) _ _ _) @ _).
-  refine (assoc (C:=E) _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (assoc _ _ _ @ _).
-  do 2 refine (_ @ assoc' (C:=E) _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, compose (C:=E) _ f · _) (assoc (C:=E) _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (_ · f) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, compose (C:=E) _ f · _) (assoc' (C:=E) _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (f · _) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, compose (C:=E) _ f · _) (assoc (C:=E) _ _ _)).
-  refine (_ @ maponpaths (λ f, compose (C:=E) f _) (assoc' _ _ _)).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ ! maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
-  repeat rewrite assoc'.  
-  apply maponpaths.
-  refine (_ @ maponpaths (λ f, _ · (compose (C:=E) _ f)) (functor_comp K _ _)).
-  refine (_ @ maponpaths (compose (C:=E) _) (functor_comp K _ _)).
-  refine (! maponpaths (compose (C:=E) _) (functor_comp K _ _) @ _).
-  refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
-  apply maponpaths.
-  rewrite assoc'.
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  apply linear_category_coassoc.
-  intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counitality.
-  do 2 refine (assoc (C:=E) _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (assoc' (C:=E) _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc' (C:=E) _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (assoc (C:=E) _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc (C:=E) _ _ _) @ _).
-  rewrite assoc'.
-  refine (! maponpaths (compose (C:=E) _) (functor_comp K _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc (C:=E) _ _ _) @ _).
-  rewrite assoc'.
-  refine (! maponpaths (compose (C:=E) _) (functor_comp K _ _) @ _).
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  rewrite id_left.
-  refine (! functor_comp K _ _ @ _).
-  refine (_ @ functor_id K _).
-  apply maponpaths.
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  apply linear_category_counitality.
-  intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_cocommutative.
-  refine (assoc (C:=E) _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  rewrite assoc'.
-  apply (maponpaths (compose _)).
-  refine (! functor_comp K _ _ @ _).
-  apply maponpaths.
-  apply linear_category_cocommutative.
-  intros (R1, ((U1, l1),(X1, l1'))) (R2, ((U2, l2),(X2, l2'))).
+Qed.
+
+Lemma double_glued_total_linear_category_comult_preserves_tensor {C E : linear_category}
+  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
+  mon_functor_tensor (linear_category_bang_functor (double_glued_total_linear_category_data pb L k))
+    A B
+    · linear_category_comult (double_glued_total_linear_category_data pb L k)
+    (monoidal_cat_tensor_pt A B) =
+  monoidal_cat_tensor_mor (linear_category_comult (double_glued_total_linear_category_data pb L k) A)
+    (linear_category_comult (double_glued_total_linear_category_data pb L k) B)
+    · (SymmetricDiagonal.inner_swap (double_glued_total_linear_category_data pb L k)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+         · monoidal_cat_tensor_mor
+         (mon_functor_tensor
+            (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B)
+         (mon_functor_tensor
+            (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B)).
+Proof.
+  destruct A as (R1, ((U1, l1),(X1, l1'))).
+  destruct B as (R2, ((U2, l2),(X2, l2'))).
   apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_tensor.
   set (dpb := tensor_doublePullback pb k
                     (((pr111 (linear_category_bang E)) U1,, # (pr111 (linear_category_bang E)) l1 · (pr121 L) R1),,
@@ -297,7 +209,7 @@ Proof.
                      K ((pr111 (linear_category_bang C)) R2),, identity (K ((pr111 (linear_category_bang C)) R2)))).
   refine (doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _).
   Unshelve.
-  12 : {
+  9 : {
     apply (compose (C:=E) (doublePullbackPrM _)).
     apply (compose (C:=E) (# K (linear_category_comult C (R1 ⊗_{ C} R2)))).
     apply internal_lam.
@@ -306,13 +218,13 @@ Proof.
     apply (compose (sym_mon_braiding E _ _)).
     apply (pr1 k).
   }
-  12 : {
+  9 : {
     apply (compose (C:=E) (doublePullbackPrM _)).
     apply (# K).
     apply (compose (fmonoidal_preservestensordata (linear_category_bang_functor C) R1 R2)).
     exact (linear_category_comult C (R1 ⊗_{ C} R2)).
   }
-  12 : {
+  9 : {
     apply (compose (C:=E) (doublePullbackPrM _)).
     apply (compose (C:=E) (# K (linear_category_comult C (R1 ⊗_{ C} R2)))).
     apply internal_lam.
@@ -449,9 +361,9 @@ Proof.
   refine (_ @ assoc' _ _ _).
   refine (_ @ ! internal_lam_natural _ _).
   apply maponpaths.
-  unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
-  simpl.
-  unfold monoidal_cat_tensor_pt.
+
+
+  
   do 2 refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) _ @ _).
   refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
@@ -511,6 +423,7 @@ Proof.
   2 : {
     apply cancel_postcomposition.
     apply pathsinv0.
+    unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
     apply (bifunctor_rightcomp E).
   }
   refine (assoc' _ _ _ @ _).
@@ -810,7 +723,6 @@ Proof.
   refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
   apply cancel_postcomposition.
   refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
-  simpl.
   unfold monoidal_cat_tensor_pt.
   refine (_ @ assoc' _ _ _ @ _).
   apply cancel_postcomposition.
@@ -885,19 +797,17 @@ Proof.
   refine (assoc' _ _ _ @ _).
   apply maponpaths.
   refine (doublePullbackArrow_PrR _ _ _ _ _ _ _).
-  simpl.
   unfold postcompose.
   apply internal_lam_natural.
   refine (internal_lam_natural _ _ @ _).
   refine (_ @ assoc' _ _ _).
   refine (_ @ ! internal_lam_natural _ _).
   apply maponpaths.
-  unfold monoidal_cat_tensor_mor;
-    rewrite 2 (when_bifunctor_becomes_rightwhiskering E).
   refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) _ @ _).
   refine (_ @ internal_lam_tensor_eval _).
   apply cancel_postcomposition.
+  unfold monoidal_cat_tensor_mor; refine (when_bifunctor_becomes_rightwhiskering E _ _ @ _).
   apply maponpaths.
   apply internal_lam_precomp.
   refine (assoc _ _ _ @ _).
@@ -919,7 +829,7 @@ Proof.
   apply cancel_postcomposition.
   refine (assoc _ _ _ @ _).
   apply cancel_postcomposition.
-  simpl.  
+  unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
   refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
   refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
   apply maponpaths.
@@ -961,11 +871,11 @@ Proof.
   apply pathsinv0.
   apply (bifunctor_equalwhiskers E).
   refine (assoc' _ _ _ @ _).
-  rewrite (when_bifunctor_becomes_rightwhiskering E).
   refine (_ @ assoc _ _ _ @ _).
   2 : {
     apply cancel_postcomposition.
     apply pathsinv0.
+    unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
     apply (bifunctor_rightcomp E).
   }
   apply maponpaths.
@@ -1096,6 +1006,137 @@ Proof.
   apply maponpaths.
   apply assoc'.
   apply (monoidal_braiding_naturality_left E). (* completes subgoal *)
+Qed.
+
+
+Lemma double_glued_total_linear_category_laws {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) : linear_category_laws (double_glued_total_linear_category_data pb L k).
+Proof.
+  split13.
+  intros A B f.
+  exact (double_glued_total_linear_category_comult_nat pb L k f).
+  intros (R1, dr1) (R2, dr2) (f, df).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_nat.
+  refine (! functor_comp K _ _ @ _).
+  apply (maponpaths (# K)).
+  apply linear_category_counit_nat.
+  intros (R, dr).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_coalgebra_mor.
+  refine (assoc (C:=E) _ _ _ @ _ @ functor_comp K _ _).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (compose (C:=E) _) (assoc' (C:=E) _ _ _) @ _).
+  do 2 refine (maponpaths (compose _) (assoc (C:=E) _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (f · _)) (assoc' (C:=E) _ _ _) @ _).
+  rewrite assoc.
+  refine (maponpaths (λ f, _ · (_ · f) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (f · _) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (compose (C:=E) f _)) (! functor_comp K _ _) @ _).
+  refine (maponpaths (compose (C:=E) _) (! functor_comp K _ _) @ _).
+  refine (! functor_comp K _ _ @ _).
+  apply maponpaths.
+  apply linear_category_comult_coalgebra_mor.
+  intros (R, dr).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_coalgebra_mor.
+  simpl.
+  refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
+  apply maponpaths.
+  apply linear_category_counit_coalgebra_mor.
+  intros (R, dr).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_counit.
+  refine (! functor_comp K _ _ @ _).
+  simpl.
+  apply maponpaths.
+  apply linear_category_comult_comonoid_mor_counit.
+  intros (R, dr).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_comult.
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (_ @ assoc (C:=E) _ _ _).
+  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  refine (_ @ ! maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
+  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ assoc' (C:=E) _ _ _).
+  refine (_ @ ! maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
+  repeat rewrite assoc'.
+  apply maponpaths.
+  refine (_ @ maponpaths (compose (C:=E) _) (functor_comp K _ _)).
+  refine (_ @ functor_comp K _ _).
+  refine (! functor_comp K _ _ @ _).
+  apply maponpaths.
+  rewrite assoc'.
+  apply linear_category_comult_comonoid_mor_comult.
+  intros (R, dr).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_coassoc.
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (maponpaths (compose (C:=E) _) (assoc (C:=E) _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose (C:=E) _) (assoc' (C:=E) _ _ _) @ _).
+  refine (assoc (C:=E) _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (assoc _ _ _ @ _).
+  do 2 refine (_ @ assoc' (C:=E) _ _ _).
+  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
+  refine (_ @ maponpaths (λ f, compose (C:=E) _ f · _) (assoc (C:=E) _ _ _)).
+  refine (_ @ ! maponpaths (λ f, _ · (_ · f) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, compose (C:=E) _ f · _) (assoc' (C:=E) _ _ _)).
+  refine (_ @ ! maponpaths (λ f, _ · (f · _) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, compose (C:=E) _ f · _) (assoc (C:=E) _ _ _)).
+  refine (_ @ maponpaths (λ f, compose (C:=E) f _) (assoc' _ _ _)).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ ! maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _)).
+  refine (_ @ assoc _ _ _).
+  do 2 refine (assoc' _ _ _ @ _).
+  apply maponpaths.
+  refine (_ @ functor_comp K _ _ @ _).
+  2 : {
+    apply (maponpaths (compose (C:=E) _)).
+    refine (functor_comp K _ _ @ _).
+    apply (cancel_postcomposition (C:=E)).
+    apply (functor_comp K).
+  }
+  refine (_ @ ! functor_comp K _ _ @ _).
+  apply (maponpaths (compose (C:=E) _)).
+  apply pathsinv0.
+  apply (functor_comp K).
+  apply maponpaths.
+  rewrite assoc'.
+  apply linear_category_coassoc.
+  intros (R, dr).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counitality.
+  do 2 refine (assoc (C:=E) _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (assoc' (C:=E) _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f · _) (assoc' (C:=E) _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (_ · f) · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f · _) (assoc (C:=E) _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc (C:=E) _ _ _) @ _).
+  rewrite assoc'.
+  refine (! maponpaths (compose (C:=E) _) (functor_comp K _ _) @ _).
+  refine (maponpaths (λ f, _ · f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc (C:=E) _ _ _) @ _).
+  rewrite assoc'.
+  refine (! maponpaths (compose (C:=E) _) (functor_comp K _ _) @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  rewrite id_left.
+  refine (! functor_comp K _ _ @ _).
+  refine (_ @ functor_id K _).
+  apply maponpaths.
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  apply linear_category_counitality.
+  intros (R, dr).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_cocommutative.
+  refine (assoc (C:=E) _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  rewrite assoc'.
+  apply (maponpaths (compose _)).
+  refine (! functor_comp K _ _ @ _).
+  apply maponpaths.
+  apply linear_category_cocommutative.
+  intros A B.
+  exact (double_glued_total_linear_category_comult_preserves_tensor pb L k A B).
   (* linear_category_comult_preserves_unit : *)
   apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_unit.
   refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _).
@@ -1154,7 +1195,14 @@ Proof.
   refine (_ @ maponpaths (λ f, _ · f) (assoc _ _ _)).
   refine (_ @ assoc' _ _ _).
   rewrite sym_mon_braiding_rinvunitor.
-  refine (_ @ ! maponpaths (λ f, _ · (f ⊗^{E}_{r} _ · _)) (pr2 (pr222 L))).
+  simpl.
+  refine (_ @ maponpaths (λ f, _ · (f ⊗^{E}_{r} _ · _)) _).
+  2 : {
+    apply pathsinv0.
+    refine (assoc _ _ _ @ _).
+    apply (pr22 (pr222 L)). (* \kappa is monoidal *)
+  }
+  simpl.
   rewrite (bifunctor_rightcomp E).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
   refine (_ @ maponpaths (λ f, _ · (f · _)) (assoc _ _ _)).
