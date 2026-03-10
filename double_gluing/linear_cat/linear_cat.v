@@ -22,12 +22,10 @@ Require Import UniMath.CategoryTheory.Monoidal.Functors.
 Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
+Require Import UniMath.CategoryTheory.Monoidal.Structure.SymmetricDiagonal.
 Require Import UniMath.CategoryTheory.Limits.Pullbacks.
 Require Import UniMath.CategoryTheory.opp_precat.
 Require Import UniMath.CategoryTheory.OppositeCategory.Core.
-Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
-Require Import UniMath.CategoryTheory.Subcategory.Core.
-Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.Semantics.LinearLogic.LinearCategory.
 Require Import UniMath.CategoryTheory.Monads.Comonads.
 Require Import UniMath.CategoryTheory.FunctorCategory.
@@ -179,60 +177,38 @@ Proof.
   apply linear_category_comult_nat.
 Qed.
 
-Lemma double_glued_total_linear_category_comult_preserves_tensor {C E : linear_category}
-  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
-  mon_functor_tensor (linear_category_bang_functor (double_glued_total_linear_category_data pb L k))
-    A B
-    · linear_category_comult (double_glued_total_linear_category_data pb L k)
-    (monoidal_cat_tensor_pt A B) =
-  monoidal_cat_tensor_mor (linear_category_comult (double_glued_total_linear_category_data pb L k) A)
-    (linear_category_comult (double_glued_total_linear_category_data pb L k) B)
-    · (SymmetricDiagonal.inner_swap (double_glued_total_linear_category_data pb L k)
-         (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
-         (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
-         (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
-         (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
-         · monoidal_cat_tensor_mor
-         (mon_functor_tensor
-            (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B)
-         (mon_functor_tensor
-            (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B)).
+Local Definition double_glued_total_linear_category_comult_preserves_tensor1_type
+  {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E)
+  {K : functor C (E^opp)} (k : natural_contraction C E L K)
+  (A B : double_glued_total_linear_category_data pb L k):
+  UU.
 Proof.
+  refine (pr122 (mon_functor_tensor (linear_category_bang_functor
+                                       (double_glued_total_linear_category_data pb L k))
+                   A B
+                   · linear_category_comult (double_glued_total_linear_category_data pb L k)
+                   (monoidal_cat_tensor_pt A B)) = _).
   destruct A as (R1, ((U1, l1),(X1, l1'))).
   destruct B as (R2, ((U2, l2),(X2, l2'))).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_tensor.
-  set (dpb := tensor_doublePullback pb k
-                    (((pr111 (linear_category_bang E)) U1,, # (pr111 (linear_category_bang E)) l1 · (pr121 L) R1),,
-                     K ((pr111 (linear_category_bang C)) R1),, identity (K ((pr111 (linear_category_bang C)) R1)))
-                    (((pr111 (linear_category_bang E)) U2,, # (pr111 (linear_category_bang E)) l2 · (pr121 L) R2),,
-                     K ((pr111 (linear_category_bang C)) R2),, identity (K ((pr111 (linear_category_bang C)) R2)))).
-  refine (doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _).
-  Unshelve.
-  9 : {
-    apply (compose (C:=E) (doublePullbackPrM _)).
-    apply (compose (C:=E) (# K (linear_category_comult C (R1 ⊗_{ C} R2)))).
-    apply internal_lam.
-    apply (compose (_ ⊗^{E}_{l} (# _ l1 · pr1 κ^{L} R1))).
-    apply (compose ((# K (fmonoidal_preservestensordata (linear_category_bang_functor C) R1 R2)) ⊗^{E}_{r} _ )).
-    apply (compose (sym_mon_braiding E _ _)).
-    apply (pr1 k).
-  }
-  9 : {
-    apply (compose (C:=E) (doublePullbackPrM _)).
-    apply (# K).
-    apply (compose (fmonoidal_preservestensordata (linear_category_bang_functor C) R1 R2)).
-    exact (linear_category_comult C (R1 ⊗_{ C} R2)).
-  }
-  9 : {
-    apply (compose (C:=E) (doublePullbackPrM _)).
-    apply (compose (C:=E) (# K (linear_category_comult C (R1 ⊗_{ C} R2)))).
-    apply internal_lam.
-    apply (compose (_ ⊗^{E}_{l} (# _ l2 · pr1 κ^{L} R2))).
-    apply (compose ((# K (sym_mon_braiding C _ _ · fmonoidal_preservestensordata (linear_category_bang_functor C) R1 R2)) ⊗^{E}_{r} _ )).
-    apply (compose (sym_mon_braiding E _ _)).
-    apply (pr1 k).
-  }
+  use doublePullbackArrow.
+  apply (compose (C:=E) (doublePullbackPrM _)).
+  apply (compose (C:=E) (# K (linear_category_comult C (R1 ⊗_{ C} R2)))).
+  apply internal_lam.
+  apply (compose (_ ⊗^{E}_{l} (# _ l1 · pr1 κ^{L} R1))).
+  apply (compose ((# K (fmonoidal_preservestensordata (linear_category_bang_functor C) R1 R2)) ⊗^{E}_{r} _ )).
+  apply (compose (sym_mon_braiding E _ _)).
+  apply (pr1 k).
+  apply (compose (C:=E) (doublePullbackPrM _)).
+  apply (# K).
+  apply (compose (fmonoidal_preservestensordata (linear_category_bang_functor C) R1 R2)).
+  exact (linear_category_comult C (R1 ⊗_{ C} R2)).
+  apply (compose (C:=E) (doublePullbackPrM _)).
+  apply (compose (C:=E) (# K (linear_category_comult C (R1 ⊗_{ C} R2)))).
+  apply internal_lam.
+  apply (compose (_ ⊗^{E}_{l} (# _ l2 · pr1 κ^{L} R2))).
+  apply (compose ((# K (sym_mon_braiding C _ _ · fmonoidal_preservestensordata (linear_category_bang_functor C) R1 R2)) ⊗^{E}_{r} _ )).
+  apply (compose (sym_mon_braiding E _ _)).
+  apply (pr1 k).
   repeat rewrite assoc'.
   apply maponpaths.
   rewrite (functor_comp K).
@@ -271,6 +247,15 @@ Proof.
   repeat rewrite assoc.
   do 2 apply (maponpaths (postcompose _)).
   exact (bifunctor_equalwhiskers E _ _ _ _ _ _).
+Defined.
+
+Local Lemma double_glued_total_linear_category_comult_preserves_tensor1 {C E : linear_category}
+  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
+  double_glued_total_linear_category_comult_preserves_tensor1_type pb L k A B.
+Proof.
+  unfold double_glued_total_linear_category_comult_preserves_tensor1_type.
+  use doublePullbackArrowUnique.
   do 2 refine (assoc' (C:=E) _ _ _ @ _).
   do 2 apply maponpaths.
   refine (doublePullbackArrow_PrL _ _ _ _ _ _ _ @ _).
@@ -314,6 +299,57 @@ Proof.
   rewrite assoc.
   apply (maponpaths (postcompose _)).
   exact (bifunctor_equalwhiskers E _ _ _ _ _ _).
+Qed.
+
+Local Lemma double_glued_total_linear_category_comult_preserves_tensor_lemma1
+  {C E : linear_category}
+  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
+  compose (C:=E) (pr122 (monoidal_cat_tensor_mor
+           (linear_category_comult (double_glued_total_linear_category_data pb L k) A)
+           (linear_category_comult (double_glued_total_linear_category_data pb L k) B)
+         · (SymmetricDiagonal.inner_swap
+              (double_glued_total_linear_category_data pb L k)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+            · monoidal_cat_tensor_mor
+                (mon_functor_tensor
+                   (linear_category_bang_functor
+                      (double_glued_total_linear_category_data pb L k))
+                   A B)
+                (mon_functor_tensor
+                   (linear_category_bang_functor
+                      (double_glued_total_linear_category_data pb L k))
+                   A B))))
+  (doublePullbackPrL
+      (tensor_doublePullback pb k (pr2 (linear_category_bang_functor
+                 (double_glued_total_linear_category_data pb L k) A))
+         (pr2 (linear_category_bang_functor
+                    (double_glued_total_linear_category_data pb L k) B)))) =
+  doublePullbackPrM
+    (tensor_doublePullback pb k
+       (pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k)
+                  (A ⊗_{ double_glued_total_linear_category_data pb L k} B)))
+       ((pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k)
+                  (A ⊗_{ double_glued_total_linear_category_data pb L k} B)))))
+  · (compose (C:=E) (# K (linear_category_comult C (pr1 A ⊗_{ C} pr1 B)))
+     (internal_lam
+         (K (linear_category_bang C (pr1 A ⊗_{ C} pr1 B))
+          ⊗^{ E}_{l} (# (linear_category_bang_functor E) (pr212 A) · pr1 κ^{ L} (pr1 A))
+          · (# K
+               (fmonoidal_preservestensordata (linear_category_bang_functor C) 
+                  (pr1 A) (pr1 B))
+             ⊗^{ E}_{r} (linear_category_bang_functor C ∙ L) (pr1 A)
+             · (sym_mon_braiding E
+                  (K
+                     (linear_category_bang_functor C (pr1 A)
+                      ⊗_{ C} linear_category_bang_functor C (pr1 B)))
+                  ((linear_category_bang_functor C ∙ L) (pr1 A))
+                · pr1 k (linear_category_bang_functor C (pr1 A))
+                (linear_category_bang C (pr1 B))))))).
+Proof.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (maponpaths (compose _) _ @ _).
   refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _ @ _).
@@ -342,18 +378,15 @@ Proof.
   apply cancel_postcomposition.
   refine (! internal_postcomp_comp _ _ _ @ _).
   apply maponpaths.
-  refine (assoc' _ _ _ @ _ @ internal_lam_natural _ _ @ _).
+  refine (assoc' _ _ _ @ _ @ internal_lam_natural _ _).
   apply maponpaths.
   refine (doublePullbackArrow_PrL _ _ _ _ _ _ _).
-  unfold monoidal_cat_tensor_mor; now rewrite (when_bifunctor_becomes_rightwhiskering E).
   refine (maponpaths (λ f, f · _) _ @ _).
   refine (maponpaths (λ f, f · _) _ @ _).
   apply internal_lam_natural.
-  unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
   refine (internal_lam_postcomp _ _ @ _).
   apply maponpaths.
-  refine (internal_lam_natural _ _ @ _).
-  unfold monoidal_cat_tensor_mor; now rewrite (when_bifunctor_becomes_rightwhiskering E).
+  refine (internal_lam_natural _ _).
   apply internal_lam_uncurry.
   refine (_ @ internal_lam_precomp _ _ @ _).
   apply cancel_postcomposition.
@@ -361,9 +394,6 @@ Proof.
   refine (_ @ assoc' _ _ _).
   refine (_ @ ! internal_lam_natural _ _).
   apply maponpaths.
-
-
-  
   do 2 refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) _ @ _).
   refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
@@ -376,6 +406,9 @@ Proof.
   apply maponpaths.
   refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
   apply cancel_postcomposition.
+  refine (maponpaths (λ f, f · _) _ @ _).
+  unfold monoidal_cat_tensor_mor;
+    apply (when_bifunctor_becomes_rightwhiskering E).
   refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
   refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
   apply maponpaths.
@@ -389,6 +422,9 @@ Proof.
   refine (assoc _ _ _ @ _).
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
+  refine (maponpaths (λ f, f · _) _ @ _).
+  unfold monoidal_cat_tensor_mor;
+    apply (when_bifunctor_becomes_rightwhiskering E).
   refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
   refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
   apply maponpaths.
@@ -399,6 +435,9 @@ Proof.
   refine (doublePullbackArrow_PrM _ _ _ _ _ _ _).
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
+  refine (maponpaths (λ f, f · _) _ @ _).
+  unfold monoidal_cat_tensor_mor;
+    apply (when_bifunctor_becomes_rightwhiskering E).
   refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
   refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
   apply maponpaths.
@@ -558,8 +597,8 @@ Proof.
   refine (maponpaths (compose _) _ @ _).
   apply (natural_contraction_composed k).
   refine (_ @ ! maponpaths (compose _)
-            (natural_contraction_extranatural k (linear_category_bang_functor C R2) _ _
-               (linear_category_comult C R1)) @ _).
+            (natural_contraction_extranatural k (linear_category_bang_functor C (pr1 B)) _ _
+               (linear_category_comult C (pr1 A))) @ _).
   refine (assoc _ _ _ @ _ @ assoc' _ _ _).
   apply cancel_postcomposition.
   2 : {
@@ -698,7 +737,6 @@ Proof.
   apply maponpaths.
   refine (! functor_comp K _ _ @ _).
   apply maponpaths.
-  unfold SymmetricDiagonal.inner_swap, monoidal_cat_tensor_mor, monoidal_cat_tensor_pt.
   refine (_ @ assoc' _ _ _).
   do 5 refine (assoc _ _ _ @ _).
   apply cancel_postcomposition.
@@ -707,7 +745,7 @@ Proof.
   apply cancel_postcomposition.
   apply monoidal_associatornatleft.
   apply maponpaths.
-  apply maponpaths.
+  apply (maponpaths (compose _)).
   do 2 refine (assoc _ _ _ @ _).
   apply cancel_postcomposition.
   refine (_ @ ! bifunctor_leftcomp C _ _ _ _ _ _ @ _).
@@ -716,6 +754,44 @@ Proof.
   apply (bifunctor_leftcomp C).
   apply maponpaths.
   apply assoc'. (* completes subgoal *)
+Qed.
+
+Local Lemma double_glued_total_linear_category_comult_preserves_tensor_lemma2
+  {C E : linear_category}
+  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
+  compose (C:=E) (pr122 (monoidal_cat_tensor_mor
+           (linear_category_comult (double_glued_total_linear_category_data pb L k) A)
+           (linear_category_comult (double_glued_total_linear_category_data pb L k) B)
+         · (inner_swap (double_glued_total_linear_category_data pb L k)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+            · monoidal_cat_tensor_mor
+                (mon_functor_tensor
+                   (linear_category_bang_functor
+                      (double_glued_total_linear_category_data pb L k))
+                   A B)
+                (mon_functor_tensor
+                   (linear_category_bang_functor
+                      (double_glued_total_linear_category_data pb L k))
+                   A B))))
+    (doublePullbackPrM
+    (tensor_doublePullback pb k
+       (pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k) A))
+       ((pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k) B))))) =
+  doublePullbackPrM
+    (tensor_doublePullback pb k
+       (pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k)
+                  (A ⊗_{ double_glued_total_linear_category_data pb L k} B)))
+       ((pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k)
+                  (A ⊗_{ double_glued_total_linear_category_data pb L k} B)))))
+  · # K
+      (fmonoidal_preservestensordata (linear_category_bang_functor C) (pr1 A) (pr1 B)
+         · linear_category_comult C (pr1 A ⊗_{ C} pr1 B)).
+Proof.
+  
   refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _ @ _).
   apply maponpaths.
   refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
@@ -772,7 +848,7 @@ Proof.
   refine (! functor_comp K _ _ @ _).
   apply maponpaths.
   refine (_ @ ! linear_category_comult_preserves_tensor _ _).
-  unfold monoidal_cat_tensor_mor, SymmetricDiagonal.inner_swap.  
+  unfold monoidal_cat_tensor_mor.  
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   apply maponpaths.
   unfold monoidal_cat_tensor_pt.
@@ -781,7 +857,62 @@ Proof.
   apply assoc.
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
-  now repeat rewrite assoc. (* completes subgoal *)
+  refine (assoc _ _ _ @ _).
+  do 2 refine (_ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  apply assoc. (* completes subgoal *)
+Qed.
+
+
+Local Lemma double_glued_total_linear_category_comult_preserves_tensor_lemma3
+  {C E : linear_category}
+  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
+  compose (C:=E) (pr122 (monoidal_cat_tensor_mor
+           (linear_category_comult (double_glued_total_linear_category_data pb L k) A)
+           (linear_category_comult (double_glued_total_linear_category_data pb L k) B)
+         · (inner_swap (double_glued_total_linear_category_data pb L k)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+              (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+            · monoidal_cat_tensor_mor
+                (mon_functor_tensor
+                   (linear_category_bang_functor
+                      (double_glued_total_linear_category_data pb L k))
+                   A B)
+                (mon_functor_tensor
+                   (linear_category_bang_functor
+                      (double_glued_total_linear_category_data pb L k))
+                   A B))))
+  (doublePullbackPrR
+      (tensor_doublePullback pb k
+       (pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k) A))
+       ((pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k) B))))) =
+  doublePullbackPrM
+    (tensor_doublePullback pb k
+       (pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k)
+                  (A ⊗_{ double_glued_total_linear_category_data pb L k} B)))
+       ((pr2 (linear_category_bang (double_glued_total_linear_category_data pb L k)
+                  (A ⊗_{ double_glued_total_linear_category_data pb L k} B)))))
+  · (compose (C:=E) (# K (linear_category_comult C (pr1 A ⊗_{ C} pr1 B)))
+       (internal_lam
+         (K (linear_category_bang C (pr1 A ⊗_{ C} pr1 B))
+          ⊗^{ E}_{l} (# (linear_category_bang_functor E) (pr212 B) · pr1 κ^{ L} (pr1 B))
+          · (# K
+               (sym_mon_braiding C (linear_category_bang_functor C (pr1 B))
+                  (linear_category_bang_functor C (pr1 A))
+                · fmonoidal_preservestensordata (linear_category_bang_functor C) 
+                    (pr1 A) (pr1 B))
+             ⊗^{ E}_{r} (linear_category_bang_functor C ∙ L) (pr1 B)
+             · (sym_mon_braiding E
+                  (K
+                     (monoidal_cat_tensor_pt (linear_category_bang_functor C (pr1 B))
+                        (linear_category_bang_functor C (pr1 A))))
+                  ((linear_category_bang_functor C ∙ L) (pr1 B))
+                · pr1 k (linear_category_bang_functor C (pr1 B))
+                (linear_category_bang C (pr1 A))))))).
+Proof.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (maponpaths (compose _) _ @ _).
   refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _ @ _).
@@ -886,7 +1017,7 @@ Proof.
   apply pathsinv0.
   apply (pr12 k).
   do 3 refine (_ @ assoc' _ _ _).
-  set (keq := natural_contraction_extranatural k (linear_category_bang_functor C R1) _ _ (linear_category_comult C R2)).
+  set (keq := natural_contraction_extranatural k (linear_category_bang_functor C (pr1 A)) _ _ (linear_category_comult C (pr1 B))).
   refine (_ @ maponpaths (compose _) (! keq) @ _); clear keq.
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
@@ -1007,6 +1138,373 @@ Proof.
   apply assoc'.
   apply (monoidal_braiding_naturality_left E). (* completes subgoal *)
 Qed.
+
+
+Lemma double_glued_total_linear_category_comult_preserves_tensor {C E : linear_category}
+  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
+  mon_functor_tensor (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B
+    · linear_category_comult (double_glued_total_linear_category_data pb L k)
+    (monoidal_cat_tensor_pt A B) =
+  monoidal_cat_tensor_mor (linear_category_comult (double_glued_total_linear_category_data pb L k) A)
+    (linear_category_comult (double_glued_total_linear_category_data pb L k) B)
+    · (inner_swap (double_glued_total_linear_category_data pb L k)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) A)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+         (linear_category_bang (double_glued_total_linear_category_data pb L k) B)
+         · monoidal_cat_tensor_mor
+         (mon_functor_tensor
+            (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B)
+         (mon_functor_tensor
+            (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B)).
+Proof.
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_tensor.
+  refine (double_glued_total_linear_category_comult_preserves_tensor1 pb L k A B @ _).
+  refine (! doublePullbackArrowUnique _ _ _ _ _ _ _ _ _ _ _).
+  exact (double_glued_total_linear_category_comult_preserves_tensor_lemma1 pb L k A B).
+  exact (double_glued_total_linear_category_comult_preserves_tensor_lemma2 pb L k A B).
+  exact (double_glued_total_linear_category_comult_preserves_tensor_lemma3 pb L k A B).
+Qed.
+
+
+Lemma double_glued_total_linear_category_counit_preserves_tensor {C E : linear_category}
+  (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data pb L k):
+mon_functor_tensor
+    (linear_category_bang_functor (double_glued_total_linear_category_data pb L k)) A B
+  · linear_category_counit (double_glued_total_linear_category_data pb L k)
+      (monoidal_cat_tensor_pt A B) =
+  monoidal_cat_tensor_mor
+    (linear_category_counit (double_glued_total_linear_category_data pb L k) A)
+    (linear_category_counit (double_glued_total_linear_category_data pb L k) B)
+    · mon_lunitor I_{ double_glued_total_linear_category_data pb L k}.
+Proof.
+  destruct A as (R1, ((U1, l1), (X1, l1'))).
+  destruct B as (R2, ((U2, l2), (X2, l2'))).
+  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_preserves_tensor.
+  refine (doublePullbackArrowUnique _ _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique _ _ _ _ _ _ _ _ _ _ _).
+  Unshelve.
+  9 : {
+    apply internal_lam.
+    
+    apply (compose (_ ⊗^{E}_{l} (# _ l1 · pr1 κ^{L} R1))).
+    refine (compose ((# K _) ⊗^{E}_{r} _) _).
+    refine (compose _ (ru^{C}_{ I_{C} } )).
+    exact (linear_category_counit C R1 ⊗^{C}_{r} _).
+    apply (compose (sym_mon_braiding E _ _)).
+    apply (compose (pr1 k _ _)).
+    apply (# K).
+    exact (linear_category_counit C _).
+  }
+  9 : {
+    apply (# K).
+    apply (compose (linear_category_counit C _ ⊗^{C} linear_category_counit C _)).
+    apply (ru^{C}_{_}).
+  }
+  9 : {
+    apply internal_lam.
+    
+    apply (compose (_ ⊗^{E}_{l} (# _ l2 · pr1 κ^{L} R2))).
+    refine (compose ((# K _) ⊗^{E}_{r} _) _).
+    refine (compose _ (ru^{C}_{ I_{C} } )).
+    exact (linear_category_counit C R2 ⊗^{C}_{r} _).
+    apply (compose (sym_mon_braiding E _ _)).
+    apply (compose (pr1 k _ _)).
+    apply (# K).
+    exact (linear_category_counit C _).  
+  }
+  rewrite internal_lam_precomp.
+  refine (maponpaths (compose _) (internal_postcomp_id _ _) @ _).
+  rewrite id_right.
+  refine (_ @ assoc' _ _ _).
+  refine (_ @ ! maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _)).
+  refine (_ @ assoc _ _ _).
+  apply (maponpaths (compose _)).
+  simpl.
+  refine (_ @ functor_comp _ _ _).
+  apply maponpaths.
+  rewrite 2 assoc.
+  refine (! maponpaths (compose _) (pr12 k _ _ _ _) @ _).
+  repeat rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (compose _) (monoidal_braiding_naturality_right E _ _ _ _) @ _).
+  rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  rewrite assoc'.
+  rewrite <- (bifunctor_rightcomp E).
+  refine (! bifunctor_equalwhiskers E _ _ _ _ _ _ @ _).
+  apply (maponpaths (postcompose _)).
+  apply maponpaths.
+  refine (! functor_comp K _ _ @ _).
+  apply maponpaths.
+  rewrite assoc.
+  rewrite (bifunctor_equalwhiskers C).
+  reflexivity.
+  rewrite internal_lam_precomp.
+  refine (_ @ ! maponpaths (compose _) (internal_postcomp_id _ _)).
+  rewrite id_right.
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _) @ _).
+  rewrite assoc'.
+  apply (maponpaths (compose _)).
+  simpl.
+  refine (! functor_comp _ _ _ @ _).
+  apply maponpaths.
+  do 2 refine (_ @ assoc' _ _ _).
+  refine (_ @ maponpaths (compose _) (pr12 k _ _ _ _)).
+  repeat rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ ! maponpaths (compose _) (monoidal_braiding_naturality_right E _ _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  apply (maponpaths (postcompose _)).
+  refine (_ @ assoc _ _ _).
+  rewrite <- (bifunctor_rightcomp E).
+  refine (_ @ bifunctor_equalwhiskers E _ _ _ _ _ _).
+  apply (maponpaths (postcompose _)).
+  apply maponpaths.
+  refine (_ @ functor_comp K _ _).
+  apply maponpaths.
+  rewrite assoc.
+  rewrite (bifunctor_equalwhiskers C).
+  apply (maponpaths (postcompose _)).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (monoidal_braiding_naturality_right C _ _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (_ @ bifunctor_equalwhiskers C _ _ _ _ _ _).
+  apply (maponpaths (compose _)).
+  refine (monoidal_braiding_naturality_left C _ _ _ _ @ _).
+  refine (_ @ id_right _).
+  apply maponpaths.
+  exact (sym_mon_braiding_id C).
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (maponpaths (compose _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
+  unfold postcompose.
+  rewrite assoc.
+  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _) @ _).
+  rewrite assoc'.
+  apply (maponpaths (compose _)).
+  simpl.
+  refine (! functor_comp _ _ _ @ _).
+  apply maponpaths.
+  rewrite assoc.
+  refine (! maponpaths (λ f, f · _) (monoidal_braiding_naturality_right E _ _ _ _) @ _).
+  rewrite assoc'.
+  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  rewrite <- (monoidal_braiding_naturality_right E).
+  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  rewrite <- (monoidal_braiding_naturality_left E).
+  refine (_ @ assoc _ _ _).
+  apply maponpaths.
+  refine (_ @ assoc' _ _ _).
+  refine (_ @ maponpaths (compose _) (pr12 k _ _ _ _)).
+  repeat rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ maponpaths (compose _) (bifunctor_leftcomp E _ _ _ _ _ _)).
+  refine (! bifunctor_equalwhiskers E _ _ _ _ _ _ @ _).
+  apply (maponpaths (compose _)).
+  apply maponpaths.
+  refine (_ @ functor_comp K _ _).
+  apply maponpaths.
+  rewrite assoc.
+  refine (linear_category_counit_preserves_tensor _ _ @ _).
+  apply map_on_two_paths.
+  apply (bifunctor_equalwhiskers C).
+  rewrite <- id_left.
+  refine (_ @ maponpaths (λ f, f · _) (sym_mon_braiding_id C)).
+  apply pathsinv0.
+  apply sym_mon_braiding_runitor. (* completes subgoal *)
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (maponpaths (compose _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  unfold postcompose.
+  refine (! functor_comp K _ _ @ _).
+  apply maponpaths.
+  refine (linear_category_counit_preserves_tensor _ _ @ _).
+  apply maponpaths.
+  rewrite <- id_left.
+  refine (_ @ maponpaths (λ f, f · _) (sym_mon_braiding_id C)).
+  apply pathsinv0.
+  apply sym_mon_braiding_runitor. (* completes subgoal *)
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (maponpaths (compose _) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
+  unfold postcompose.
+  rewrite assoc.
+  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
+  rewrite assoc.
+  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _) @ _).
+  rewrite assoc'.
+  apply (maponpaths (compose _)).
+  simpl.
+  refine (! functor_comp _ _ _ @ _).
+  apply maponpaths.
+  rewrite assoc.
+  refine (! maponpaths (λ f, f · _) (monoidal_braiding_naturality_right E _ _ _ _) @ _).
+  rewrite assoc'.
+  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  rewrite <- (monoidal_braiding_naturality_right E).
+  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  rewrite <- (monoidal_braiding_naturality_left E).
+  refine (_ @ assoc _ _ _).
+  apply maponpaths.
+  refine (_ @ assoc' _ _ _).
+  refine (_ @ maponpaths (compose _) (pr12 k _ _ _ _)).
+  repeat rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ maponpaths (compose _) (bifunctor_leftcomp E _ _ _ _ _ _)).
+  refine (! bifunctor_equalwhiskers E _ _ _ _ _ _ @ _).
+  apply (maponpaths (compose _)).
+  apply maponpaths.
+  refine (_ @ functor_comp K _ _).
+  apply maponpaths.
+  rewrite assoc'.
+  refine (maponpaths (compose _) (linear_category_counit_preserves_tensor _ _) @ _).
+  rewrite assoc.
+  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f · _ · _) (monoidal_braiding_naturality_left C _ _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  rewrite assoc'.
+  apply maponpaths.
+  refine (maponpaths (λ f, f · _) (monoidal_braiding_naturality_right C _ _ _ _) @ _).
+  rewrite assoc'.
+  apply maponpaths.
+  apply sym_mon_braiding_lunitor. (* completes subgoal *)
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  rewrite assoc.
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
+  rewrite <- internal_pre_post_comp_as_post_pre_comp.
+  rewrite internal_pre_post_comp_as_pre_post_comp.
+  rewrite assoc.
+  rewrite internal_lam_precomp.
+  refine (assoc' _ _ _ @ _).
+  apply (maponpaths (compose _)).
+  rewrite <- hom_onmorphisms_is_postcomp.
+  refine (! functor_comp (pr1 (pr211 E _)) _ _ @ _).
+  apply maponpaths.
+  repeat rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  rewrite (functor_comp K).
+  refine (_ @ ! maponpaths (λ f, _ · f · _ · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _ · _) (assoc' _ _ _)).
+  do 2 refine (_ @ assoc _ _ _).
+  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  rewrite <- (monoidal_braiding_naturality_right E).
+  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  generalize (pr122 k (I_{C}) _ _ (linear_category_counit C R1)); simpl; rewrite 2 id_right; intros keq.
+  refine (_ @ ! maponpaths (compose _) keq); clear keq.
+  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
+  rewrite <- (monoidal_braiding_naturality_right E).
+  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  rewrite <- (monoidal_braiding_naturality_left E).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  refine (_ @ maponpaths (λ f, _ · (_ ⊗^{E}_{l} # K f · _)) (sym_mon_braiding_lunitor C (I_{C}))).
+  rewrite (sym_mon_braiding_id C).
+  rewrite id_left.
+  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
+  refine (_ @ maponpaths (λ f, (_ · f) · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, (_ · f ⊗^{E}_{r} _) · _) (assoc _ _ _)).
+  refine (_ @ ! maponpaths (λ f, (_ · (_ · f) ⊗^{E}_{r} _) · _) (pr12 L R1)).
+  refine (_ @ maponpaths (λ f, (_ · f ⊗^{E}_{r} _) · _) (assoc' _ _ _)).
+  rewrite (bifunctor_rightcomp E).
+  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (compose _) (pr1 (pr222 k) (I_{C}))).
+  rewrite (monoidal_braiding_naturality_left E).
+  refine (_ @ assoc _ _ _).
+  apply map_on_two_paths.
+  apply maponpaths.
+  apply pathsinv0.
+  apply linear_category_counit_nat.
+  apply pathsinv0.
+  apply (sym_mon_braiding_lunitor E). (* completes subgoal *)
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  rewrite assoc.
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose (C:=E) _) (! functor_comp K _ _) @ _).
+  rewrite assoc'.
+  refine (maponpaths (compose (C:=E) _) (! functor_comp K _ _) @ _).
+  refine (id_left _ @ _).
+  do 2 apply maponpaths.
+  rewrite <- id_left.
+  refine (_ @ maponpaths (λ f, f · _) (sym_mon_braiding_id C)).
+  apply pathsinv0.
+  apply (sym_mon_braiding_runitor C). (* completes subgoal *)
+  refine (assoc' (C:=E) _ _ _ @ _).
+  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  rewrite assoc.
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
+  simpl.
+  rewrite id_left.
+  rewrite assoc.
+  rewrite internal_lam_precomp.
+  refine (assoc' _ _ _ @ _).
+  apply (maponpaths (compose _)).
+  rewrite <- hom_onmorphisms_is_postcomp.
+  refine (! functor_comp (pr1 (pr211 E _)) _ _ @ _).
+  apply maponpaths.
+  repeat rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  rewrite (functor_comp K).
+  refine (_ @ ! maponpaths (λ f, _ · f · _ · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _ · _) (assoc' _ _ _)).
+  do 2 refine (_ @ assoc _ _ _).
+  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  rewrite <- (monoidal_braiding_naturality_right E).
+  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  generalize (pr122 k (I_{C}) _ _ (linear_category_counit C R2)); simpl; rewrite 2 id_right; intros keq.
+  refine (_ @ ! maponpaths (compose _) keq); clear keq.
+  repeat rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ ! maponpaths (compose _) (monoidal_braiding_naturality_left E _ _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  apply (maponpaths (postcompose _)).
+  refine (_ @ assoc _ _ _).
+  refine (_ @ ! maponpaths (compose _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+  refine (_ @ assoc' _ _ _).
+  apply (maponpaths (postcompose _)).
+  do 2 rewrite <- (bifunctor_leftcomp E).
+  apply maponpaths.
+  rewrite assoc'.
+  refine (_ @ ! maponpaths (compose _) (pr12 L R2)).
+  rewrite assoc.
+  apply (maponpaths (postcompose _)).
+  apply pathsinv0.
+  apply linear_category_counit_nat. (* completes subgoal *)
+Qed.
+  
 
 
 Lemma double_glued_total_linear_category_laws {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
@@ -1135,8 +1633,7 @@ Proof.
   refine (! functor_comp K _ _ @ _).
   apply maponpaths.
   apply linear_category_cocommutative.
-  intros A B.
-  exact (double_glued_total_linear_category_comult_preserves_tensor pb L k A B).
+  exact (double_glued_total_linear_category_comult_preserves_tensor pb L k).
   (* linear_category_comult_preserves_unit : *)
   apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_unit.
   refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _).
@@ -1238,349 +1735,7 @@ Proof.
   rewrite assoc'.
   refine (_ @ maponpaths (compose _) (bifunctor_equalwhiskers C _ _ _ _ _ _)). 
   apply linear_category_comult_preserves_unit.
-  intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_preserves_tensor.
-  set (dpb := tensor_doublePullback pb k
-                    (((pr111 (linear_category_bang E)) U1,, # (pr111 (linear_category_bang E)) l1 · (pr121 L) R1),,
-                     K ((pr111 (linear_category_bang C)) R1),, identity (K ((pr111 (linear_category_bang C)) R1)))
-                    (((pr111 (linear_category_bang E)) U2,, # (pr111 (linear_category_bang E)) l2 · (pr121 L) R2),,
-                     K ((pr111 (linear_category_bang C)) R2),, identity (K ((pr111 (linear_category_bang C)) R2)))).
-  refine (doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _).
-  Unshelve.
-  10 : {
-    apply internal_lam.
-    
-    apply (compose (_ ⊗^{E}_{l} (# _ l1 · pr1 κ^{L} R1))).
-    refine (compose ((# K _) ⊗^{E}_{r} _) _).
-    refine (compose _ (ru^{C}_{ I_{C} } )).
-    exact (linear_category_counit C R1 ⊗^{C}_{r} _).
-    apply (compose (sym_mon_braiding E _ _)).
-    apply (compose (pr1 k _ _)).
-    apply (# K).
-    exact (linear_category_counit C _).
-
-    (*
-    refine (compose (_ ⊗^{E}_{l} _) _).
-    apply (compose (# _ l1)).
-    exact (linear_category_counit E _).
-    apply (compose (ru^{E}_{_})).
-    apply (# K).
-    exact (linear_category_counit C _).*)
-  }
-  10 : {
-    apply (# K).
-    apply (compose (linear_category_counit C _ ⊗^{C} linear_category_counit C _)).
-    apply (ru^{C}_{_}).
-  }
-  10 : {
-    apply internal_lam.
-    
-    apply (compose (_ ⊗^{E}_{l} (# _ l2 · pr1 κ^{L} R2))).
-    refine (compose ((# K _) ⊗^{E}_{r} _) _).
-    refine (compose _ (ru^{C}_{ I_{C} } )).
-    exact (linear_category_counit C R2 ⊗^{C}_{r} _).
-    apply (compose (sym_mon_braiding E _ _)).
-    apply (compose (pr1 k _ _)).
-    apply (# K).
-    exact (linear_category_counit C _).
-
-    (*
-    refine (compose (_ ⊗^{E}_{l} _) _).
-    apply (compose (# _ l2)).
-    exact (linear_category_counit E _).
-    apply (compose (ru^{E}_{_})).
-    apply (# K).
-    exact (linear_category_counit C _).*)    
-  }
-  rewrite internal_lam_precomp.
-  refine (maponpaths (compose _) (internal_postcomp_id _ _) @ _).
-  rewrite id_right.
-  refine (_ @ assoc' _ _ _).
-  refine (_ @ ! maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _)).
-  refine (_ @ assoc _ _ _).
-  apply (maponpaths (compose _)).
-  simpl.
-  refine (_ @ functor_comp _ _ _).
-  apply maponpaths.
-  rewrite 2 assoc.
-  refine (! maponpaths (compose _) (pr12 k _ _ _ _) @ _).
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  refine (assoc' _ _ _ @ _).
-  refine (maponpaths (compose _) (monoidal_braiding_naturality_right E _ _ _ _) @ _).
-  rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  rewrite assoc'.
-  rewrite <- (bifunctor_rightcomp E).
-  refine (! bifunctor_equalwhiskers E _ _ _ _ _ _ @ _).
-  apply (maponpaths (postcompose _)).
-  apply maponpaths.
-  refine (! functor_comp K _ _ @ _).
-  apply maponpaths.
-  rewrite assoc.
-  rewrite (bifunctor_equalwhiskers C).
-  reflexivity.
-  rewrite internal_lam_precomp.
-  refine (_ @ ! maponpaths (compose _) (internal_postcomp_id _ _)).
-  rewrite id_right.
-  refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
-  refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _) @ _).
-  rewrite assoc'.
-  apply (maponpaths (compose _)).
-  simpl.
-  refine (! functor_comp _ _ _ @ _).
-  apply maponpaths.
-  do 2 refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (pr12 k _ _ _ _)).
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ ! maponpaths (compose _) (monoidal_braiding_naturality_right E _ _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  apply (maponpaths (postcompose _)).
-  refine (_ @ assoc _ _ _).
-  rewrite <- (bifunctor_rightcomp E).
-  refine (_ @ bifunctor_equalwhiskers E _ _ _ _ _ _).
-  apply (maponpaths (postcompose _)).
-  apply maponpaths.
-  refine (_ @ functor_comp K _ _).
-  apply maponpaths.
-  rewrite assoc.
-  rewrite (bifunctor_equalwhiskers C).
-  apply (maponpaths (postcompose _)).
-  refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (monoidal_braiding_naturality_right C _ _ _ _) @ _).
-  refine (assoc' _ _ _ @ _).
-  refine (_ @ bifunctor_equalwhiskers C _ _ _ _ _ _).
-  apply (maponpaths (compose _)).
-  refine (monoidal_braiding_naturality_left C _ _ _ _ @ _).
-  refine (_ @ id_right _).
-  apply maponpaths.
-  exact (sym_mon_braiding_id C).
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose _) (doublePullbackArrow_PrL dpb _ _ _ _ _ _) @ _).
-  unfold postcompose.
-  rewrite assoc.
-  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
-  refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _) @ _).
-  rewrite assoc'.
-  apply (maponpaths (compose _)).
-  simpl.
-  refine (! functor_comp _ _ _ @ _).
-  apply maponpaths.
-  rewrite assoc.
-  refine (! maponpaths (λ f, f · _) (monoidal_braiding_naturality_right E _ _ _ _) @ _).
-  rewrite assoc'.
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  rewrite <- (monoidal_braiding_naturality_left E).
-  refine (_ @ assoc _ _ _).
-  apply maponpaths.
-  refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (pr12 k _ _ _ _)).
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (bifunctor_leftcomp E _ _ _ _ _ _)).
-  refine (! bifunctor_equalwhiskers E _ _ _ _ _ _ @ _).
-  apply (maponpaths (compose _)).
-  apply maponpaths.
-  refine (_ @ functor_comp K _ _).
-  apply maponpaths.
-  rewrite assoc.
-  refine (linear_category_counit_preserves_tensor _ _ @ _).
-  apply map_on_two_paths.
-  apply (bifunctor_equalwhiskers C).
-  rewrite <- id_left.
-  refine (_ @ maponpaths (λ f, f · _) (sym_mon_braiding_id C)).
-  apply pathsinv0.
-  apply sym_mon_braiding_runitor. (* completes subgoal *)
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose _) (doublePullbackArrow_PrM dpb _ _ _ _ _ _) @ _).
-  unfold postcompose.
-  refine (! functor_comp K _ _ @ _).
-  apply maponpaths.
-  refine (linear_category_counit_preserves_tensor _ _ @ _).
-  apply maponpaths.
-  rewrite <- id_left.
-  refine (_ @ maponpaths (λ f, f · _) (sym_mon_braiding_id C)).
-  apply pathsinv0.
-  apply sym_mon_braiding_runitor. (* completes subgoal *)
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose _) (doublePullbackArrow_PrR dpb _ _ _ _ _ _) @ _).
-  unfold postcompose.
-  rewrite assoc.
-  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
-  refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr211 E _))) _ _ _) @ _).
-  rewrite assoc'.
-  apply (maponpaths (compose _)).
-  simpl.
-  refine (! functor_comp _ _ _ @ _).
-  apply maponpaths.
-  rewrite assoc.
-  refine (! maponpaths (λ f, f · _) (monoidal_braiding_naturality_right E _ _ _ _) @ _).
-  rewrite assoc'.
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  rewrite <- (monoidal_braiding_naturality_left E).
-  refine (_ @ assoc _ _ _).
-  apply maponpaths.
-  refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (pr12 k _ _ _ _)).
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (bifunctor_leftcomp E _ _ _ _ _ _)).
-  refine (! bifunctor_equalwhiskers E _ _ _ _ _ _ @ _).
-  apply (maponpaths (compose _)).
-  apply maponpaths.
-  refine (_ @ functor_comp K _ _).
-  apply maponpaths.
-  rewrite assoc'.
-  refine (maponpaths (compose _) (linear_category_counit_preserves_tensor _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, f · _ · _) (monoidal_braiding_naturality_left C _ _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  rewrite assoc'.
-  apply maponpaths.
-  refine (maponpaths (λ f, f · _) (monoidal_braiding_naturality_right C _ _ _ _) @ _).
-  rewrite assoc'.
-  apply maponpaths.
-  apply sym_mon_braiding_lunitor. (* completes subgoal *)
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrL dpb _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
-  rewrite <- internal_pre_post_comp_as_post_pre_comp.
-  rewrite internal_pre_post_comp_as_pre_post_comp.
-  rewrite assoc.
-  rewrite internal_lam_precomp.
-  refine (assoc' _ _ _ @ _).
-  apply (maponpaths (compose _)).
-  rewrite <- hom_onmorphisms_is_postcomp.
-  refine (! functor_comp (pr1 (pr211 E _)) _ _ @ _).
-  apply maponpaths.
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  rewrite (functor_comp K).
-  refine (_ @ ! maponpaths (λ f, _ · f · _ · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _ · _) (assoc' _ _ _)).
-  do 2 refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  generalize (pr122 k (I_{C}) _ _ (linear_category_counit C R1)); simpl; rewrite 2 id_right; intros keq.
-  refine (_ @ ! maponpaths (compose _) keq); clear keq.
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_left E).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, _ · (_ ⊗^{E}_{l} # K f · _)) (sym_mon_braiding_lunitor C (I_{C}))).
-  rewrite (sym_mon_braiding_id C).
-  rewrite id_left.
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f ⊗^{E}_{r} _) · _) (assoc _ _ _)).
-  refine (_ @ ! maponpaths (λ f, (_ · (_ · f) ⊗^{E}_{r} _) · _) (pr12 L R1)).
-  refine (_ @ maponpaths (λ f, (_ · f ⊗^{E}_{r} _) · _) (assoc' _ _ _)).
-  rewrite (bifunctor_rightcomp E).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (compose _) (pr1 (pr222 k) (I_{C}))).
-  rewrite (monoidal_braiding_naturality_left E).
-  refine (_ @ assoc _ _ _).
-  apply map_on_two_paths.
-  apply maponpaths.
-  apply pathsinv0.
-  apply linear_category_counit_nat.
-  apply pathsinv0.
-  apply (sym_mon_braiding_lunitor E). (* completes subgoal *)
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrM dpb _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose (C:=E) _) (! functor_comp K _ _) @ _).
-  rewrite assoc'.
-  refine (maponpaths (compose (C:=E) _) (! functor_comp K _ _) @ _).
-  refine (id_left _ @ _).
-  do 2 apply maponpaths.
-  rewrite <- id_left.
-  refine (_ @ maponpaths (λ f, f · _) (sym_mon_braiding_id C)).
-  apply pathsinv0.
-  apply (sym_mon_braiding_runitor C). (* completes subgoal *)
-  refine (assoc' (C:=E) _ _ _ @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrR dpb _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
-  simpl.
-  rewrite id_left.
-  rewrite assoc.
-  rewrite internal_lam_precomp.
-  refine (assoc' _ _ _ @ _).
-  apply (maponpaths (compose _)).
-  rewrite <- hom_onmorphisms_is_postcomp.
-  refine (! functor_comp (pr1 (pr211 E _)) _ _ @ _).
-  apply maponpaths.
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  rewrite (functor_comp K).
-  refine (_ @ ! maponpaths (λ f, _ · f · _ · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _ · _) (assoc' _ _ _)).
-  do 2 refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  generalize (pr122 k (I_{C}) _ _ (linear_category_counit C R2)); simpl; rewrite 2 id_right; intros keq.
-  refine (_ @ ! maponpaths (compose _) keq); clear keq.
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ ! maponpaths (compose _) (monoidal_braiding_naturality_left E _ _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  apply (maponpaths (postcompose _)).
-  refine (_ @ assoc _ _ _).
-  refine (_ @ ! maponpaths (compose _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  apply (maponpaths (postcompose _)).
-  do 2 rewrite <- (bifunctor_leftcomp E).
-  apply maponpaths.
-  rewrite assoc'.
-  refine (_ @ ! maponpaths (compose _) (pr12 L R2)).
-  rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  apply pathsinv0.
-  apply linear_category_counit_nat. (* completes subgoal *)
+  exact (double_glued_total_linear_category_counit_preserves_tensor pb L k).
   apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_preserves_unit.
   refine (! functor_comp K _ _ @ _).
   refine (_ @ functor_id K _).

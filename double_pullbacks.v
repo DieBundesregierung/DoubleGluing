@@ -1,42 +1,9 @@
-Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.
-Require Import UniMath.CategoryTheory.Core.Functors.
-Require Import UniMath.CategoryTheory.Core.Isos.
-Require Import UniMath.CategoryTheory.Core.NaturalTransformations.
-Require Import UniMath.CategoryTheory.Adjunctions.Core.
-Require Import UniMath.CategoryTheory.DisplayedCats.Core.
-Require Import UniMath.CategoryTheory.DisplayedCats.Adjunctions.
-Require Import UniMath.CategoryTheory.DisplayedCats.Functors.
-Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
-Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations.
-Require Import UniMath.CategoryTheory.DisplayedCats.Total.
-Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction.
-Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.Monics.
-Require Import UniMath.CategoryTheory.Monoidal.Categories.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.TotalMonoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.WhiskeredDisplayedBifunctors.
-Require Import UniMath.CategoryTheory.Monoidal.Functors.
-Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
-Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
-Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
 Require Import UniMath.CategoryTheory.Limits.Pullbacks.
-Require Import UniMath.CategoryTheory.opp_precat.
-Require Import UniMath.CategoryTheory.OppositeCategory.Core.
-Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
-Require Import UniMath.CategoryTheory.Subcategory.Core.
-Require Import UniMath.CategoryTheory.Subcategory.Full.
-Require Import UniMath.Semantics.LinearLogic.LinearCategory.
-Require Import UniMath.Semantics.LinearLogic.LinearNonLinear.
 
 Local Open Scope cat.
-
-Import BifunctorNotations.
-Import MonoidalNotations.
 
 Require Import preliminaries.
 
@@ -52,7 +19,8 @@ Defined.
 Lemma doublePullback_exists {C : category} {L1 M1 LR M2 R2: C} (pb : Pullbacks C) (f1 : C⟦L1, M1⟧) (g1 : C⟦LR, M1⟧) (f2 : C⟦LR, M2⟧) (g2 : C⟦R2, M2⟧) :
   doublePullback pb f1 g1 f2 g2. 
 Proof.
-  apply pb.
+  exact (pb LR (pr11 (pb M1 L1 LR f1 g1)) (pr11 (pb M2 LR R2 f2 g2)) 
+           (pr221 (pb M1 L1 LR f1 g1)) (pr121 (pb M2 LR R2 f2 g2))).
 Defined.
 
 Definition doublePullbackObject {C : category} {L1 M1 LR M2 R2: C} {pb : Pullbacks C} {f1 : C⟦L1, M1⟧} {g1 : C⟦LR, M1⟧} {f2 : C⟦LR, M2⟧} {g2 : C⟦R2, M2⟧}
