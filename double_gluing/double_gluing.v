@@ -1,54 +1,41 @@
-Require Import UniMath.Foundations.All.
+(***********************************
+
+This file contains the definition of the general double gluing construction and results
+surrounding it (Compare definition 37 in the paper). In more detail, there is:
+- general double glued category as a displayed category
+- results about morphisms of the double glued (displayed) category regarding equality and inverses
+- the total general double glued category
+- the total double glued category for intuitionistic linear logic
+
+
+**********************************)
+
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.
 Require Import UniMath.CategoryTheory.Core.Isos.
-Require Import UniMath.CategoryTheory.Core.NaturalTransformations.
-Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
-Require Import UniMath.CategoryTheory.DisplayedCats.Adjunctions.
-Require Import UniMath.CategoryTheory.DisplayedCats.Functors.
 Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
-Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations.
 Require Import UniMath.CategoryTheory.DisplayedCats.Total.
-Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction.
-Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.Monics.
-Require Import UniMath.CategoryTheory.Monoidal.Categories.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.TotalMonoidal.
 Require Import UniMath.CategoryTheory.Monoidal.Displayed.WhiskeredDisplayedBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Functors.
-Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
-Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
-Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
-Require Import UniMath.CategoryTheory.Limits.Pullbacks.
 Require Import UniMath.CategoryTheory.opp_precat.
 Require Import UniMath.CategoryTheory.OppositeCategory.Core.
 Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
-Require Import UniMath.CategoryTheory.Subcategory.Core.
-Require Import UniMath.CategoryTheory.Subcategory.Full.
-Require Import UniMath.Semantics.LinearLogic.LinearCategory.
-Require Import UniMath.Semantics.LinearLogic.LinearNonLinear.
 
 Local Open Scope cat.
-
-Import BifunctorNotations.
-Import MonoidalNotations.
-
-Require Import preliminaries.
-Require Import double_pullbacks.
 
 
 
 
 (** general double glueing as displayed cat**)
 
+(* type of displayed objects *)
 Definition double_glued_ob {C E E': category} (L : functor C E) (K : functor C E') : C → UU :=
   λ R : ob C, (∑ U : E, E⟦U, L R⟧) × (∑ X : E', E'⟦K R, X⟧).
 
+(* component 1 of type of morphism *)
 Definition double_glued_mor_comp1 {C E E': category} (L : functor C E) (K : functor C E') :
   ∏ R S : ob C, double_glued_ob L K R → double_glued_ob L K S → UU.
 Proof.
@@ -56,6 +43,7 @@ Proof.
   exact (E⟦U,V⟧).
 Defined.
 
+(* equation component 1 needs to satisfy *)
 Definition double_glued_mor_eq1 {C E E': category} (L : functor C E) (K : functor C E') :
   ∏ R S : ob C, ∏ dr : double_glued_ob L K R, ∏ ds : double_glued_ob L K S, C⟦R, S⟧ → double_glued_mor_comp1 L K R S dr ds → hProp.
 Proof.
@@ -64,6 +52,7 @@ Proof.
   exact (pr2 E _ _ _ _).
 Defined.
 
+(* component 2 of type of morphism *)
 Definition double_glued_mor_comp2 {C E E': category} (L : functor C E) (K : functor C E') :
   ∏ R S : ob C, double_glued_ob L K R → double_glued_ob L K S → UU.
 Proof.
@@ -71,6 +60,7 @@ Proof.
   exact (E'⟦X,Y⟧).
 Defined.
 
+(* equation component 2 needs to satisfy *)
 Definition double_glued_mor_eq2 {C E E': category} (L : functor C E) (K : functor C E') :
   ∏ R S : ob C, ∏ dr : double_glued_ob L K R, ∏ ds : double_glued_ob L K S, C⟦R, S⟧ → double_glued_mor_comp2 L K R S dr ds → hProp.
 Proof.
@@ -79,13 +69,15 @@ Proof.
   exact (pr2 E' _ _ _ _).
 Defined.
 
+(* type of (displayed) morphisms bundled *)
 Definition double_glued_mor {C E E': category} (L : functor C E) (K : functor C E') :
   ∏ R S : ob C, double_glued_ob L K R → double_glued_ob L K S → C⟦R, S⟧ → UU.
 Proof.
   intros R S dr ds f.
   exact ((∑ ϕ, double_glued_mor_eq1 L K R S dr ds f ϕ) × (∑ ψ, double_glued_mor_eq2 L K R S dr ds f ψ)).
 Defined.
-  
+
+(* objects and morphisms bundled *)
 Definition double_glued_ob_mor {C E E': category} (L : functor C E) (K : functor C E') : disp_cat_ob_mor C.
 Proof.
   use make_disp_cat_ob_mor.
@@ -93,6 +85,7 @@ Proof.
   exact (double_glued_mor L K).
 Defined.
 
+(* 1st equation identity has to satisfy *)
 Lemma double_glued_id_eq1 {C E E' : category} {L : C ⟶ E} {K : C ⟶ E'} {R : C} (dr : double_glued_ob L K R) :
   double_glued_mor_eq1 L K R R dr dr (identity R) (identity _).
 Proof.
@@ -103,6 +96,7 @@ Proof.
   exact (! functor_id L R).
 Qed.
 
+(* 2nd equation identity has to satisfy *)
 Lemma double_glued_id_eq2 {C E E' : category} {L : C ⟶ E} {K : C ⟶ E'} {R : C} (dr : double_glued_ob L K R) :
   double_glued_mor_eq2 L K R R dr dr (identity R) (identity _).
 Proof.
@@ -113,6 +107,7 @@ Proof.
   exact (functor_id K R).  
 Qed.
 
+(* 1st equation composed arrow has to satisfy *)
 Lemma double_glued_comp_eq1 {C E E' : category} {L : C ⟶ E} {K : C ⟶ E'} {R S T : C} {f : C ⟦ R, S ⟧} {g : C ⟦ S, T ⟧} {dr : double_glued_ob L K R}
   {ds : double_glued_ob L K S} {dt : double_glued_ob L K T} (df : double_glued_mor L K R S dr ds f) (dg : double_glued_mor L K S T ds dt g) :
   double_glued_mor_eq1 L K R T dr dt (f · g) (pr11 df · pr11 dg).
@@ -128,6 +123,7 @@ Proof.
   exact eqmn.
 Qed.
 
+(* 2nd equation composed arrow has to satisfy *)
 Lemma double_glued_comp_eq2 {C E E' : category} {L : C ⟶ E} {K : C ⟶ E'} {R S T : C} {f : C ⟦ R, S ⟧} {g : C ⟦ S, T ⟧} {dr : double_glued_ob L K R}
   {ds : double_glued_ob L K S} {dt : double_glued_ob L K T} (df : double_glued_mor L K R S dr ds f) (dg : double_glued_mor L K S T ds dt g) :
   double_glued_mor_eq2 L K R T dr dt (f · g) (pr12 df · pr12 dg).
@@ -142,7 +138,11 @@ Proof.
   apply (maponpaths (postcompose χ)).
   exact eqlm'.
 Qed.
-  
+
+(* data of the double glued displayed category:
+ - type of obecjst and morphisms
+ - identity
+ - composition *)
 Definition double_glued_data {C E E': category} (L : functor C E) (K : functor C E') : disp_cat_data C.
 Proof.
   exists (double_glued_ob_mor L K).
@@ -163,7 +163,8 @@ Proof.
   exact (double_glued_comp_eq2 df dg).
 Defined.
 
-Definition double_glued_axioms {C E E': category} (L : functor C E) (K : functor C E') : disp_cat_axioms C (double_glued_data L K).
+(* Proof that axioms of a displayed category are satisfied *)
+Lemma double_glued_axioms {C E E': category} (L : functor C E) (K : functor C E') : disp_cat_axioms C (double_glued_data L K).
 Proof.
   split4.
   intros R S f.
@@ -201,12 +202,17 @@ Proof.
   exact (isasetaprop (propproperty _)).
 Qed.
 
+
+(* the double glued displayed category *)
 Definition double_glued_cat {C E E': category} (L : functor C E) (K : functor C E') : disp_cat C.
 Proof.
   exists (double_glued_data L K).
   exact (double_glued_axioms L K).
 Defined.
-  
+
+
+
+(* two morphisms in the double glued cat displayed over the same f are equal if both of their components are equal, disregarding the equations they have to satisfy *)
 Lemma double_glued_mor_eq {C E E': category} {L : functor C E} {K : functor C E'} {R1 R2 : ob C} {f: C⟦R1, R2⟧} {dr1 : double_glued_cat L K R1} {dr2 : double_glued_cat L K R2} (df dg : dr1 -->[f] dr2): df = dg <-> (pr11 df = pr11 dg) × (pr12 df = pr12 dg).
 Proof.
   split.
@@ -220,6 +226,7 @@ Proof.
   exact (subtypePath_prop eq2).
 Qed.
 
+(* equality of morphisms displayed over an equality of morphisms still reduces to equality of both component *)
 Lemma double_glued_mor_eq_transp {C E E': category} {L : functor C E} {K : functor C E'} {R1 R2 : ob C} {f g: C⟦R1, R2⟧} {dr1 : double_glued_cat L K R1}
   {dr2 : double_glued_cat L K R2} (eqfg : f = g) (df : dr1 -->[f] dr2) (dg : dr1 -->[g] dr2) :
   df = transportf (mor_disp dr1 dr2) (! eqfg) dg <-> (pr11 df = pr11 dg) × (pr12 df = pr12 dg).
@@ -227,7 +234,8 @@ Proof.
   unfold transportf; induction (! eqfg); simpl.
   exact (double_glued_mor_eq df dg).
 Qed.
-  
+
+(* an inverse morphism is exactly the morphism where both components are inverted *)
 Lemma is_inv_iff_components_are_inv {C E E' : category} {L : functor C E} {K : functor C E'} {R1 R2 : C} {f : C⟦R1, R2⟧} {g : C⟦R2, R1⟧}
   (isinv : is_inverse_in_precat f g) (dr1 : ob_disp (double_glued_cat L K) R1) (dr2 : ob_disp (double_glued_cat L K) R2) (df : mor_disp dr1 dr2 f)
   (dg : mor_disp dr2 dr1 g) :
@@ -282,6 +290,7 @@ Proof.
   exact (idpath _).  
 Defined.
 
+(* the isomorphisms in the double glued cat are exactly the morphisms whose components are both isos *)
 Lemma is_iso_iff_components_are_iso {C E E' : category} {L : functor C E} {K : functor C E'} (R1 R2 : C) (f : z_iso R1 R2) (dr1 : ob_disp (double_glued_cat L K) R1) (dr2 : ob_disp (double_glued_cat L K) R2) (df : mor_disp dr1 dr2 f) :
   (is_z_isomorphism (pr11 df) × is_z_isomorphism (pr12 df)) <-> is_z_iso_disp f df.
 Proof.
@@ -369,5 +378,11 @@ Proof.
   exact (idpath _).  
 Defined.
 
-Definition double_glued_total_cat {C E : sym_mon_closed_cat} (L : sym_monoidal_functor C E) (K : functor C (E^opp)) : category
+
+(* the total double glued category *)
+Definition double_glued_general_total_cat {C E E' : category} (L : functor C E) (K : functor C E') : category
+  := total_category (double_glued_cat L K).
+
+(* the total double glued category for intutionistic linear logic *)
+Definition double_glued_total_cat {C E : category} (L : functor C E) (K : functor C (E^opp)) : category
   := total_category (double_glued_cat L K).

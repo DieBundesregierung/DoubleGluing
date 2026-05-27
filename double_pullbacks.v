@@ -1,3 +1,10 @@
+(**********************************************
+
+This file contains definitions and results regarding double pullbacks.
+The implementation is in style kept similar to UniMath.CategoryTheory.Limits.Pullbacks.
+
+ **********************************************)
+
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.

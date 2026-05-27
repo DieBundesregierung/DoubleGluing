@@ -1,25 +1,20 @@
-Require Import UniMath.Foundations.All.
+(************************************
+
+This files contains some preliminary definitions and lemmata, namely:
+- definition of dinaturality
+- definition of a constant bifunctor
+- a bundled approach to symmetric monoidal functors (will be partially removed because it overlaps with existing code of the UniMath library)
+- many results about internal structure of symmetric monoidal categories (cmp. section 3.2 of the paper)
+
+************************************)
+
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.
-Require Import UniMath.CategoryTheory.Core.Isos.
 Require Import UniMath.CategoryTheory.Core.NaturalTransformations.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
-Require Import UniMath.CategoryTheory.DisplayedCats.Core.
-Require Import UniMath.CategoryTheory.DisplayedCats.Adjunctions.
-Require Import UniMath.CategoryTheory.DisplayedCats.Functors.
-Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
-Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations.
-Require Import UniMath.CategoryTheory.DisplayedCats.Total.
-Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction.
-Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.Monics.
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.TotalMonoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.WhiskeredDisplayedBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Functors.
 Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
@@ -27,18 +22,13 @@ Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
 Require Import UniMath.CategoryTheory.Limits.Pullbacks.
 Require Import UniMath.CategoryTheory.opp_precat.
 Require Import UniMath.CategoryTheory.OppositeCategory.Core.
-Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
-Require Import UniMath.CategoryTheory.Subcategory.Core.
-Require Import UniMath.CategoryTheory.Subcategory.Full.
-Require Import UniMath.Semantics.LinearLogic.LinearCategory.
-Require Import UniMath.Semantics.LinearLogic.LinearNonLinear.
 
 Local Open Scope cat.
 
 Import BifunctorNotations.
 Import MonoidalNotations.
 
-(* Preliminaries *)
+(* dinatural transformations *)
 Definition is_dinatural {C D : category} {F G : bifunctor (C^opp) C D} (α : ∏ c : C, D⟦(pr11 F) c c, (pr11 G) c c⟧) : hProp.
 Proof.
   refine (∀ c c' : C, ∀ f : C⟦c, c'⟧, _).
@@ -51,6 +41,7 @@ Defined.
 Definition dinat_trans {C D : category} (F G : bifunctor (C^opp) C D) : UU :=
   ∑ (α : ∏ c : C, D⟦(pr11 F) c c, (pr11 G) c c⟧), is_dinatural α.
 
+(* constant bifunctor *)
 Definition constant_bifunctor {E : category} (C D : category) (a : ob E) : bifunctor C D E.
 Proof.
   use tpair.
@@ -66,6 +57,19 @@ Proof.
   exact (λ _ _ _ _ _ _, idpath _).
 Defined.
 
+
+(* bundled approach to symmetric monoidal functors  *)
+(* will be partially removed because it overlaps with existing code of the UniMath library *)
+Definition sym_monoidal_functor (C D : sym_monoidal_cat) : UU :=
+  ∑ (F : lax_monoidal_functor C D), is_symmetric_monoidal_functor C D F.
+
+Definition fsym_respects_braiding {C D : sym_monoidal_cat} (F : sym_monoidal_functor C D) := pr2 F.
+
+Definition fmonoidal_from_fsym {C D : sym_monoidal_cat} (F : sym_monoidal_functor C D) : lax_monoidal_functor C D := pr1 F.
+Coercion fmonoidal_from_fsym : sym_monoidal_functor >-> lax_monoidal_functor.
+
+
+(* Extra results about symm. mon. cats *)
 Lemma hom_onmorphisms_is_postcomp {E : sym_mon_closed_cat} {Y Z : ob E} (X : ob E) (f : E⟦Y, Z⟧) : # (pr1 (pr2 E X)) f = internal_postcomp X f.
 Proof.
   unfold internal_postcomp, internal_lam.
@@ -76,16 +80,6 @@ Proof.
   apply pathsinv0.
   apply (triangle_id_right_ad (pr2 (pr2 E X))).
 Qed.
-
-(* Extra results about symm. mon. cats *)
-
-Definition sym_monoidal_functor (C D : sym_monoidal_cat) : UU :=
-  ∑ (F : lax_monoidal_functor C D), is_symmetric_monoidal_functor C D F.
-
-Definition fsym_respects_braiding {C D : sym_monoidal_cat} (F : sym_monoidal_functor C D) := pr2 F.
-
-Definition fmonoidal_from_fsym {C D : sym_monoidal_cat} (F : sym_monoidal_functor C D) : lax_monoidal_functor C D := pr1 F.
-Coercion fmonoidal_from_fsym : sym_monoidal_functor >-> lax_monoidal_functor.
 
 Definition mon_closed_adj_natural_statement (V : sym_mon_closed_cat) : UU.
 Proof.

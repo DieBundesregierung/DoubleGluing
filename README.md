@@ -16,4 +16,4 @@ Documentation:
 - double_gluing/closed  contains files defining the closedness structure for the symmetric monoidal double glued category. In particular the file closed.v contains the bundled symmetric monoidal closed double-glued category that the other files work towards to.
 - double_gluing/linear_cat  contains files defining the bang-exponential as a comonad and the linear structure of the double-glued category. In particular the file contains the bundled linear double-glued category that this whole project works towards to.
 
-- double_gluing/linear_cat/linear_cat.v  is the main result of this project. It depends on all other files.
+- double_gluing/linear_cat/linear_cat.v  is the main result of this project. It depends on all other files. Depending on the machine, compiling this file might take a lot of patience.
