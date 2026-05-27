@@ -71,10 +71,8 @@ Proof.
   refine (maponpaths (λ f, f · _) (monoidal_braiding_naturality_left E _ _ _ _) @ _).
   rewrite assoc'.
   apply maponpaths.
-  assert (is_symmetric_monoidal_functor C E L) as issymL.
-  admit.
-  exact (issymL _ _).
-Admitted.
+  apply L.
+Qed.
 
 Local Lemma double_glued_braiding_data_lemma1 {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R1 R2 : ob C} {U1 U2 X1 X2 : ob E} (l1 : E⟦U1, L R1⟧) (l1' : E⟦X1, K R1⟧) (l2 : E⟦U2, L R2⟧) (l2' : E⟦X2, K R2⟧) :
@@ -190,10 +188,7 @@ Proof.
   refine (maponpaths (λ f, f ⊗^{E}_{r} _) (assoc' _ _ _ @ _) @ _).
   refine (maponpaths (compose _) (! curry_nat3 _ _ _) @ _).
   refine (assoc _ _ _ @ _).
-(*  It stop working here:
-
-  refine (maponpaths (λ f, f · _) (! doublePullbackSqrRCommutes dpb231 @ _) @ _). 
-  now rewrite <- doublePullbackSqrMCommutes.
+  refine (maponpaths (λ f, f · _) (! doublePullbackSqrRCommutes dpb231) @ _). 
   apply assoc'.
   apply (bifunctor_rightcomp E).
   apply assoc'.
@@ -319,8 +314,6 @@ Proof.
   apply pathsinv0.
   apply sym_mon_tensor_rassociator.
 Qed.
- *)
-Admitted.
 
 Local Lemma double_glued_braiding_laws_lemma2 {C E : sym_mon_closed_cat} (pb : Pullbacks E) (L : sym_monoidal_functor C E) (K : functor C (E^opp))
   (k : natural_contraction C E L K) {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) (dr3 : double_glued_cat L K R3)
@@ -522,9 +515,7 @@ Proof.
         refine (map_on_two_paths compose _ _).
         apply (bifunctor_leftcomp E).
         refine (_ @ bifunctor_rightcomp E _ _ _ _ _ _).
-        assert (is_symmetric_monoidal_functor C E L) as issymL.
-        admit.
-        rewrite <- issymL.
+        rewrite <- (pr2 L).
         apply pathsinv0.
         apply (bifunctor_rightcomp E).
       }
@@ -693,7 +684,7 @@ Proof.
   apply (bifunctor_leftid C).
   apply id_left.
   apply (monoidal_associatorisolaw C).
-Admitted.
+Qed.
 
 
 Local Lemma double_glued_braiding_laws_lemma3 {C E : sym_mon_closed_cat} (pb : Pullbacks E) (L : sym_monoidal_functor C E) (K : functor C (E^opp))
@@ -847,9 +838,7 @@ Proof.
     refine (_ @ maponpaths (λ f, f · _) (! bifunctor_equalwhiskers E _ _ _ _ _ _)).
     refine (_ @ assoc _ _ _).
     refine (maponpaths (compose _) (_ @ bifunctor_rightcomp E _ _ _ _ _ _)).
-    assert (is_symmetric_monoidal_functor C E L) as issymL.
-    admit.
-    rewrite <- issymL.
+    rewrite <- (pr2 L).
     apply pathsinv0.
     apply (bifunctor_rightcomp E).
   }
@@ -1068,7 +1057,7 @@ Proof.
   apply maponpaths.
   apply pathsinv0.
   apply (monoidal_braiding_inverses C).
-Admitted.
+Qed.
 
 Local Lemma double_glued_braiding_laws_lemma4 {C E : sym_mon_closed_cat} (pb : Pullbacks E) (L : sym_monoidal_functor C E) (K : functor C (E^opp))
   (k : natural_contraction C E L K) {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) (dr3 : double_glued_cat L K R3)
@@ -1181,9 +1170,7 @@ Proof.
       2 : {
         refine (_ @ maponpaths (λ f, f · _) (tensor_sym_mon_braiding E l1 l3)).
         refine (_ @ assoc _ _ _).
-        assert (is_symmetric_monoidal_functor C E L) as issymL.
-        admit.
-        refine (_ @ maponpaths (compose _) (! issymL _ _)).
+        refine (_ @ maponpaths (compose _) (! (pr2 L) _ _)).
         unfold  monoidal_cat_tensor_mor.
         now rewrite (bifunctor_equalwhiskers E).
       }
@@ -1288,7 +1275,7 @@ Proof.
   refine (assoc' _ _ _ @ _).
   apply maponpaths.
   apply (monoidal_associatorisolaw E).
-Admitted.
+Qed.
 
 Lemma double_glued_braiding_laws {C E : sym_mon_closed_cat} (pb : Pullbacks E) (L : sym_monoidal_functor C E) (K : functor C (E^opp))
   (k : natural_contraction C E L K) : disp_braiding_laws (double_glued_monoidal pb L K k) (double_glued_braiding_data pb L K k) (double_glued_braiding_data pb L K k).
@@ -1680,11 +1667,8 @@ Proof.
   refine (maponpaths (λ f, f ⊗^{E}_{r} _) (assoc' _ _ _ @ _) @ _).
   refine (maponpaths (compose _) (! internal_postcomp_comp _ _ _ @ _) @ _).
   refine (maponpaths (internal_postcomp _) (! doublePullbackSqrRCommutes _ @ _) @ _).
-  refine (maponpaths (compose _) (_ @ internal_lam_natural _ _) @ _).
+  refine (maponpaths (compose _) (_ @ internal_lam_natural _ _)).
   exact (maponpaths (compose _) (internal_lam_precomp _ _)).
-(* It stops working here:
-
-  now rewrite <- doublePullbackSqrMCommutes.
   apply internal_postcomp_comp.
   refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (doublePullbackSqrLCommutes _ @ _) @ _).
@@ -1751,9 +1735,7 @@ Proof.
   refine (! maponpaths (compose _) (bifunctor_leftcomp E _ _ _ _ _ _)).
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (! bifunctor_rightcomp E _ _ _ _ _ _ @ _) @ _).
-  assert (is_symmetric_monoidal_functor C E L) as issymL.
-  admit.
-  rewrite <- issymL.
+  rewrite <- (pr2 L).
   apply (bifunctor_rightcomp E).
   apply assoc.
   apply assoc.
@@ -2237,7 +2219,6 @@ Proof.
   refine (internal_lam_natural _ _ @ _).
   apply maponpaths.
   unfold monoidal_cat_tensor_mor; rewrite (when_bifunctor_becomes_rightwhiskering E).
-  rewrite doublePullbackSqrMCommutes.
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (compose _) (_ @ assoc _ _ _)).
   2 : {
@@ -2646,7 +2627,6 @@ Proof.
   refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
   refine (maponpaths (λ f, f ⊗^{E}_{r} _) _).
   refine (assoc' _ _ _ @ _).
-  rewrite <- doublePullbackSqrMCommutes.
   apply maponpaths.
   refine (! functor_comp K _ _ @ _).
   now rewrite (assoc (C:=C)). (* completes subgoal *)
@@ -2688,10 +2668,9 @@ Proof.
   refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _)  (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (compose (C:=E) _) (! functor_comp K _ _) @ _).
-  apply cancel_postcomposition.
+  apply maponpaths.
   apply pathsinv0.
-  apply doublePullbackSqrMCommutes. (* completes subgoal *)
+  apply (functor_comp K). (* completes subgoal *)
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (assoc' _ _ _ @ _) @ _).
   refine (maponpaths (compose _) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
@@ -2746,8 +2725,7 @@ Proof.
   refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _ @ bifunctor_leftid E _ _).
   apply maponpaths.
   apply (monoidal_braiding_inverses E).
-*)  
-Admitted.
+Qed.
 
 Definition double_glued_symmetric {C E : sym_mon_closed_cat} (pb : Pullbacks E) (L : sym_monoidal_functor C E) (K : functor C (E^opp))
   (k : natural_contraction C E L K) : disp_symmetric (double_glued_monoidal pb L K k) C.

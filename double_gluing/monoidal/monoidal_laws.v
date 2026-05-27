@@ -52,14 +52,15 @@ Require Import double_gluing.monoidal.associator.
 Require Import double_gluing.monoidal.monoidal_data.
 Require Import double_gluing.monoidal.monoidal_laws1.
 
-
+(*
 Lemma double_glued_monoidal_laws {E C : sym_mon_closed_cat} (pb : Pullbacks E)
   (L : sym_monoidal_functor C E) (K : functor C (E^opp)) (k : natural_contraction C E L K) :
   disp_monoidal_laws (double_glued_monoidal_data pb L K k).
 Proof.
 Admitted.
 
-(*
+*)
+
 Local Lemma double_glued_monoidal_laws_lemma7  {E C : sym_mon_closed_cat} (pb : Pullbacks E) (L : sym_monoidal_functor C E)
   (K : functor C (E^opp)) (k : natural_contraction C E L K) {R1 R2 R3 R4: C} {U1 X1 U2 X2 U3 X3 U4 X4: E} (l1 : E ⟦ U1, L R1 ⟧)
   (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧)
@@ -3038,7 +3039,7 @@ Proof.
   } *)
   exact (double_glued_monoidal_laws_lemma11 pb L K k l1 l1' l2 l2' l3 l3' l4 l4').  
   exact (double_glued_monoidal_laws_lemma12 pb L K k l1 l1' l2 l2' l3 l3' l4 l4').
-  simpl.
+  
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   refine (maponpaths (λ f, _ · (_ · f)) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
@@ -3544,4 +3545,4 @@ Proof.
   exact (double_glued_disp_triangle_identity pb L K k).
   exact (double_glued_disp_pentagon_identity pb L K k).
 Qed.
-*)
+

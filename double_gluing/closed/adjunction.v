@@ -224,8 +224,6 @@ Lemma double_glued_hom_adjunction_unit_eq2 {C E : sym_mon_closed_cat} (pb : Pull
 Proof.
   destruct dr as ((U, l), (X, l')).
   destruct ds as ((V, m), (Y, m')).
-  simpl.
-  rewrite doublePullbackSqrMCommutes.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (_ @ assoc (C:=E) _ _ _).
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
@@ -243,9 +241,6 @@ Proof.
   refine (_ @ assoc _ _ _).
   rewrite (bifunctor_equalwhiskers E).
   refine (assoc' _ _ _ @ _).
-(*
-  It stops working from here:
-
   apply maponpaths.
   unfold internal_lam.
   rewrite hom_onmorphisms_is_postcomp.
@@ -300,8 +295,7 @@ Proof.
   apply maponpaths.
   exact (triangle_id_left_ad (pr2 (pr2 C R)) _).
 Qed.
- *)
-Admitted.
+(* Admitted. *)
 
 Definition double_glued_internal_hom_unit_data {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
