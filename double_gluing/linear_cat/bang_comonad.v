@@ -1,33 +1,30 @@
+(******************************************
+
+This file contains the following definitions and proofs about the bang functor of the (total) double glued category:
+- Definition of comonad-data for the bang functor i.e.
+  - Comultiplication
+  - Counit
+- Proofs of (ordinary) comonad-laws
+- Proofs of extra laws for symmetric monoidal comonads
+- Bundled definition of the bang as a symmetric monoidal comonad.
+
+******************************************)
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.
-Require Import UniMath.CategoryTheory.Core.Isos.
 Require Import UniMath.CategoryTheory.Core.NaturalTransformations.
-Require Import UniMath.CategoryTheory.Adjunctions.Core.
+Require Import UniMath.CategoryTheory.Adjunctions.Core. 
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
-Require Import UniMath.CategoryTheory.DisplayedCats.Adjunctions.
-Require Import UniMath.CategoryTheory.DisplayedCats.Functors.
-Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
-Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations.
 Require Import UniMath.CategoryTheory.DisplayedCats.Total.
-Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction.
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.TotalMonoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.WhiskeredDisplayedBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Functors.
 Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
-Require Import UniMath.CategoryTheory.Limits.Pullbacks.
-Require Import UniMath.CategoryTheory.opp_precat.
 Require Import UniMath.CategoryTheory.OppositeCategory.Core.
 Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
-Require Import UniMath.CategoryTheory.Subcategory.Core.
-Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.Semantics.LinearLogic.LinearCategory.
 Require Import UniMath.CategoryTheory.Monads.Comonads.
 Require Import UniMath.CategoryTheory.FunctorCategory.
@@ -49,7 +46,6 @@ Require Import double_gluing.monoidal.left_unitor.
 Require Import double_gluing.monoidal.right_unitor.
 Require Import double_gluing.monoidal.associator.
 Require Import double_gluing.monoidal.monoidal_data.
-Require Import double_gluing.monoidal.monoidal_laws.
 Require Import double_gluing.monoidal.monoidal.
 Require Import double_gluing.monoidal.symmetry.
 
@@ -64,7 +60,7 @@ Require Import double_gluing.linear_cat.bang_sym_mon_fun.
 
 
 
-Lemma double_glued_total_bang_comonad_comult_eq1 {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
+Lemma double_glued_total_bang_comonad_comult_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R):
   (pr11 (pr12 (linear_category_bang E))) (pr11 dr)
   · (# (linear_category_bang_functor E) (# (linear_category_bang_functor E) (pr21 dr) · (pr121 L) R) · (pr121 L) ((pr111 (linear_category_bang C)) R)) =
@@ -82,13 +78,13 @@ Proof.
   exact (pr21 (pr222 L) R).  (* (L, κ^{L}) is a comonad-morphism. *)
 Qed.
 
-Lemma double_glued_total_bang_comonad_comult_is_nat_trans {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E)
+Lemma double_glued_total_bang_comonad_comult_is_nat_trans {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
   {K : functor C (E^opp)} (k : natural_contraction C E L K) :
-  is_nat_trans (double_glued_total_bang_functor_data pb L k)
-    (functor_composite_data (double_glued_total_bang_functor_data pb L k) (double_glued_total_bang_functor_data pb L k))
+  is_nat_trans (double_glued_total_bang_functor_data dpbs L k)
+    (functor_composite_data (double_glued_total_bang_functor_data dpbs L k) (double_glued_total_bang_functor_data dpbs L k))
     (λ x : ∑ x : C, double_glued_ob L K x,
           (pr111 (pr12 (linear_category_bang C))) (pr1 x),,
-     ((pr111 (pr12 (linear_category_bang E))) (pr112 x),, double_glued_total_bang_comonad_comult_eq1 pb L k (pr2 x)),,
+     ((pr111 (pr12 (linear_category_bang E))) (pr112 x),, double_glued_total_bang_comonad_comult_eq1 dpbs L k (pr2 x)),,
      # K ((pr111 (pr12 (linear_category_bang C))) (pr1 x)),,
      id_right (# K ((pr111 (pr12 (linear_category_bang C))) (pr1 x))) @ ! id_left (# K ((pr111 (pr12 (linear_category_bang C))) (pr1 x)))).
 Proof.
@@ -102,9 +98,9 @@ Proof.
   exact ((pr211 (pr12 (linear_category_bang C))) _ _ f).
 Qed.
 
-Definition double_glued_total_bang_comonad_comult {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+Definition double_glued_total_bang_comonad_comult {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
   (k : natural_contraction C E L K) :
-  double_glued_total_bang_functor pb L k ⟹ double_glued_total_bang_functor pb L k ∙ double_glued_total_bang_functor pb L k.
+  double_glued_total_bang_functor dpbs L k ⟹ double_glued_total_bang_functor dpbs L k ∙ double_glued_total_bang_functor dpbs L k.
 Proof.
   use tpair.
   intros (R, dr).
@@ -112,15 +108,15 @@ Proof.
   apply (linear_category_bang C).
   split; use tpair.
   apply (linear_category_bang E).
-  exact (double_glued_total_bang_comonad_comult_eq1 pb L k dr).
+  exact (double_glued_total_bang_comonad_comult_eq1 dpbs L k dr).
   unfold double_glued_mor_comp2; simpl.
   apply (# K).
   apply (linear_category_bang C).
   exact (id_right _ @ ! id_left _).
-  exact (double_glued_total_bang_comonad_comult_is_nat_trans pb L k).
+  exact (double_glued_total_bang_comonad_comult_is_nat_trans dpbs L k).
 Defined.
 
-Lemma double_glued_total_bang_comonad_counit_eq1 {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+Lemma double_glued_total_bang_comonad_counit_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R):
   (pr121 (pr12 (linear_category_bang E))) (pr11 dr) · (pr21 dr) =
     # (pr111 (linear_category_bang E)) (pr21 dr) · (pr121 L) R · # L ((pr121 (pr12 (linear_category_bang C))) R).
@@ -131,12 +127,12 @@ Proof.
   apply (pr1 (pr222 L)).
 Qed.
 
-Lemma double_glued_total_bang_comonad_counit_is_nat_trans {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E)
+Lemma double_glued_total_bang_comonad_counit_is_nat_trans {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
   {K : functor C (E^opp)} (k : natural_contraction C E L K):
-  is_nat_trans (double_glued_total_bang_functor_data pb L k) (functor_identity_data (total_category_data (double_glued_data L K)))
+  is_nat_trans (double_glued_total_bang_functor_data dpbs L k) (functor_identity_data (total_category_data (double_glued_data L K)))
     (λ x : ∑ x : C, double_glued_ob L K x,
      (pr121 (pr12 (linear_category_bang C))) (pr1 x),,
-     ((pr121 (pr12 (linear_category_bang E))) (pr112 x),, double_glued_total_bang_comonad_counit_eq1 pb L k (pr2 x)),,
+     ((pr121 (pr12 (linear_category_bang E))) (pr112 x),, double_glued_total_bang_comonad_counit_eq1 dpbs L k (pr2 x)),,
      compose (C:=E) (pr222 x) (# K ((pr121 (pr12 (linear_category_bang C))) (pr1 x))),, ! id_left (# K ((pr121 (pr12 (linear_category_bang C))) (pr1 x)) · pr222 x)).
 Proof.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
@@ -154,8 +150,8 @@ Proof.
   exact ((pr221 (pr12 (linear_category_bang C))) _ _ f).
 Qed.
 
-Definition double_glued_total_bang_comonad_counit {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : double_glued_total_bang_functor pb L k ⟹ functor_identity (double_glued_total_sym_mon_closed_cat pb k).
+Definition double_glued_total_bang_comonad_counit {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) : double_glued_total_bang_functor dpbs L k ⟹ functor_identity (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.
   use tpair.
   intros (R, dr).
@@ -163,25 +159,25 @@ Proof.
   apply (linear_category_bang C).
   split; use tpair.
   apply (linear_category_bang E).
-  exact (double_glued_total_bang_comonad_counit_eq1 pb L k dr).
+  exact (double_glued_total_bang_comonad_counit_eq1 dpbs L k dr).
   unfold double_glued_mor_comp2.
   apply (compose (C:=E) (pr22 dr)).
   apply (# K).
   apply (linear_category_bang C).
   exact (! id_left _).
-  exact (double_glued_total_bang_comonad_counit_is_nat_trans pb L k).
+  exact (double_glued_total_bang_comonad_counit_is_nat_trans dpbs L k).
 Defined.
 
 
-Definition double_glued_total_bang_disp_Comonad_data {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : disp_Comonad_data (double_glued_total_bang_functor pb L k).
+Definition double_glued_total_bang_disp_Comonad_data {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
+  (k : natural_contraction C E L K) : disp_Comonad_data (double_glued_total_bang_functor dpbs L k).
 Proof.
-  exists (double_glued_total_bang_comonad_comult pb L k).
-  exact (double_glued_total_bang_comonad_counit pb L k).
+  exists (double_glued_total_bang_comonad_comult dpbs L k).
+  exact (double_glued_total_bang_comonad_counit dpbs L k).
 Defined.
 
-Lemma double_glued_total_bang_disp_Comonad_laws {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : disp_Comonad_laws (double_glued_total_bang_disp_Comonad_data pb L k).
+Lemma double_glued_total_bang_disp_Comonad_laws {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
+  (k : natural_contraction C E L K) : disp_Comonad_laws (double_glued_total_bang_disp_Comonad_data dpbs L k).
 Proof.
   split.
   split.
@@ -214,23 +210,23 @@ Proof.
   exact (Comonad_law3 (T:= linear_category_bang C) R).
 Qed.
 
-Lemma double_glued_total_bang_symmetric_monoidal_comonad_extra_laws {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E)
+Lemma double_glued_total_bang_symmetric_monoidal_comonad_extra_laws {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
   {K : functor C (E^opp)} (k : natural_contraction C E L K) :
   symmetric_monoidal_comonads_extra_laws
-    ((double_glued_total_bang_preserves_tensor pb L k,, double_glued_total_bang_preserves_unit pb L k),, double_glued_total_bang_laxlaws pb L k)
-    (double_glued_total_bang_comonad_comult pb L k) (double_glued_total_bang_comonad_counit pb L k).
+    ((double_glued_total_bang_preserves_tensor dpbs L k,, double_glued_total_bang_preserves_unit dpbs L k),, double_glued_total_bang_laxlaws dpbs L k)
+    (double_glued_total_bang_comonad_comult dpbs L k) (double_glued_total_bang_comonad_counit dpbs L k).
 Proof.
   split; split.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
   apply (double_glued_total_mor_eq_transp k); split3.
   apply (pr122 (linear_category_bang C)).
   apply (pr122 (linear_category_bang E)).
-  set (dpb := tensor_doublePullback pb k
+  set (dpb := tensor_doublePullback dpbs k
                     (((pr111 (linear_category_bang E)) U1,, # (pr111 (linear_category_bang E)) l1 · (pr121 L) R1),,
                      K ((pr111 (linear_category_bang C)) R1),, identity (K ((pr111 (linear_category_bang C)) R1)))
                     (((pr111 (linear_category_bang E)) U2,, # (pr111 (linear_category_bang E)) l2 · (pr121 L) R2),,
                        K ((pr111 (linear_category_bang C)) R2),, identity (K ((pr111 (linear_category_bang C)) R2)))).
-  refine (doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _).
+  refine (doublePullbackArrowUnique' dpb _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique' dpb _ _ _ _ _ _ _ _ _ _).
   Unshelve.
   12 : {
     apply internal_lam.
@@ -526,12 +522,12 @@ Proof.
   apply (pr1 (pr222 (linear_category_bang C))).
   apply (pr1 (pr222 (linear_category_bang E))).
   refine (_ @ ! id_right _).
-  set (dpb := tensor_doublePullback pb k
+  set (dpb := tensor_doublePullback dpbs k
                     (((pr111 (linear_category_bang E)) U1,, # (pr111 (linear_category_bang E)) l1 · (pr121 L) R1),,
                      K ((pr111 (linear_category_bang C)) R1),, identity (K ((pr111 (linear_category_bang C)) R1)))
                     (((pr111 (linear_category_bang E)) U2,, # (pr111 (linear_category_bang E)) l2 · (pr121 L) R2),,
                        K ((pr111 (linear_category_bang C)) R2),, identity (K ((pr111 (linear_category_bang C)) R2)))).
-  refine (doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique dpb _ _ _ _ _ _ _ _ _ _).
+  refine (doublePullbackArrowUnique' dpb _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique' dpb _ _ _ _ _ _ _ _ _ _).
   Unshelve.
   10 : {
     apply (compose (doublePullbackPrL _)).
@@ -553,8 +549,8 @@ Proof.
   rewrite id_right.
   rewrite internal_postcomp_comp.
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  rewrite assoc.
-  refine (maponpaths (λ f, f · _ ) (doublePullbackSqrLCommutes (tensor_doublePullback pb k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) @ _).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _ ) (doublePullbackSqrLCommutes _) @ _).
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   apply maponpaths.
   rewrite 2 internal_lam_precomp.
@@ -610,7 +606,7 @@ Proof.
   rewrite internal_postcomp_comp.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ assoc' _ _ _).
-  set (sqr := doublePullbackSqrRCommutes (tensor_doublePullback pb k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))).
+  set (sqr := doublePullbackSqrRCommutes (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))).
   refine (_ @ maponpaths (λ f, f · _) sqr); clear sqr.
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   apply maponpaths.
@@ -686,7 +682,7 @@ Proof.
   simpl; unfold postcompose.
   refine (assoc' (C:=E) _ _ _ @ _).
   rewrite (doublePullbackArrow_PrL dpb).
-  generalize (doublePullbackSqrLCommutes (tensor_doublePullback pb k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))); simpl;
+  generalize (doublePullbackSqrLCommutes (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))); simpl;
     intros sqr.
   rewrite internal_postcomp_comp.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
@@ -756,7 +752,7 @@ Proof.
   simpl; unfold postcompose.
   refine (assoc' (C:=E) _ _ _ @ _).
   rewrite (doublePullbackArrow_PrR dpb).
-  generalize (doublePullbackSqrRCommutes (tensor_doublePullback pb k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))); simpl;
+  generalize (doublePullbackSqrRCommutes (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))); simpl;
     intros sqr.
   rewrite internal_postcomp_comp.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
@@ -839,20 +835,20 @@ Proof.
   apply (pr11 (pr222 L)). (* one of the axioms again *)
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (maponpaths (compose _) (doublePullbackArrow_PrL dpb _ _ _ _ _ _) @ _).
-  rewrite assoc.
+  refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
   rewrite assoc'.
   reflexivity.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (maponpaths (compose _) (doublePullbackArrow_PrM dpb _ _ _ _ _ _) @ _).
-  rewrite assoc.
+  refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
   rewrite assoc'.
   apply maponpaths.
   exact (! functor_comp K _ _).
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (maponpaths (compose _) (doublePullbackArrow_PrR dpb _ _ _ _ _ _) @ _).
-  rewrite assoc.
+  refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrR _ _ _ _ _ _ _) @ _).
   rewrite assoc'.
   apply maponpaths.
@@ -869,20 +865,20 @@ Proof.
   apply (pr2 (pr222 (linear_category_bang C))).
 Qed.
 
-Definition double_glued_total_bang {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : sym_monoidal_cmd (double_glued_total_sym_mon_closed_cat pb k).
+Definition double_glued_total_bang {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) : sym_monoidal_cmd (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.
   use tpair.
-  exists (double_glued_total_bang_functor pb L k).
+  exists (double_glued_total_bang_functor dpbs L k).
   use tpair.
   use tpair.
-  exists (double_glued_total_bang_preserves_tensor pb L k).
-  exact (double_glued_total_bang_preserves_unit pb L k).
-  exact (double_glued_total_bang_laxlaws pb L k).
-  exact (double_glued_total_bang_is_symmetric_monoidal_functor pb L k).
+  exists (double_glued_total_bang_preserves_tensor dpbs L k).
+  exact (double_glued_total_bang_preserves_unit dpbs L k).
+  exact (double_glued_total_bang_laxlaws dpbs L k).
+  exact (double_glued_total_bang_is_symmetric_monoidal_functor dpbs L k).
   use tpair.
-  exists (double_glued_total_bang_disp_Comonad_data pb L k).
-  exact (double_glued_total_bang_disp_Comonad_laws pb L k).
-  exact (double_glued_total_bang_symmetric_monoidal_comonad_extra_laws pb L k).
+  exists (double_glued_total_bang_disp_Comonad_data dpbs L k).
+  exact (double_glued_total_bang_disp_Comonad_laws dpbs L k).
+  exact (double_glued_total_bang_symmetric_monoidal_comonad_extra_laws dpbs L k).
 Defined.
 

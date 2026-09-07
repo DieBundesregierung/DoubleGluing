@@ -48,17 +48,22 @@ Definition lax_functor_distributes_over_bang (C E : linear_category) (F : lax_mo
 
 Definition linear_distributive_functor_data (C E : linear_category) : UU := ∑ F : sym_monoidal_functor C E, lax_functor_distributes_over_bang C E F.
 
+Definition sym_monoidal_functor_from_linear_distributive_functor_data {C E : linear_category}
+  (Fd : linear_distributive_functor_data C E) := pr1 Fd.
+Coercion sym_monoidal_functor_from_linear_distributive_functor_data :
+  linear_distributive_functor_data >-> sym_monoidal_functor. 
+
 Definition linear_functor_distributor_respects_unit {C E : linear_category} (Fd : linear_distributive_functor_data C E) : UU.
 Proof.
   refine (∏ c : C, _).
-  refine ((pr12 Fd c) · (# (pr1 Fd) (linear_category_counit C c)) = _).
+  refine ((pr12 Fd c) · (# Fd (linear_category_counit C c)) = _).
   exact ((linear_category_counit E (pr1 Fd c)) · fmonoidal_preservesunit (pr1 Fd)).
 Defined.
 
 Definition linear_functor_distributor_respects_comult {C E : linear_category} (Fd : linear_distributive_functor_data C E) : UU.
 Proof.
   refine (∏ c : C, _).
-  refine ((pr12 Fd c) · (# (pr1 Fd) (linear_category_comult C c)) = _).
+  refine ((pr12 Fd c) · (# Fd (linear_category_comult C c)) = _).
   apply (compose (linear_category_comult E (pr1 Fd c))).
   apply (compose (pr1 (pr2 Fd) c ⊗^{E} pr1 (pr2 Fd) c)).
   exact (fmonoidal_preservestensordata (pr1 Fd) _ _).
@@ -69,9 +74,9 @@ Proof.
   set (bang_counit_E := pr2 (pr112 (linear_category_bang E))).
   set (bang_counit_C := pr2 (pr112 (linear_category_bang C))).
   refine (∏ X : ob C, _).
-  refine (bang_counit_E ((pr1 Fd) X) = _).
+  refine (bang_counit_E (Fd X) = _).
   apply (compose ((pr12 Fd) X)).
-  apply (# (pr11 Fd)).
+  apply (# Fd).
   apply bang_counit_C.  
 Defined.
 
@@ -85,7 +90,7 @@ Proof.
   apply (pr12 Fd).
   apply (pr12 Fd).
   apply (pr12 Fd).
-  apply (# (pr11 Fd)).
+  apply (# Fd).
   apply bang_comult_C.  
 Defined.
 
@@ -106,7 +111,7 @@ Definition islax2cell {C E : linear_category} (L : linear_distributive_functor_d
        fmonoidal_preservesunit (pr1 L) · (# (pr1 L) (fmonoidal_preservesunit (lax_monoidal_from_symmetric_monoidal_comonad C (linear_category_bang C))))). *)
 
 Definition linear_distributor_is_monoidal {C E : linear_category} (Fd : linear_distributive_functor_data C E): UU :=
-  is_mon_nat_trans (comp_fmonoidal_lax (pr1 Fd) (linear_category_bang_functor E)) (comp_fmonoidal_lax (linear_category_bang_functor C) (pr1 Fd)) (pr2 Fd).
+  is_mon_nat_trans (comp_fmonoidal_lax Fd (linear_category_bang_functor E)) (comp_fmonoidal_lax (linear_category_bang_functor C) Fd) (pr2 Fd).
 
 Definition linear_distributive_functor_laws {C E : linear_category} (Fd : linear_distributive_functor_data C E) : UU :=
   (linear_functor_distributor_respects_unit Fd) × (linear_functor_distributor_respects_comult Fd) ×
@@ -114,7 +119,16 @@ Definition linear_distributive_functor_laws {C E : linear_category} (Fd : linear
 
 Definition linear_distributive_functor (C E : linear_category) : UU := ∑ Fd : linear_distributive_functor_data C E, linear_distributive_functor_laws Fd.
 
-Definition lax_monoidal_from_linear_functor {C E : linear_category} : linear_distributive_functor C E → sym_monoidal_functor C E := λ F, pr11 F.
-Coercion lax_monoidal_from_linear_functor : linear_distributive_functor >-> sym_monoidal_functor.
-Definition flinear_distributesoverbang {C E : linear_category} (F : linear_distributive_functor C E) : lax_functor_distributes_over_bang C E F := pr21 F.
+Definition data_from_linear_distributive_functor {C E : linear_category}
+  (F : linear_distributive_functor C E) := pr1 F.
+Coercion data_from_linear_distributive_functor :
+  linear_distributive_functor >-> linear_distributive_functor_data.
+
+(*
+Definition lax_monoidal_from_linear_functor {C E : linear_category} :
+  linear_distributive_functor C E → sym_monoidal_functor C E := λ F, pr11 F.
+Coercion lax_monoidal_from_linear_functor : linear_distributive_functor >-> sym_monoidal_functor.*)
+
+Definition flinear_distributesoverbang {C E : linear_category} (F : linear_distributive_functor C E) :
+  lax_functor_distributes_over_bang C E F := pr21 F.
 Notation "κ^{ F }" := (flinear_distributesoverbang F).

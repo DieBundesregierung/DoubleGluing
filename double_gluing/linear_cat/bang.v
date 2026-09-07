@@ -13,8 +13,6 @@ Require Import UniMath.CategoryTheory.Monoidal.Categories.
 Require Import UniMath.CategoryTheory.Monoidal.Functors.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
-Require Import UniMath.CategoryTheory.Limits.Pullbacks.
-Require Import UniMath.CategoryTheory.opp_precat.
 Require Import UniMath.CategoryTheory.OppositeCategory.Core.
 Require Import UniMath.Semantics.LinearLogic.LinearCategory.
 Require Import UniMath.CategoryTheory.Monads.Comonads.
@@ -48,7 +46,7 @@ Require Import double_gluing.linear_cat.linear_functor.
 
 (* bang functor *)
 
-Lemma double_glued_total_bang_functor_data_eq1 {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+Lemma double_glued_total_bang_functor_data_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R1 R2 : ob C} {dr1 : double_glued_ob L K R1} {dr2 : double_glued_ob L K R2} {f : C⟦R1, R2⟧}
   (df : double_glued_mor L K R1 R2 dr1 dr2 f):
   # (pr111 (linear_category_bang E)) (pr11 df) · (# (pr111 (linear_category_bang E)) (pr21 dr2) · (pr121 L) R2) =
@@ -66,33 +64,33 @@ Proof.
   
 Qed.
 
-Definition double_glued_total_bang_functor_data {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : functor_data (double_glued_total_sym_mon_closed_cat pb k) (double_glued_total_sym_mon_closed_cat pb k).
+Definition double_glued_total_bang_functor_data {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
+  (k : natural_contraction C E L K) : functor_data (double_glued_total_sym_mon_closed_cat dpbs k) (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.
   use tpair.
   intros (R, ((U, l), (X, l'))).
-  exists (linear_category_bang C R).
+  exists (linear_category_bang_functor C R).
   split.
-  exists (linear_category_bang E U).
-  apply (compose (# (linear_category_bang E) l)).
+  exists (linear_category_bang_functor E U).
+  apply (compose (# (linear_category_bang_functor E) l)).
   exact (pr121 L R).
   exact (_ ,, identity _).
   intros (R1, dr1) (R2, dr2).
   intros (f, df).
-  exists (# (linear_category_bang C) f).
+  exists (# (linear_category_bang_functor C) f).
   use tpair.
-  exists (# (linear_category_bang E) (pr11 df)).
-  exact (double_glued_total_bang_functor_data_eq1 pb L k df).
+  exists (# (linear_category_bang_functor E) (pr11 df)).
+  exact (double_glued_total_bang_functor_data_eq1 dpbs L k df).
   use tpair.
   2: {
-    simpl.
     refine (_ @ ! id_left (C:=E^opp) _).
     exact ( id_right (C:=E^opp) _).
     }
 Defined.
 
-Lemma double_glued_total_bang_is_functor {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : is_functor (double_glued_total_bang_functor_data pb L k).
+Lemma double_glued_total_bang_is_functor {C E : linear_category} (dpbs : doublePullbacks E)
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  is_functor (double_glued_total_bang_functor_data dpbs L k).
 Proof.
   split.
   intros (R, dr).
@@ -109,9 +107,11 @@ Proof.
   exact (functor_comp K _ _).
 Qed.
 
-Definition double_glued_total_bang_functor {C E : linear_category} (pb : Pullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : functor (double_glued_total_sym_mon_closed_cat pb k) (double_glued_total_sym_mon_closed_cat pb k).
+Definition double_glued_total_bang_functor {C E : linear_category} (dpbs : doublePullbacks E)
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  functor (double_glued_total_sym_mon_closed_cat dpbs k)
+    (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.
-  exists (double_glued_total_bang_functor_data pb L k).
-  exact (double_glued_total_bang_is_functor pb L k).
+  exists (double_glued_total_bang_functor_data dpbs L k).
+  exact (double_glued_total_bang_is_functor dpbs L k).
 Defined.
