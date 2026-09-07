@@ -677,7 +677,6 @@ Qed.
 Lemma uncurry_unit {V : sym_mon_closed_cat} (X Y Z : ob V) :
   unit_from_are_adjoints (pr2 (pr2 V X)) Z · internal_postcomp X (unit_from_are_adjoints (pr2 (pr2 V Y)) (Z ⊗_{V} X)) · internal_uncurry X Y _ =
     unit_from_are_adjoints (pr2 (pr2 V (X ⊗_{V} Y))) Z · (internal_postcomp (X ⊗_{V} Y) (αinv^{V}_{Z, X, Y})).
-Proof. (*follows from curry_unit *)
 Proof.
   refine (_ @ id_right _).
   refine (_ @ maponpaths (compose _) (internal_curry_uncurry _ _ _)).

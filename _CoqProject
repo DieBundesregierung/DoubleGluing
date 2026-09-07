@@ -2,6 +2,8 @@
 
 -arg "-w -notation-overridden"
 
+-R UniMath/UniMath UniMath
+
 preliminaries.v
 double_pullbacks.v
 natural_contraction.v
@@ -13,6 +15,7 @@ double_gluing/monoidal/left_unitor.v
 double_gluing/monoidal/right_unitor.v
 double_gluing/monoidal/associator.v
 double_gluing/monoidal/monoidal_data.v
+double_gluing/monoidal/unitor_laws.v
 double_gluing/monoidal/monoidal_laws1.v
 double_gluing/monoidal/monoidal_laws.v
 double_gluing/monoidal/monoidal.v
@@ -27,4 +30,3 @@ double_gluing/linear_cat/bang.v
 double_gluing/linear_cat/bang_sym_mon_fun.v
 double_gluing/linear_cat/bang_comonad.v
 double_gluing/linear_cat/linear_cat.v
-

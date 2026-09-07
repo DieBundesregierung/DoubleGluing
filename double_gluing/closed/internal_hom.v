@@ -3,18 +3,14 @@ Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.
-Require Import UniMath.CategoryTheory.Core.Isos.
 Require Import UniMath.CategoryTheory.Core.NaturalTransformations.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Adjunctions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Functors.
-Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
 Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations.
 Require Import UniMath.CategoryTheory.DisplayedCats.Total.
 Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction.
-Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.Monics.
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
 Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
 Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
@@ -24,14 +20,7 @@ Require Import UniMath.CategoryTheory.Monoidal.Functors.
 Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
-Require Import UniMath.CategoryTheory.Limits.Pullbacks.
-Require Import UniMath.CategoryTheory.opp_precat.
 Require Import UniMath.CategoryTheory.OppositeCategory.Core.
-Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
-Require Import UniMath.CategoryTheory.Subcategory.Core.
-Require Import UniMath.CategoryTheory.Subcategory.Full.
-Require Import UniMath.Semantics.LinearLogic.LinearCategory.
-Require Import UniMath.Semantics.LinearLogic.LinearNonLinear.
 
 Local Open Scope cat.
 
@@ -54,12 +43,12 @@ Require Import double_gluing.monoidal.monoidal.
 Require Import double_gluing.monoidal.symmetry.
 
 
-Definition internal_hom_doublePullback_statement {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Definition internal_hom_doublePullback_statement {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R1 R2 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) : UU.
 Proof.
   destruct dr1 as ((U1, l1), (X1, l1')).
   destruct dr2 as ((U2, l2), (X2, l2')).
-  use (doublePullback pb).
+  use (doublePullback (C:=E)).
   exact (internal_hom U1 U2).
   exact (internal_hom U1 (L R2)).
   exact (L (internal_hom R1 R2)).
@@ -79,21 +68,20 @@ Proof.
   exact (internal_postcomp X2 l1').
 Defined.
                                                                                                                                 
-Definition internal_hom_doublePullback {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Definition internal_hom_doublePullback {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R1 R2 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) :
-  internal_hom_doublePullback_statement pb k dr1 dr2.
+  internal_hom_doublePullback_statement dpbs k dr1 dr2.
 Proof.
-  apply doublePullback_exists.
+  apply dpbs.
 Defined.
 
-Definition double_glued_disp_internal_hom_ob {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Definition double_glued_disp_internal_hom_ob {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) : double_glued_cat L K (pr1 (pr2 C R) S).
 Proof.
   use tpair.
-  set (dpb := internal_hom_doublePullback pb k dr ds).
-  exists (pr11 dpb).
-  apply (compose (pr121 dpb)).
-  exact (pr221 (pb _ _ _ _ _)).
+  set (dpb := internal_hom_doublePullback dpbs k dr ds).
+  exists (doublePullbackObject dpb).
+  exact (doublePullbackPrM dpb).
   destruct dr as ((U, l), (X, l')).
   destruct ds as ((V, m), (Y, m')).
   exists (U ⊗_{E} Y).
@@ -105,11 +93,11 @@ Proof.
 Defined.
 
 
-Local Lemma double_glued_disp_internal_hom_lemma1 {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Local Lemma double_glued_disp_internal_hom_lemma1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R S1 S2: C} (dr : double_glued_cat L K R) {ds1 : double_glued_cat L K S1} {ds2 : double_glued_cat L K S2}
   {f : pr1 C ⟦ S1, S2 ⟧} (df : ds1 -->[ f] ds2):
-  doublePullbackPrL (internal_hom_doublePullback pb k dr ds1) · internal_postcomp (pr11 dr) (pr11 df) · internal_postcomp (pr11 dr) (pr21 ds2) =
-  doublePullbackPrM (internal_hom_doublePullback pb k dr ds1) · # L (internal_postcomp R f)
+  doublePullbackPrL (internal_hom_doublePullback dpbs k dr ds1) · internal_postcomp (pr11 dr) (pr11 df) · internal_postcomp (pr11 dr) (pr21 ds2) =
+  doublePullbackPrM (internal_hom_doublePullback dpbs k dr ds1) · # L (internal_postcomp R f)
   · postcompose (internal_precomp (pr21 dr) (L S2)) (internal_lam ((fmonoidal_preservestensordata L) (internal_hom R S2) R · # L (internal_eval R S2))).
 Proof.
   destruct dr as ((U, l), (X, l')).
@@ -121,7 +109,7 @@ Proof.
   rewrite eqphi.
   refine (maponpaths (compose _) (internal_postcomp_comp _ _ _) @ _).
   refine (assoc _ _ _ @ _ ).
-  refine (maponpaths (λ f, f · _) (doublePullbackSqrLCommutes (internal_hom_doublePullback pb k _ _)) @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackSqrLCommutes (internal_hom_doublePullback dpbs k _ _)) @ _).
   unfold postcompose.
   rewrite 3 assoc'.
   apply maponpaths.
@@ -149,12 +137,12 @@ Proof.
   exact (! pr1 (pr222 L) _ _ R (internal_postcomp R f)).
 Qed.
 
-Lemma double_glued_disp_internal_hom_lemma2 {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Lemma double_glued_disp_internal_hom_lemma2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R S1 S2: C} (dr : double_glued_cat L K R) {ds1 : double_glued_cat L K S1} {ds2 : double_glued_cat L K S2}
   {f : pr1 C ⟦ S1, S2 ⟧} (df : ds1 -->[ f] ds2) :
-  doublePullbackPrM (internal_hom_doublePullback pb k dr ds1) · # L (internal_postcomp R f)
+  doublePullbackPrM (internal_hom_doublePullback dpbs k dr ds1) · # L (internal_postcomp R f)
     · (internal_lam (L (internal_hom R S2) ⊗^{ E}_{l} # K (internal_eval R S2) · pr1 k (internal_hom R S2) R) · internal_precomp (pr22 ds2) (K R)) =
-    doublePullbackPrR (internal_hom_doublePullback pb k dr ds1) · internal_precomp (pr12 df) (pr12 dr) · internal_postcomp (pr12 ds2) (pr22 dr).
+    doublePullbackPrR (internal_hom_doublePullback dpbs k dr ds1) · internal_precomp (pr12 df) (pr12 dr) · internal_postcomp (pr12 ds2) (pr22 dr).
 Proof.
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
@@ -205,11 +193,11 @@ Proof.
   exact pathsinv0.
 Qed.
 
-Definition double_glued_disp_internal_hom_data_comp1 {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Definition double_glued_disp_internal_hom_data_comp1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R S1 S2: C} (dr : double_glued_cat L K R) {ds1 : double_glued_cat L K S1} {ds2 : double_glued_cat L K S2}
   {f : pr1 C ⟦ S1, S2 ⟧} (df : ds1 -->[ f] ds2) :
-  double_glued_mor_comp1 L K (pr1 (pr2 C R) S1) (pr1 (pr2 C R) S2) (double_glued_disp_internal_hom_ob pb k dr ds1)
-    (double_glued_disp_internal_hom_ob pb k dr ds2).
+  double_glued_mor_comp1 L K (pr1 (pr2 C R) S1) (pr1 (pr2 C R) S2) (double_glued_disp_internal_hom_ob dpbs k dr ds1)
+    (double_glued_disp_internal_hom_ob dpbs k dr ds2).
 Proof.
   unfold double_glued_mor_comp1, double_glued_disp_internal_hom_ob.
   use doublePullbackArrow.
@@ -219,26 +207,26 @@ Proof.
   exact (# L (internal_postcomp _ f)).
   apply (compose (doublePullbackPrR _)).
   exact (internal_precomp (pr12 df) _).
-  exact (double_glued_disp_internal_hom_lemma1 pb k dr df).
-  exact (double_glued_disp_internal_hom_lemma2 pb k dr df).
+  exact (double_glued_disp_internal_hom_lemma1 dpbs k dr df).
+  exact (double_glued_disp_internal_hom_lemma2 dpbs k dr df).
 Defined.
 
-Lemma double_glued_disp_internal_hom_data_eq1 {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Lemma double_glued_disp_internal_hom_data_eq1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R S1 S2: C} (dr : double_glued_cat L K R) {ds1 : double_glued_cat L K S1} {ds2 : double_glued_cat L K S2}
   {f : pr1 C ⟦ S1, S2 ⟧} (df : ds1 -->[ f] ds2) :
-  double_glued_mor_eq1 L K (pr1 (pr2 C R) S1) (pr1 (pr2 C R) S2) (double_glued_disp_internal_hom_ob pb k dr ds1)
-    (double_glued_disp_internal_hom_ob pb k dr ds2) (# (pr1 (pr2 C R)) f) (double_glued_disp_internal_hom_data_comp1 pb k dr df).
+  double_glued_mor_eq1 L K (pr1 (pr2 C R) S1) (pr1 (pr2 C R) S2) (double_glued_disp_internal_hom_ob dpbs k dr ds1)
+    (double_glued_disp_internal_hom_ob dpbs k dr ds2) (# (pr1 (pr2 C R)) f) (double_glued_disp_internal_hom_data_comp1 dpbs k dr df).
 Proof.
   unfold double_glued_mor_eq1, double_glued_disp_internal_hom_data_comp1; simpl.
   rewrite hom_onmorphisms_is_postcomp.
   apply doublePullbackArrow_PrM.
 Qed.
 
-Lemma double_glued_disp_internal_hom_data_eq2 {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Lemma double_glued_disp_internal_hom_data_eq2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R S1 S2: C} (dr : double_glued_cat L K R) {ds1 : double_glued_cat L K S1} {ds2 : double_glued_cat L K S2}
   {f : pr1 C ⟦ S1, S2 ⟧} (df : ds1 -->[ f] ds2) :
-double_glued_mor_eq2 L K (pr1 (pr2 C R) S1) (pr1 (pr2 C R) S2) (double_glued_disp_internal_hom_ob pb k dr ds1)
-     (double_glued_disp_internal_hom_ob pb k dr ds2) (# (pr1 (pr2 C R)) f) (pr11 dr ⊗^{ E}_{l} pr12 df).
+double_glued_mor_eq2 L K (pr1 (pr2 C R) S1) (pr1 (pr2 C R) S2) (double_glued_disp_internal_hom_ob dpbs k dr ds1)
+     (double_glued_disp_internal_hom_ob dpbs k dr ds2) (# (pr1 (pr2 C R)) f) (pr11 dr ⊗^{ E}_{l} pr12 df).
 Proof.
   unfold double_glued_mor_eq2; simpl.
   unfold postcompose.
@@ -282,24 +270,24 @@ Proof.
   exact (pr2 (counit_from_are_adjoints (pr2 (pr2 C R))) _ _ f).
 Qed.
 
-Definition double_glued_disp_internal_hom_data {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Definition double_glued_disp_internal_hom_data {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R : C} (dr : double_glued_cat L K R) : disp_functor_data (pr1 (pr2 C R)) (double_glued_cat L K) (double_glued_cat L K).
 Proof.
   use tpair.
   intros S ds.
-  exact (double_glued_disp_internal_hom_ob pb k dr ds).
+  exact (double_glued_disp_internal_hom_ob dpbs k dr ds).
   intros R1 R2 dr1 dr2 f12 df12.
   use tpair.
-  exists (double_glued_disp_internal_hom_data_comp1 pb k dr df12).
-  exact (double_glued_disp_internal_hom_data_eq1 pb k dr df12).
+  exists (double_glued_disp_internal_hom_data_comp1 dpbs k dr df12).
+  exact (double_glued_disp_internal_hom_data_eq1 dpbs k dr df12).
   use tpair.
   exact ( _ ⊗^{E}_{l} (pr12 df12)).
-  exact (double_glued_disp_internal_hom_data_eq2 pb k dr df12).
+  exact (double_glued_disp_internal_hom_data_eq2 dpbs k dr df12).
 Defined.
 
-Lemma double_glued_disp_internal_hom_axioms {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Lemma double_glued_disp_internal_hom_axioms {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R : C} (dr : double_glued_cat L K R) :
-  disp_functor_axioms (double_glued_disp_internal_hom_data pb k dr).
+  disp_functor_axioms (double_glued_disp_internal_hom_data dpbs k dr).
 Proof.
   split.
   intros S ds.
@@ -311,7 +299,7 @@ Proof.
   unfold double_glued_disp_internal_hom_data_comp1; simpl.
   unfold postcompose.
   apply pathsinv0.
-  apply doublePullbackArrowUnique;
+  apply doublePullbackArrowUnique';
     rewrite (id_left _).
   rewrite (internal_postcomp_id _).
   rewrite (id_right _).
@@ -332,27 +320,27 @@ Proof.
     simpl.
   unfold double_glued_disp_internal_hom_data_comp1; simpl.
   apply pathsinv0.
-  apply doublePullbackArrowUnique;
+  apply doublePullbackArrowUnique';
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (compose _) (doublePullbackArrow_PrL (internal_hom_doublePullback pb k dr ds3) _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (doublePullbackArrow_PrL (internal_hom_doublePullback dpbs k dr ds3) _ _ _ _ _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrL (internal_hom_doublePullback pb k dr ds2) _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrL (internal_hom_doublePullback dpbs k dr ds2) _ _ _ _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
   apply maponpaths.
   apply pathsinv0.
   apply internal_postcomp_comp. (* subgoal done *)
-  refine (maponpaths (compose _) (doublePullbackArrow_PrM (internal_hom_doublePullback pb k dr ds3) _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (doublePullbackArrow_PrM (internal_hom_doublePullback dpbs k dr ds3) _ _ _ _ _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM (internal_hom_doublePullback pb k dr ds2) _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM (internal_hom_doublePullback dpbs k dr ds2) _ _ _ _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
   apply maponpaths.
   refine (! functor_comp L _ _ @ _).
   apply maponpaths.
   apply pathsinv0.
   apply internal_postcomp_comp. (* subgoal done *)
-  refine (maponpaths (compose _) (doublePullbackArrow_PrR (internal_hom_doublePullback pb k dr ds3) _ _ _ _ _ _) @ _).
+  refine (maponpaths (compose _) (doublePullbackArrow_PrR (internal_hom_doublePullback dpbs k dr ds3) _ _ _ _ _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrR (internal_hom_doublePullback pb k dr ds2) _ _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrR (internal_hom_doublePullback dpbs k dr ds2) _ _ _ _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
   apply maponpaths.
   apply pathsinv0.
@@ -360,19 +348,19 @@ Proof.
   exact (bifunctor_leftcomp E _ _ _ _ _ _).
 Qed.
 
-Definition double_glued_disp_internal_hom {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+Definition double_glued_disp_internal_hom {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R : C} (dr : double_glued_cat L K R) : disp_functor (pr1 (pr2 C R)) (double_glued_cat L K) (double_glued_cat L K).
 Proof.
-  exists (double_glued_disp_internal_hom_data pb k dr).
-  exact (double_glued_disp_internal_hom_axioms pb k dr).
+  exists (double_glued_disp_internal_hom_data dpbs k dr).
+  exact (double_glued_disp_internal_hom_axioms dpbs k dr).
 Defined.
 
-Definition double_glued_total_internal_hom {C E : sym_mon_closed_cat} (pb : Pullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
+Definition double_glued_total_internal_hom {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
   (k : natural_contraction C E L K) {R : C} (dr : double_glued_cat L K R) :
-  double_glued_total_sym_monoidal_cat pb L K k ⟶ double_glued_total_sym_monoidal_cat pb L K k.
+  double_glued_total_sym_monoidal_cat dpbs L K k ⟶ double_glued_total_sym_monoidal_cat dpbs L K k.
 Proof.
   use total_functor.
   exact (pr1 (pr2 C R)).
-  exact (double_glued_disp_internal_hom pb k dr).  
+  exact (double_glued_disp_internal_hom dpbs k dr).  
 Defined.
 
