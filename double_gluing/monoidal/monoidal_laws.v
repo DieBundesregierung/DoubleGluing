@@ -4,7 +4,7 @@ In this file the remaining monoidal laws are proven, namely:
 
 - pentagon identity
 
-Then all laws are bundled as a disp_monoidal_laws structure.
+Then all laws are bundled as a disp_monoidal_laws structure. 
 
 for proofs of the other laws, see file monoidal_laws1.v
 
