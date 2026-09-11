@@ -6,7 +6,7 @@ This file contains the following definitions and proofs about the bang functor o
   - Counit
 - Proofs of (ordinary) comonad-laws
 - Proofs of extra laws for symmetric monoidal comonads
-- Bundled definition of the bang as a symmetric monoidal comonad.
+- Bundled definition of the bang as a symmetric monoidal comonad. 
 
 ******************************************)
 Require Import UniMath.Foundations.All.

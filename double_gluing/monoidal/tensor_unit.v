@@ -1,3 +1,8 @@
+(****************************************
+
+This file contains the definition of the tensor product of the (displayed) double glued category as well as its unit object.
+
+*****************************************)
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.

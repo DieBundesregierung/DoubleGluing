@@ -1,6 +1,6 @@
 (***********************************
 
-This file contains the adjunction defining the closedness structure of the (total) double glued category.
+This file contains the adjunction defining the closedness structure of the (total) double glued category. 
 
 *************************************)
 Require Import UniMath.Foundations.All.

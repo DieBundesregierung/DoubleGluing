@@ -1,6 +1,6 @@
 (*******************************
 
-In this file we define the bang functor of the double glued category of two linear categories.
+In this file we define the bang functor of the double glued category 
 
  ******************************)
 

@@ -4,7 +4,7 @@ In this file we prove some of the coherence laws of the monoidal structure, name
 - associator :
   - naturality in each component
   - isolaw
-- triangle identity
+- triangle identity 
 
 **************************************)
 Require Import UniMath.Foundations.All.

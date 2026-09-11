@@ -5,7 +5,7 @@ surrounding it (Compare definition 37 in the paper). In more detail, there is:
 - general double glued category as a displayed category
 - results about morphisms of the double glued (displayed) category regarding equality and inverses
 - the total general double glued category
-- the total double glued category for intuitionistic linear logic
+- the total double glued category for intuitionistic linear logic 
 
 
 **********************************)

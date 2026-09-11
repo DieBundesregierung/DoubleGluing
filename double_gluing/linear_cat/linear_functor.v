@@ -1,6 +1,6 @@
 (**************************************
 
-In this file we define functors between linear categories.
+In this file we define what functors between linear categories are.
 
 *************************************)
 Require Import UniMath.Foundations.All.

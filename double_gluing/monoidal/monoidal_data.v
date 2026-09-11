@@ -1,3 +1,8 @@
+(****************************************
+
+Content: monoidal data of the double glued category bundled into one structure.
+
+*************************************)
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.

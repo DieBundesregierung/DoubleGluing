@@ -1,6 +1,6 @@
 (******************************************
 
-This file contains a formalization of natural contractions
+This file contains a formalization of natural contractions 
 
  ******************************************)
 

@@ -1,3 +1,11 @@
+(********************************
+
+This files contains the definition of the braiding of the double glued category as well
+as the definition of the (displayed) double glued category as a symmetric monoidal category.
+
+**********************************)
+
+
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.

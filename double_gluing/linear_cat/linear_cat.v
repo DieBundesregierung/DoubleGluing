@@ -1,3 +1,11 @@
+(****************************
+
+In this file we:
+ - proof that the double glued category suffices the coherence laws of a linear category
+ - define the double glued category as a linear category
+
+****************************)
+
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.

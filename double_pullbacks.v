@@ -1,7 +1,7 @@
 (**********************************************
 
 This file contains definitions and results regarding double pullbacks.
-The implementation is in style kept similar to UniMath.CategoryTheory.Limits.Pullbacks.
+The implementation is in style kept similar to UniMath.CategoryTheory.Limits.Pullbacks. 
 
  **********************************************)
 

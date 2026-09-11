@@ -1,3 +1,11 @@
+(**********************************
+
+Content:
+Definition of the right unitor of the monoidal structure
+
+**********************************)
+
+
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.

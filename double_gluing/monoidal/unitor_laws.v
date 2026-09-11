@@ -4,7 +4,7 @@ In this file we prove some of the coherence laws of the monoidal structure, name
 
 - leftunitor/rightunitor:
   - naturality
-  - isolaw
+  - isolaw 
 
 **************************************)
 Require Import UniMath.Foundations.All.

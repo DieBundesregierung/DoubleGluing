@@ -4,7 +4,7 @@ This files contains some preliminary definitions and lemmata, namely:
 - definition of dinaturality
 - definition of a constant bifunctor
 - a bundled approach to symmetric monoidal functors (will be partially removed because it overlaps with existing code of the UniMath library)
-- many results about internal structure of symmetric monoidal categories (cmp. section 3.2 of the paper)
+- many results about internal structure of symmetric monoidal categories (some described in section 3.2 of the paper)
 
 ************************************)
 

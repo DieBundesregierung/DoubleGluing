@@ -1,6 +1,6 @@
 (***********************************
 
-This file contains the final bundled monoidal structure of both the displayed double glued category as well as the total double glued category.
+This file contains the final bundled monoidal structure of both the displayed double glued category as well as the total double glued category. 
 
 *************************************)
 Require Import UniMath.MoreFoundations.Notations.

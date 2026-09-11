@@ -1,3 +1,10 @@
+(************************************
+
+Content: bundled definition of the double glued category as a symmetric monoidal closed category
+
+*************************************)
+
+
 Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
