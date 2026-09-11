@@ -3,25 +3,11 @@ Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.
-(*
-Require Import UniMath.CategoryTheory.Core.Isos.*)
 Require Import UniMath.CategoryTheory.Core.NaturalTransformations.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
-(*
-Require Import UniMath.CategoryTheory.DisplayedCats.Adjunctions.
-Require Import UniMath.CategoryTheory.DisplayedCats.Functors.
-Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
-Require Import UniMath.CategoryTheory.DisplayedCats.NaturalTransformations. *)
 Require Import UniMath.CategoryTheory.DisplayedCats.Total.
-(*
-Require Import UniMath.CategoryTheory.DisplayedCats.TotalAdjunction. *)
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
-(*
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Monoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.Symmetric.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.TotalMonoidal.
-Require Import UniMath.CategoryTheory.Monoidal.Displayed.WhiskeredDisplayedBifunctors. *)
 Require Import UniMath.CategoryTheory.Monoidal.Functors.
 Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
