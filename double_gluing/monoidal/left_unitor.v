@@ -32,303 +32,305 @@ Require Import double_pullbacks.
 Require Import natural_contraction.
 
 Require Import double_gluing.double_gluing.
-
 Require Import double_gluing.monoidal.tensor_unit.
 
-Lemma double_glued_leftunitor_data_eq1 {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (R : C) (U X : E) (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧) :
-  lu^{ E }_{ U} · l = fmonoidal_preservesunit L ⊗^{ E} l · (fmonoidal_preservestensordata L) I_{ C} R · # L lu^{ C }_{ R}.
-Proof.
-  refine (! monoidal_leftunitornat E _ _ _ @ _).
-  refine (_ @ assoc _ _ _ @ _ @ assoc _ _ _).
-  apply maponpaths.
-  2 : {
-    apply (maponpaths (postcompose _)).
-    apply pathsinv0.
-    apply (bifunctor_equalwhiskers E).
-  }
-  refine (_ @ assoc' _ _ _).
-  apply pathsinv0.
-  apply (fmonoidal_preservesleftunitality L).
-Qed.
+Section Leftunitor.
 
-Local Lemma double_glued_leftunitor_data_lemma1 {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (R : C) (U X : E) (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧)
-  (arr1 := pr112 (pr2 E (I_{E})) X · # (pr1 (pr2 E I_{ E})) (ru_{E} _))
-  (arr2 := compose (C:=E) l' (# K (lu_{C} R)))
-  (arr3 := compose (C:=E) l' ((pr112 (pr2 E U) _) · (# (pr1 (pr2 E U)) ((K R ⊗^{E}_{l} l) · ((# K (ru_{C} R)) ⊗^{E}_{r} (L R)) · (pr121 E _ _) · pr1 k R (I_{C}))))) :
-  arr1 · internal_postcomp I_{ E} l' =
-    arr2 · (internal_lam ((pr121 E) (K (I_{C} ⊗_{ C} R)) (L I_{ C}) · pr1 k I_{C} R) · internal_precomp (pr212 L) (K R)).
-Proof.            
-  refine (! maponpaths (compose _) (hom_onmorphisms_is_postcomp (I_{E}) l') @ _).
-  refine (assoc' _ _ _ @ _).
-  refine (! maponpaths (compose _) (functor_comp _ _ _)  @ _).
-  refine (! maponpaths (λ f, compose _ (# _ f)) (monoidal_rightunitornat E X _ l') @ _).
-  refine (maponpaths (compose _) (functor_comp _ _ _)  @ _).
-  refine (assoc _ _ _ @ _).
-  set (unitnateq := ! pr2 (pr112 (pr2 E (I_{E}))) _ _ l').
-  refine (maponpaths (postcompose _) unitnateq @ _); clear unitnateq.
-  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
-  apply (maponpaths (compose _)).
-  set (eqrbl := ! sym_mon_braiding_lunitor E (K R)).
-  refine (maponpaths (λ f, _ · # _ f) eqrbl @ _); clear eqrbl.
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (! hom_onmorphisms_is_postcomp (L I_{C}) ((pr121 E) (K (I_{ pr211 C} ⊗_{ C} R)) (L I_{ pr211 C}) · pr1 k I_{ pr211 C} R))).
-  refine (_ @ maponpaths (compose _) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _)).
-  refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (postcompose _) (assoc _ _ _)).
-  generalize (mon_closed_adj_natural E (K (I_{C} ⊗_{C} R)) _ _ (pr212 L)); simpl; intros natadjeq.
-  refine (_ @ maponpaths (λ f, _ · f · _) natadjeq); clear natadjeq.
-  refine (_ @ maponpaths (postcompose _) (assoc' _ _ _)).
-  refine (maponpaths (compose _) (functor_comp (pr1 (pr2 E I_{ E})) _ _) @ _).
-  refine (assoc _ _ _ @ _ @ assoc _ _ _).
-  set (uninateq := ! pr2 (unit_from_are_adjoints (pr2 (pr2 E I_{ E}))) _ _ (# K lu^{ C }_{ R})).
-  refine (_ @ maponpaths (postcompose _) uninateq); clear uninateq.
-  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
-  apply (maponpaths (compose _)).
-  refine (! functor_comp _ _ _ @ _ @ maponpaths (compose _) (internal_postcomp_comp _ _ _)).
-  refine (_ @ maponpaths (compose _) (hom_onmorphisms_is_postcomp (I_{E}) _)).
-  refine (_ @ functor_comp _ _ _).
-  apply maponpaths.
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _) ) (pr11 (pr221 E) _ _ _ _)).
-  refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (postcompose _) (assoc' _ _ _)); unfold postcompose.
-  refine (_ @ maponpaths (λ f, (f · _) · _) (pr21 (pr221 E) _ _ _ _)).
-  repeat refine (_ @ assoc _ _ _).
-  apply maponpaths.
-  generalize (pr1 (pr222 k) R); simpl; intros eq1.
-  refine (eq1 @ _); clear eq1.
-  refine (_ @ assoc' _ _ _).
-  apply (maponpaths (postcompose _)).
-  unfold functoronmorphisms1.
-  exact (pr2 (pr222 (monoidal_tensor_is_bifunctor E)) _ _ _ _ _ _).
-Qed.
-
-Local Lemma double_glued_leftunitor_data_lemma2 {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (R : C) (U X : E) (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧) :
-  (compose (C:=E) l' (# K lu^{ C }_{ R})) · (compose (C:=E) (# K (sym_mon_braiding C R I_{ pr211 C})) (internal_lam ((pr121 E) (K (R ⊗_{ C} I_{ pr211 C})) (L R) · pr1 k R I_{ pr211 C}) · internal_precomp l (K I_{ pr211 C}))) =
-    compose (C:=E) l' (internal_lam (K R ⊗^{ E}_{l} l · (# K ru^{ C }_{ R} ⊗^{ E}_{r} L R · (sym_mon_braiding E (K (R ⊗_{ C} I_{ C})) (L R) · pr1 k R I_{ C})))) · internal_postcomp U (identity (K I_{ C})).
-Proof.
-  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
-  apply maponpaths.
-  refine (_ @ ! maponpaths (compose _) (internal_postcomp_id U _)).
-  refine (_ @ ! pr2 (pr121 (pr111 E)) _ _ _).
-  unfold internal_lam.
-  do 2 rewrite hom_onmorphisms_is_postcomp.
-  refine (maponpaths (λ f, _ · (_ · f)) (assoc' _ _ _) @ _ @ ! maponpaths (compose _) (internal_postcomp_comp _ _ _)).
-  do 2 refine (assoc _ _ _ @ _ ).
-  refine (maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
-  refine (assoc' _ _ _ @ _ @ assoc' _ _ _).
-  refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
-  refine (assoc _ _ _ @ _).
-  refine (maponpaths (postcompose (C:=E) _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E (L R)))) _ _ _) @ _).
-  unfold postcompose.
-  refine (_ @ ! maponpaths (compose _) (internal_postcomp_comp U _ _)).
-  generalize (! mon_closed_adj_natural E (K R) _ _ l); simpl; intros natadjeq.
-  refine (_ @ maponpaths (postcompose _) natadjeq); clear natadjeq.
-  refine (assoc' _ _ _ @ _ @ assoc _ _ _).
-  apply maponpaths.
-  repeat rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  rewrite hom_onmorphisms_is_postcomp.
-  refine (_ @ (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
-  apply (maponpaths (postcompose _)).
-  repeat apply maponpaths.
-  exact (sym_mon_braiding_lunitor C R).
-Qed.
-
-Definition double_glued_leftunitor_data_comp2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R) : double_glued_mor_comp2 L K (I_{ pr211 C} ⊗_{ pr211 C} R) R
-        (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{ C} R (double_glued_monoidal_unit L K) dr) dr.
-Proof.
-  unfold double_glued_mor_comp2.
-  destruct dr as ((U, l), (X, l')).
-  use (doublePullbackArrow _).
-  exact (internal_lam ru^{E}_{X}).
-  exact (compose (C:=E) l' (# K lu^{C}_{R})).
-  apply (compose (C:=E) l').
-  apply internal_lam.
-  apply (compose (C:=E) (K R ⊗^{E}_{l} l)).
-  apply (compose (C:=E) ((# K (ru_{C} R)) ⊗^{E}_{r} (L R))).
-  apply (compose (sym_mon_braiding E _ _)).
-  exact (pr1 k R _).
-  exact (double_glued_leftunitor_data_lemma1 k R U X l l').
-  exact (double_glued_leftunitor_data_lemma2 k R U X l l').
-Defined.
-
-Definition double_glued_leftunitor_data_eq2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R) :
-  double_glued_mor_eq2 L K (I_{ pr211 C} ⊗_{ pr211 C} R) R (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{ C} R (double_glued_monoidal_unit L K) dr) dr lu^{ pr211 C }_{ R} (double_glued_leftunitor_data_comp2 dpbs k dr).
-Proof.
-  unfold double_glued_mor_eq2; simpl.
-  apply pathsinv0.
-  apply doublePullbackArrow_PrM.
-Qed.
-
-Definition double_glued_leftunitor_data {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) :
-  disp_leftunitor_data (double_glued_tensor dpbs k) (double_glued_monoidal_unit L K).
-Proof.
-  intros R dr.
-  split.
-  destruct dr as ((U, l), (X, l')).
-  exists (lu_{E} U).
-  exact (double_glued_leftunitor_data_eq1 R U X l l').
-  exists (double_glued_leftunitor_data_comp2 dpbs k dr).
-  exact (double_glued_leftunitor_data_eq2 dpbs k dr).
-Defined.
-
-
-Lemma leftunitorinv_data_eq1 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R : C} {U X : E} (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧) :
-  luinv^{ E }_{ U} · (pr212 L ⊗^{ E} l · (pr112 L) I_{ pr211 C} R) = l · # L luinv^{ pr211 C }_{ R}.
-Proof.
-  refine (! pr2 (pr121 (pr111 E)) _ _ _ @ _).
-  refine (! maponpaths (compose _) (functor_id _ _) @ _).
-  refine (! maponpaths (λ f, _ · (# L f)) (pr1 (monoidal_leftunitorisolaw C R)) @ _).
-  refine (maponpaths (compose _) (functor_comp _ _ _) @ _).
-  refine (assoc _ _ _ @ _).
-  apply (maponpaths (postcompose _)).
-  refine (assoc' _ _ _ @ _).
-  refine (_ @ pr1 (pr121 (pr111 E)) _ _ _).
-  refine (_ @ maponpaths (postcompose _) (pr2 (monoidal_leftunitorisolaw E U))).
-  refine (_ @ assoc _ _ _).
-  apply maponpaths.
-  exact (! pr21 (double_glued_leftunitor_data dpbs k R ((U,,l),,(X,,l')))).
-Qed.
-
-Lemma leftunitorinv_data_eq21 {E C : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K)
-  (R : ob C) :
-  # K luinv^{ pr211 C }_{ R} =
-    internal_lam ((pr121 E) (K (I_{ pr211 C} ⊗_{ C} R)) (L I_{ pr211 C}) · pr1 k I_{ pr211 C} R) · internal_precomp (pr212 L) (K R)
-      · (ruinv^{ E }_{ internal_hom I_{ E} (K R)} · internal_eval I_{ E} (K R)).
-Proof.
-
-  unfold internal_lam.
-  rewrite hom_onmorphisms_is_postcomp.
-  refine (_ @ maponpaths (λ f, f · (ruinv^{ E }_{ internal_hom I_{ E} (K R)} · internal_eval I_{ E} (K R))) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (f · _) · _) (mon_closed_adj_natural E (K (I_{C} ⊗_{C} R)) _ _ (pr212 L))).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (internal_postcomp_comp _ _ _)).
-  assert (_ ⊗^{E}_{l} # K luinv^{ C }_{ R} · lu^{ E }_{ K R} = pr212 L ⊗^{ E}_{r} _ · pr1 k I_{ C} R) as keq.
-  refine (_ @ pr1 (pr121 (pr111 E)) _ _ _).
-  rewrite (! bifunctor_leftid (monoidal_tensor E) _ _).
-  refine (_ @ maponpaths (λ f, I_{E} ⊗^{E}_{l} f · _) (functor_id K _)).
-  rewrite (! pr1 (monoidal_leftunitorisolaw C R)).
-  rewrite (functor_comp K _ _).
-  refine (_ @ ! maponpaths (postcompose _) (bifunctor_leftcomp (monoidal_tensor E) (I_{E}) _ _ _ _ _)).
-  refine (_ @ assoc _ _ _).
-  apply maponpaths.
-  refine (_ @ assoc' _ _ _).
-  refine (pr1 (pr222 k) R @ _).
-  apply (maponpaths (postcompose _)).
-  exact (bifunctor_equalwhiskers (monoidal_tensor E) _ _ _ _ _ _).
-  assert (K (I_{ C} ⊗_{ C} R) ⊗^{ E}_{l} pr212 L · ((pr121 E) (K (I_{ pr211 C} ⊗_{ C} R)) (L I_{ pr211 C}) · pr1 k I_{ pr211 C} R) = (# K (luinv^{C}_{R}) ⊗^{E}_{r} I_{E}) · ru^{E}_{K R}) as eqm.
-  rewrite assoc.
-  refine (! maponpaths (λ f, f · _) (monoidal_braiding_naturality_left (pr21 E) (K (I_{C} ⊗_{C} R)) _ _ (pr212 L)) @ _).
-  rewrite assoc'.
-  refine (! maponpaths (compose _) keq @ _).
-  refine (_ @ maponpaths (compose _) (sym_mon_braiding_lunitor E (K R))).
-  do 2 rewrite assoc.
-  apply (maponpaths (postcompose _)).
-  exact (monoidal_braiding_naturality_right (pr21 E) _ _ _ (# K luinv^{ C }_{ R})).
-  refine (_ @ ! maponpaths (λ f, _ · (internal_postcomp _ f) · _) eqm).
-  clear eqm keq.
-  rewrite internal_postcomp_comp.
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  rewrite assoc'.
-  rewrite <- hom_onmorphisms_is_postcomp.
-  refine (_ @ maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E I_{ E}))) _ _ (# K luinv^{ C }_{ R}))).
-  rewrite assoc'.
-  refine (! id_right _ @ _).
-  apply maponpaths.
-  do 2 rewrite assoc.
-  exact (rightunitors_eval_expand2 (K R)).
-Qed.
-
-Lemma leftunitorinv_data_eq2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K)
-  {R : ob C} {U X : E} (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧)
-  (dpb1 := dpbs _ _ _ _ _ (internal_postcomp I_{ E} l')
-             (internal_lam ((pr121 E) (K (I_{ pr211 C} ⊗_{ C} R)) (L I_{ pr211 C}) · pr1 k I_{ pr211 C} R) · internal_precomp (pr212 L) (K R))
-             (compose (C:=E) (# K ((pr121 C) R I_{ pr211 C})) (internal_lam ((pr121 E) (K (R ⊗_{ C} I_{ pr211 C})) (L R) · pr1 k R I_{ pr211 C}))
-                · internal_precomp l (K I_{ pr211 C})) (internal_postcomp U (identity (K I_{ C})))):
-   compose (C:=E) (doublePullbackPrM dpb1) (# K luinv^{ pr211 C }_{ R})  =
-     compose (C:=E) (doublePullbackPrL dpb1
-             · (ruinv^{ E }_{ internal_hom I_{ E} X} · internal_eval I_{ E} X)) l'.
-Proof.
-  refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
-  2 : {
+  Context  {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E}
+    {K : functor C (E^opp)} (k : natural_contraction E L K).
+  
+  Local Lemma double_glued_leftunitor_data_eq1 {R : C} {U X : E} (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧) :
+    lu^{ E }_{ U} · l = fmonoidal_preservesunit L ⊗^{ E} l · (fmonoidal_preservestensordata L) I_{ C} R · # L lu^{ C }_{ R}.
+  Proof.
+    refine (! monoidal_leftunitornat E _ _ _ @ _).
+    refine (_ @ assoc _ _ _ @ _ @ assoc _ _ _).
     apply maponpaths.
+    2 : {
+      apply (maponpaths (postcompose _)).
+      apply pathsinv0.
+      apply (bifunctor_equalwhiskers E).
+    }
+    refine (_ @ assoc' _ _ _).
+    apply pathsinv0.
+    apply (fmonoidal_preservesleftunitality L).
+  Qed.
+
+  Local Lemma double_glued_leftunitor_data_lemma1 {R : C} {U X : E} (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧)
+    (arr1 := pr112 (pr2 E (I_{E})) X · # (pr1 (pr2 E I_{ E})) (ru_{E} _))
+    (arr2 := compose (C:=E) l' (# K (lu_{C} R)))
+    (arr3 := compose (C:=E) l' ((pr112 (pr2 E U) _) · (# (pr1 (pr2 E U)) ((K R ⊗^{E}_{l} l) · ((# K (ru_{C} R)) ⊗^{E}_{r} (L R)) · (pr121 E _ _) · pr1 k R (I_{C}))))) :
+    arr1 · internal_postcomp I_{ E} l' =
+      arr2 · (internal_lam ((pr121 E) (K (I_{C} ⊗_{ C} R)) (L I_{ C}) · pr1 k I_{C} R) ·
+                internal_precomp (fmonoidal_preservesunit L) (K R)).
+  Proof.            
+    refine (! maponpaths (compose _) (hom_onmorphisms_is_postcomp (I_{E}) l') @ _).
+    refine (assoc' _ _ _ @ _).
+    refine (! maponpaths (compose _) (functor_comp _ _ _)  @ _).
+    refine (! maponpaths (λ f, compose _ (# _ f)) (monoidal_rightunitornat E X _ l') @ _).
+    refine (maponpaths (compose _) (functor_comp _ _ _)  @ _).
+    refine (assoc _ _ _ @ _).
+    set (unitnateq := ! pr2 (pr112 (pr2 E (I_{E}))) _ _ l').
+    refine (maponpaths (postcompose _) unitnateq @ _); clear unitnateq.
+    refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+    apply (maponpaths (compose _)).
+    set (eqrbl := ! sym_mon_braiding_lunitor E (K R)).
+    refine (maponpaths (λ f, _ · # _ f) eqrbl @ _); clear eqrbl.
+    refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (λ f, _ · (f · _))
+              (! hom_onmorphisms_is_postcomp (L I_{C}) ((pr121 E) (K (I_{C} ⊗_{ C} R)) (L I_{C}) · pr1 k I_{C} R))).
+    refine (_ @ maponpaths (compose _) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _)).
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (postcompose _) (assoc _ _ _)).
+    refine (_ @ maponpaths (λ f, _ · f · _)
+              (mon_closed_adj_natural _ (fmonoidal_preservesunit L))).
+    refine (_ @ maponpaths (postcompose _) (assoc' _ _ _)).
+    refine (maponpaths (compose _) (functor_comp (pr1 (pr2 E I_{ E})) _ _) @ _).
+    refine (assoc _ _ _ @ _ @ assoc _ _ _).
+    set (uninateq := ! pr2 (unit_from_are_adjoints (pr2 (pr2 E I_{ E}))) _ _ (# K lu^{ C }_{ R})).
+    refine (_ @ maponpaths (postcompose _) uninateq); clear uninateq.
+    refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+    apply (maponpaths (compose _)).
+    refine (! functor_comp _ _ _ @ _ @ maponpaths (compose _) (internal_postcomp_comp _ _ _)).
+    refine (_ @ maponpaths (compose _) (hom_onmorphisms_is_postcomp (I_{E}) _)).
+    refine (_ @ functor_comp _ _ _).
+    apply maponpaths.
+    refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+    refine (_ @ maponpaths (λ f, _ · (f · _) ) (pr11 (pr221 E) _ _ _ _)).
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (postcompose _) (assoc' _ _ _)); unfold postcompose.
+    refine (_ @ maponpaths (λ f, (f · _) · _) (pr21 (pr221 E) _ _ _ _)).
+    repeat refine (_ @ assoc _ _ _).
+    apply maponpaths.
+    generalize (pr1 (pr222 k) R); simpl; intros eq1.
+    refine (eq1 @ _); clear eq1.
+    refine (_ @ assoc' _ _ _).
+    apply (maponpaths (postcompose _)).
+    unfold functoronmorphisms1.
+    exact (pr2 (pr222 (monoidal_tensor_is_bifunctor E)) _ _ _ _ _ _).
+  Qed.
+
+  Local Lemma double_glued_leftunitor_data_lemma2 {R : C} {U X : E} (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧) :
+    (compose (C:=E) l' (# K lu^{ C }_{ R})) ·
+      (compose (C:=E) (# K (sym_mon_braiding C R I_{C}))
+         (internal_lam ((pr121 E) (K (R ⊗_{ C} I_{C})) (L R) · pr1 k R I_{C}) · internal_precomp l (K I_{C}))) =
+      compose (C:=E) l'
+        (internal_lam (K R ⊗^{ E}_{l} l ·
+                               (# K ru^{ C }_{ R} ⊗^{ E}_{r} L R · (sym_mon_braiding E (K (R ⊗_{ C} I_{ C})) (L R) · pr1 k R I_{ C})))) ·
+        internal_postcomp U (identity (K I_{ C})).
+  Proof.
+    refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+    apply maponpaths.
+    refine (_ @ ! maponpaths (compose _) (internal_postcomp_id U _)).
+    refine (_ @ ! pr2 (pr121 (pr111 E)) _ _ _).
+    unfold internal_lam.
+    do 2 rewrite hom_onmorphisms_is_postcomp.
+    refine (maponpaths (λ f, _ · (_ · f)) (assoc' _ _ _) @ _ @ ! maponpaths (compose _) (internal_postcomp_comp _ _ _)).
+    do 2 refine (assoc _ _ _ @ _ ).
+    refine (maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
+    refine (assoc' _ _ _ @ _ @ assoc' _ _ _).
+    refine (maponpaths (λ f, compose (C:=E) f _) (! functor_comp K _ _) @ _).
+    refine (assoc _ _ _ @ _).
+    refine (maponpaths (postcompose (C:=E) _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E (L R)))) _ _ _) @ _).
+    unfold postcompose.
+    refine (_ @ ! maponpaths (compose _) (internal_postcomp_comp U _ _)).
+    refine (_ @ maponpaths (postcompose _) (! mon_closed_adj_natural _ l)).
+    refine (assoc' _ _ _ @ _ @ assoc _ _ _).
+    apply maponpaths.
+    repeat rewrite assoc.
+    apply (maponpaths (postcompose _)).
+    simpl.
+    rewrite hom_onmorphisms_is_postcomp.
+    refine (_ @ (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
+    apply (maponpaths (postcompose _)).
+    repeat apply maponpaths.
+    exact (sym_mon_braiding_lunitor C R).
+  Qed.
+
+  Definition double_glued_leftunitor_data_comp2 {R : ob C} (dr : double_glued_cat L K R) :
+    double_glued_mor_comp2 L K (I_{C} ⊗_{C} R) R
+      (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{ C} R (double_glued_monoidal_unit L K) dr) dr.
+  Proof.
+    unfold double_glued_mor_comp2.
+    destruct dr as ((U, l), (X, l')).
+    use (doublePullbackArrow _).
+    exact (internal_lam ru^{E}_{X}).
+    exact (compose (C:=E) l' (# K lu^{C}_{R})).
+    apply (compose (C:=E) l').
+    apply internal_lam.
+    apply (compose (C:=E) (K R ⊗^{E}_{l} l)).
+    apply (compose (C:=E) ((# K (ru_{C} R)) ⊗^{E}_{r} (L R))).
+    apply (compose (sym_mon_braiding E _ _)).
+    exact (pr1 k R _).
+    exact (double_glued_leftunitor_data_lemma1 l l').
+    exact (double_glued_leftunitor_data_lemma2 l l').
+  Defined.
+
+  Definition double_glued_leftunitor_data_eq2 {R : ob C} (dr : double_glued_cat L K R) :
+    double_glued_mor_eq2 L K (I_{C} ⊗_{C} R) R (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{ C} R (double_glued_monoidal_unit L K) dr) dr lu^{C}_{ R} (double_glued_leftunitor_data_comp2 dr).
+  Proof.
+    unfold double_glued_mor_eq2; simpl.
+    apply pathsinv0.
+    apply doublePullbackArrow_PrM.
+  Qed.
+
+  Definition double_glued_leftunitor_data :
+    disp_leftunitor_data (double_glued_tensor dpbs k) (double_glued_monoidal_unit L K).
+  Proof.
+    intros R dr.
+    split.
+    destruct dr as ((U, l), (X, l')).
+    exists (lu_{E} U).
+    exact (double_glued_leftunitor_data_eq1 l l').
+    exists (double_glued_leftunitor_data_comp2 dr).
+    exact (double_glued_leftunitor_data_eq2 dr).
+  Defined.
+
+
+  Lemma leftunitorinv_data_eq1 {R : C} {U X : E} (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧) :
+    luinv^{ E }_{ U} · (fmonoidal_preservesunit L ⊗^{ E} l · (fmonoidal_preservestensordata L) I_{C} R) = l · # L luinv^{C}_{ R}.
+  Proof.
+    refine (! id_right _ @ _).
+    refine (! maponpaths (compose _) (functor_id _ _) @ _).
+    refine (! maponpaths (λ f, _ · (# L f)) (pr1 (monoidal_leftunitorisolaw C R)) @ _).
+    refine (maponpaths (compose _) (functor_comp _ _ _) @ _).
+    refine (assoc _ _ _ @ _).
+    apply (maponpaths (postcompose _)).
+    refine (assoc' _ _ _ @ _).
+    refine (_ @ id_left _).
+    refine (_ @ maponpaths (postcompose _) (pr2 (monoidal_leftunitorisolaw E U))).
+    refine (_ @ assoc _ _ _).
+    apply maponpaths.
+    exact (! pr21 (double_glued_leftunitor_data R ((U,,l),,(X,,l')))).
+  Qed.
+
+  Lemma leftunitorinv_data_eq21 (R : ob C) :
+    # K luinv^{C}_{ R} =
+      internal_lam ((pr121 E) (K (I_{C} ⊗_{ C} R)) (L I_{C}) · pr1 k I_{C} R) · internal_precomp (fmonoidal_preservesunit L) (K R)
+        · (ruinv^{ E }_{ internal_hom I_{ E} (K R)} · internal_eval I_{ E} (K R)).
+  Proof.
+    unfold internal_lam.
+    rewrite hom_onmorphisms_is_postcomp.
+    refine (_ @ maponpaths (λ f, f · (ruinv^{ E }_{ internal_hom I_{ E} (K R)} · internal_eval I_{ E} (K R))) (assoc _ _ _)).
+    refine (_ @ maponpaths (λ f, _ · f · _) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _)).
+    refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+    refine (_ @ maponpaths (λ f, (f · _) · _) (mon_closed_adj_natural _ _)).
+    refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
+    refine (_ @ maponpaths (λ f, _ · f · _) (internal_postcomp_comp _ _ _)).
+    assert (_ ⊗^{E}_{l} # K luinv^{ C }_{ R} · lu^{ E }_{ K R} = (fmonoidal_preservesunit L) ⊗^{ E}_{r} _ · pr1 k I_{ C} R) as keq.
+    refine (_ @ pr1 (pr121 (pr111 E)) _ _ _).
+    rewrite (! bifunctor_leftid (monoidal_tensor E) _ _).
+    refine (_ @ maponpaths (λ f, I_{E} ⊗^{E}_{l} f · _) (functor_id K _)).
+    rewrite (! pr1 (monoidal_leftunitorisolaw C R)).
+    rewrite (functor_comp K _ _).
+    refine (_ @ ! maponpaths (postcompose _) (bifunctor_leftcomp (monoidal_tensor E) (I_{E}) _ _ _ _ _)).
+    refine (_ @ assoc _ _ _).
+    apply maponpaths.
+    refine (_ @ assoc' _ _ _).
+    refine (pr1 (pr222 k) R @ _).
+    apply (maponpaths (postcompose _)).
+    exact (bifunctor_equalwhiskers (monoidal_tensor E) _ _ _ _ _ _).
+    assert (K (I_{ C} ⊗_{ C} R) ⊗^{ E}_{l} (fmonoidal_preservesunit L) · ((pr121 E) (K (I_{C} ⊗_{ C} R)) (L I_{C}) · pr1 k I_{C} R) = (# K (luinv^{C}_{R}) ⊗^{E}_{r} I_{E}) · ru^{E}_{K R}) as eqm.
+    rewrite assoc.
+    refine (! maponpaths (λ f, f · _) (monoidal_braiding_naturality_left (pr21 E) (K (I_{C} ⊗_{C} R)) _ _ _) @ _).
+    rewrite assoc'.
+    refine (! maponpaths (compose _) keq @ _).
+    refine (_ @ maponpaths (compose _) (sym_mon_braiding_lunitor E (K R))).
+    do 2 rewrite assoc.
+    apply (maponpaths (postcompose _)).
+    exact (monoidal_braiding_naturality_right (pr21 E) _ _ _ (# K luinv^{ C }_{ R})).
+    refine (_ @ ! maponpaths (λ f, _ · (internal_postcomp _ f) · _) eqm).
+    clear eqm keq.
+    rewrite internal_postcomp_comp.
+    refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+    rewrite assoc'.
+    rewrite <- hom_onmorphisms_is_postcomp.
+    refine (_ @ maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E I_{ E}))) _ _ (# K luinv^{ C }_{ R}))).
+    rewrite assoc'.
+    refine (! id_right _ @ _).
+    apply maponpaths.
+    do 2 rewrite assoc.
+    exact (rightunitors_eval_expand2 (K R)).
+  Qed.
+
+  Lemma leftunitorinv_data_eq2 {R : ob C} {U X : E} (l : E ⟦ U, L R ⟧) (l' : E ^opp ⟦ K R, X ⟧)
+    (dpb1 := dpbs _ _ _ _ _ (internal_postcomp I_{ E} l')
+               (internal_lam ((pr121 E) (K (I_{C} ⊗_{ C} R)) (L I_{C}) · pr1 k I_{C} R) · internal_precomp (fmonoidal_preservesunit L) (K R))
+               (compose (C:=E) (# K ((sym_mon_braiding C) R I_{C})) (internal_lam ((pr121 E) (K (R ⊗_{ C} I_{C})) (L R) · pr1 k R I_{C}))
+                  · internal_precomp l (K I_{C})) (internal_postcomp U (identity (K I_{ C})))):
+    compose (C:=E) (doublePullbackPrM dpb1) (# K luinv^{C }_{ R})  =
+      compose (C:=E) (doublePullbackPrL dpb1
+                        · (ruinv^{ E }_{ internal_hom I_{ E} X} · internal_eval I_{ E} X)) l'.
+  Proof.
     refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
     2 : {
       apply maponpaths.
-      apply (pr2 (counit_from_are_adjoints (pr2 (pr2 E I_{E})))).
+      refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
+      2 : {
+        apply maponpaths.
+        apply (pr2 (counit_from_are_adjoints (pr2 (pr2 E I_{E})))).
+      }
+      refine (assoc _ _ _ @ _).
+      apply (maponpaths (postcompose _)).
+      apply pathsinv0.
+      apply (monoidal_rightunitorinvnat E).
     }
-    refine (assoc _ _ _ @ _).
-    apply (maponpaths (postcompose _)).
-    apply pathsinv0.
-    apply (monoidal_rightunitorinvnat E).
-  }
-  refine (_ @ assoc _ _ _ @ _).
-  apply maponpaths.
-  2 : {
-    apply (maponpaths (postcompose _)).
-    refine (! doublePullbackSqrLCommutes dpb1 @ _).
+    refine (_ @ assoc _ _ _ @ _).
     apply maponpaths.
-    apply pathsinv0.
-    apply hom_onmorphisms_is_postcomp.
-  }
-  exact (leftunitorinv_data_eq21 k R).
-Qed.
+    2 : {
+      apply (maponpaths (postcompose _)).
+      refine (! doublePullbackSqrLCommutes dpb1 @ _).
+      apply maponpaths.
+      apply pathsinv0.
+      apply hom_onmorphisms_is_postcomp.
+    }
+    exact (leftunitorinv_data_eq21 R).
+  Qed.
 
-Definition double_glued_leftunitorinv_data_comp2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R):
-  double_glued_mor_comp2 L K R (I_{ C} ⊗_{ C} R) dr (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{ C} R (double_glued_monoidal_unit L K) dr).
-Proof.
-  change (E ⟦ pr11 (tensor_doublePullback dpbs k ((I_{ E},, pr212 L),, K I_{ C},, identity (K I_{ C})) dr), pr12 dr ⟧).
-  apply (compose (doublePullbackPrL _)).
-  apply (compose (ruinv^{E}_{_})).
-  exact (internal_eval _ _).
-Defined.
+  Definition double_glued_leftunitorinv_data_comp2 {R : ob C} (dr : double_glued_cat L K R):
+    double_glued_mor_comp2 L K R (I_{ C} ⊗_{ C} R) dr (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{ C} R (double_glued_monoidal_unit L K) dr).
+  Proof.
+    apply (compose (doublePullbackPrL _)).
+    apply (compose (ruinv^{E}_{_})).
+    exact (internal_eval _ _).
+  Defined.
 
-Lemma double_glued_leftunitorinv_data_eq2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R):
-  double_glued_mor_eq2 L K R (I_{ pr211 C} ⊗_{ pr211 C} R) dr (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{ pr211 C} R (double_glued_monoidal_unit L K) dr) (luinv^{C}_{R}) (double_glued_leftunitorinv_data_comp2 dpbs k dr).
-Proof.
-  change (doublePullbackPrM (tensor_doublePullback dpbs k ((I_{ E},, pr212 L),, K I_{ C},, identity (K I_{ C})) dr) · # K luinv^{ C }_{ R} =
-            doublePullbackPrL (tensor_doublePullback dpbs k ((I_{ E},, pr212 L),, K I_{ C},, identity (K I_{ C})) dr)
-              · (ruinv^{ E }_{ internal_hom I_{ E} (pr12 dr)} · internal_eval I_{ E} (pr12 dr)) · pr22 dr).
-  show_id_type.
-  unfold internal_eval.
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  rewrite assoc'.
-  refine (_ @ maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E I_{ E}))) _ _ (pr22 dr))).
-  simpl.
-  rewrite hom_onmorphisms_is_postcomp.
-  rewrite assoc.
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · f · _) (monoidal_rightunitorinvnat _ _ _ (internal_postcomp I_{ E} (pr22 dr)))).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  rewrite assoc'.
-  refine (_ @ ! maponpaths (λ f, f · _) (doublePullbackSqrLCommutes (tensor_doublePullback dpbs k ((I_{ E},, pr212 L),, K I_{ C},, identity (K I_{ C})) dr))).
-  rewrite assoc'.
-  apply maponpaths.
-  exact (leftunitorinv_data_eq21 k R).
-Qed.
+  Lemma double_glued_leftunitorinv_data_eq2 {R : ob C} (dr : double_glued_cat L K R):
+    double_glued_mor_eq2 L K R (I_{C} ⊗_{C} R) dr (disp_bifunctor_on_objects (double_glued_tensor dpbs k) I_{C} R (double_glued_monoidal_unit L K) dr) (luinv^{C}_{R}) (double_glued_leftunitorinv_data_comp2 dr).
+  Proof.
+    change (doublePullbackPrM (tensor_doublePullback dpbs k ((I_{ E},, fmonoidal_preservesunit L),, K I_{ C},, identity (K I_{ C})) dr) · # K luinv^{ C }_{ R} =
+              doublePullbackPrL (tensor_doublePullback dpbs k ((I_{ E},, fmonoidal_preservesunit L),, K I_{ C},, identity (K I_{ C})) dr)
+                · (ruinv^{ E }_{ internal_hom I_{ E} (pr12 dr)} · internal_eval I_{ E} (pr12 dr)) · pr22 dr).
+    unfold internal_eval.
+    refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+    rewrite assoc'.
+    refine (_ @ maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E I_{ E}))) _ _ (pr22 dr))).
+    simpl.
+    rewrite hom_onmorphisms_is_postcomp.
+    rewrite assoc.
+    refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
+    refine (_ @ ! maponpaths (λ f, _ · f · _) (monoidal_rightunitorinvnat _ _ _ (internal_postcomp I_{ E} (pr22 dr)))).
+    refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+    rewrite assoc'.
+    refine (_ @ ! maponpaths (λ f, f · _) (doublePullbackSqrLCommutes _)).
+    rewrite assoc'.
+    apply maponpaths.
+    exact (leftunitorinv_data_eq21 R).
+  Qed.
 
 
-Definition double_glued_leftunitorinv_data {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) :
-  disp_leftunitorinv_data (double_glued_tensor dpbs k) (double_glued_monoidal_unit L K).
-Proof.
-  intros R dr.
-  split.
-  destruct dr as ((U, l), (X, l')).
-  exists (luinv_{E} U).
-  exact (leftunitorinv_data_eq1 dpbs k l l').
-  (* component 2: *)
-  exists (double_glued_leftunitorinv_data_comp2 dpbs k dr).
-  exact (double_glued_leftunitorinv_data_eq2 dpbs k dr).
-Defined.
+  Definition double_glued_leftunitorinv_data :
+    disp_leftunitorinv_data (double_glued_tensor dpbs k) (double_glued_monoidal_unit L K).
+  Proof.
+    intros R dr.
+    split.
+    destruct dr as ((U, l), (X, l')).
+    exists (luinv_{E} U).
+    exact (leftunitorinv_data_eq1 l l').
+    (* component 2: *)
+    exists (double_glued_leftunitorinv_data_comp2 dr).
+    exact (double_glued_leftunitorinv_data_eq2 dr).
+  Defined.
+
+End Leftunitor.
 

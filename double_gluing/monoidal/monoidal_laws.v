@@ -45,33 +45,24 @@ Require Import double_gluing.monoidal.monoidal_data.
 Require Import double_gluing.monoidal.unitor_laws.
 Require Import double_gluing.monoidal.monoidal_laws1.
 
+Section PentagonIdPreparation.
 
-Definition double_glued_disp_pentagon_identity_compArrowL {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 (tensor_doublePullback dpbs k
-                       ((pr11 dr1 ⊗_{ E} pr11 dr2,,
-                         pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                        pr11 (tensor_doublePullback dpbs k dr1 dr2),,
-                        doublePullbackPrM
-                          (tensor_doublePullback dpbs k dr1 dr2)) dr3),,
-               doublePullbackPrM
-                 (tensor_doublePullback dpbs k
-                    ((pr11 dr1 ⊗_{ E} pr11 dr2,,
-                      pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 (tensor_doublePullback dpbs k dr1 dr2),,
-                     doublePullbackPrM
-                       (tensor_doublePullback dpbs k dr1 dr2)) dr3)) dr4)
+  Context {C : sym_monoidal_cat} {E: sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
+    (k : natural_contraction E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1) (dr2 : double_glued_ob L K R2)
+    (dr3 : double_glued_ob L K R3) (dr4 : double_glued_ob L K R4) (dP12 := tensor_doublePullback dpbs k dr1 dr2)
+    (dP123 := tensor_doublePullback dpbs k
+                ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
+                   pr11 dP12,, doublePullbackPrM dP12) dr3)
+    (dP1234 := tensor_doublePullback dpbs k
+                 (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
+                     (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3 · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
+                    pr11 dP123,, doublePullbackPrM dP123) dr4).
+
+Definition double_glued_disp_pentagon_identity_compArrowL
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
-  doublePullback_CompetitorArrowL dP X.
+  doublePullback_CompetitorArrowL dP1234 X.
 Proof.
     apply (compose (doublePullbackPrL _)).
     refine (compose _ (internal_precomp (α^{E}_{_,_,_}) _)).
@@ -83,47 +74,18 @@ Proof.
     apply (doublePullbackPrL _).
 Defined.
 
-Definition double_glued_disp_pentagon_identity_compArrowM  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 (tensor_doublePullback dpbs k
-                       ((pr11 dr1 ⊗_{ E} pr11 dr2,,
-                         pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                        pr11 (tensor_doublePullback dpbs k dr1 dr2),,
-                        doublePullbackPrM
-                          (tensor_doublePullback dpbs k dr1 dr2)) dr3),,
-               doublePullbackPrM
-                 (tensor_doublePullback dpbs k
-                    ((pr11 dr1 ⊗_{ E} pr11 dr2,,
-                      pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 (tensor_doublePullback dpbs k dr1 dr2),,
-                     doublePullbackPrM
-                       (tensor_doublePullback dpbs k dr1 dr2)) dr3)) dr4)
+Definition double_glued_disp_pentagon_identity_compArrowM
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
-  doublePullback_CompetitorArrowM dP X.
+  doublePullback_CompetitorArrowM dP1234 X.
 Proof.
     apply (compose (doublePullbackPrM _)).
     apply (# K).
     apply (α^{C}_{_,_,_} · α^{C}_{_,_,_}).
 Defined.
 
-Definition double_glued_disp_pentagon_identity_compArrowRL  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
+Definition double_glued_disp_pentagon_identity_compArrowRL
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
@@ -140,15 +102,7 @@ Proof.
     apply internal_uncurry.
 Defined.
 
-Definition double_glued_disp_pentagon_identity_compArrowRM  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
+Definition double_glued_disp_pentagon_identity_compArrowRM
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
@@ -163,12 +117,7 @@ Proof.
     apply (pr1 k).
 Defined.
 
-Definition double_glued_disp_pentagon_identity_compArrowRRL  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
+Definition double_glued_disp_pentagon_identity_compArrowRRL
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
@@ -183,12 +132,7 @@ Proof.
     apply (internal_eval _ _).
 Defined.
 
-Definition double_glued_disp_pentagon_identity_compArrowRRM  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
+Definition double_glued_disp_pentagon_identity_compArrowRRM 
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
@@ -200,12 +144,7 @@ Proof.
     apply (pr1 k).
 Defined.
 
-Definition double_glued_disp_pentagon_identity_compArrowRRR  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
+Definition double_glued_disp_pentagon_identity_compArrowRRR 
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
@@ -222,15 +161,10 @@ Proof.
     apply (internal_eval _ _).
 Defined.
 
-Lemma double_glued_disp_pentagon_identity_compArrowRRSqrL  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2) :
+Lemma double_glued_disp_pentagon_identity_compArrowRRSqrL :
   doublePullback_CompetitorSqrL dP12 ((_ ⊗_{E} pr11 dr4) ⊗_{E} pr11 dr3)
-    (double_glued_disp_pentagon_identity_compArrowRRL dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRRM dpbs k dr1 dr2 dr3 dr4).
+    double_glued_disp_pentagon_identity_compArrowRRL
+    double_glued_disp_pentagon_identity_compArrowRRM.
 Proof.
   refine (assoc' _ _ _ @ _ @ assoc' _ _ _ @ _).
   apply cancel_postcomposition.
@@ -258,7 +192,7 @@ Proof.
   apply maponpaths.
   refine (_ @ assoc _ _ _ @ _).
   apply maponpaths.
-  refine (internal_eval_nat _ _ _ _ @ _).
+  refine (internal_eval_nat _ _ @ _).
   now rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
@@ -271,7 +205,7 @@ Proof.
   apply cancel_postcomposition.
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   apply maponpaths.
-  refine (internal_eval_nat _ _ _ _ @ _).
+  refine (internal_eval_nat _ _ @ _).
   now rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
@@ -318,7 +252,7 @@ Proof.
   apply (bifunctor_rightcomp E).
   refine (assoc _ _ _ @ _ @ assoc _ _ _ @ _).
   apply maponpaths.
-  refine (internal_eval_nat _ _ _ _ @ _).
+  refine (internal_eval_nat _ _ @ _).
   now rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ internal_lam_tensor_eval _ @ _).
   apply cancel_postcomposition.
@@ -806,18 +740,13 @@ Proof.
   apply (monoidal_associatorisolaw E).
 Qed.
 
-Lemma double_glued_disp_pentagon_identity_compArrowRRSqrR  {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2) :
+Lemma double_glued_disp_pentagon_identity_compArrowRRSqrR :
   doublePullback_CompetitorSqrR dP12 ((_ ⊗_{E} pr11 dr4) ⊗_{E} pr11 dr3)
-    (double_glued_disp_pentagon_identity_compArrowRRM dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRRR dpbs k dr1 dr2 dr3 dr4).
+    double_glued_disp_pentagon_identity_compArrowRRM
+    double_glued_disp_pentagon_identity_compArrowRRR.
 Proof.
   
-  refine (_ @ ! maponpaths (compose _) (internal_eval_nat _ _ _ _) @ assoc _ _ _).
+  refine (_ @ ! maponpaths (compose _) (internal_eval_nat _ _) @ assoc _ _ _).
   rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ assoc' _ _ _).
   refine (_ @ maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
@@ -831,7 +760,7 @@ Proof.
   refine (_ @ maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _)).
   refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _)).
   refine (_ @ maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f · _) ⊗^{E}_{r} _ · _) (! internal_eval_nat _ _ _ _)).
+  refine (_ @ maponpaths (λ f, (_ · f · _) ⊗^{E}_{r} _ · _) (! internal_eval_nat _ _)).
   rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _)).
   refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _)).
@@ -1115,15 +1044,7 @@ Proof.
   apply (monoidal_braiding_inverses C).
 Qed.
 
-Definition double_glued_disp_pentagon_identity_compArrowRR {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
+Definition double_glued_disp_pentagon_identity_compArrowRR
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
@@ -1138,18 +1059,10 @@ Proof.
     apply double_glued_disp_pentagon_identity_compArrowRRSqrR.
 Defined.
 
-Lemma double_glued_disp_pentagon_identity_compArrowRSqrL {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3) :
+Lemma double_glued_disp_pentagon_identity_compArrowRSqrL :
   doublePullback_CompetitorSqrL dP123 (_ ⊗_{E} pr11 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRL dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRM dpbs k dr1 dr2 dr3 dr4).
+    double_glued_disp_pentagon_identity_compArrowRL
+    double_glued_disp_pentagon_identity_compArrowRM.
 Proof.
   
   refine (assoc' _ _ _ @ _).
@@ -1157,7 +1070,7 @@ Proof.
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (uncurry_nat3 _ _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (internal_eval_nat _ _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (internal_eval_nat _ _) @ _).
   rewrite hom_onmorphisms_is_postcomp.
   apply assoc'.
   refine (assoc _ _ _ @ _).
@@ -1612,18 +1525,10 @@ Proof.
   apply (sym_mon_hexagon_lassociator C).
 Qed.
 
-Lemma double_glued_disp_pentagon_identity_compArrowRSqrR {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3) :
+Lemma double_glued_disp_pentagon_identity_compArrowRSqrR :
   doublePullback_CompetitorSqrR dP123 (_ ⊗_{E} pr11 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRM dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRR dpbs k dr1 dr2 dr3 dr4).
+    double_glued_disp_pentagon_identity_compArrowRM
+    double_glued_disp_pentagon_identity_compArrowRR.
 Proof.
 
   refine (_ @ ! internal_lam_postcomp _ _).
@@ -1878,25 +1783,11 @@ Proof.
   apply (monoidal_associatorisolaw E).
 Qed.
 
-Definition double_glued_disp_pentagon_identity_compArrowR {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 dP123,,
-               doublePullbackPrM dP123) dr4)
+Definition double_glued_disp_pentagon_identity_compArrowR
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4)))) :
-  doublePullback_CompetitorArrowR dP X.
+  doublePullback_CompetitorArrowR dP1234 X.
 Proof.
   apply internal_lam.
   use doublePullbackArrow.
@@ -1907,23 +1798,9 @@ Proof.
   apply double_glued_disp_pentagon_identity_compArrowRSqrR.
 Defined.
 
-Lemma double_glued_disp_pentagon_identity_compSqrL {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 dP123,,
-               doublePullbackPrM dP123) dr4) :
-  doublePullback_CompetitorSqrL dP _ (double_glued_disp_pentagon_identity_compArrowL dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowM dpbs k dr1 dr2 dr3 dr4).
+Lemma double_glued_disp_pentagon_identity_compSqrL :
+  doublePullback_CompetitorSqrL dP1234 _ double_glued_disp_pentagon_identity_compArrowL
+    double_glued_disp_pentagon_identity_compArrowM.
 Proof.
   
   refine (assoc' _ _ _ @ _).
@@ -2190,23 +2067,9 @@ Proof.
   apply (monoidal_associatorisolaw E).
 Qed.
 
-Lemma double_glued_disp_pentagon_identity_compSqrR {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 dP123,,
-               doublePullbackPrM dP123) dr4) :
-  doublePullback_CompetitorSqrR dP _ (double_glued_disp_pentagon_identity_compArrowM dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowR dpbs k dr1 dr2 dr3 dr4).
+Lemma double_glued_disp_pentagon_identity_compSqrR :
+  doublePullback_CompetitorSqrR dP1234 _ double_glued_disp_pentagon_identity_compArrowM
+    double_glued_disp_pentagon_identity_compArrowR.
 Proof.
   refine (assoc _ _ _ @ _ @ ! internal_lam_postcomp _ _).
   refine (maponpaths (compose _) (internal_lam_precomp _ _) @ _).
@@ -2225,21 +2088,7 @@ Proof.
   refine (! functor_comp K _ _).
 Qed.
 
-Lemma double_glued_disp_pentagon_identity_compTrianLL {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 dP123,,
-               doublePullbackPrM dP123) dr4)
+Lemma double_glued_disp_pentagon_identity_compTrianLL
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4))))
@@ -2259,7 +2108,7 @@ Lemma double_glued_disp_pentagon_identity_compTrianLL {E C : sym_mon_closed_cat}
                 (double_glued_tensor_product dpbs k dr3 dr4))
              (disp_monoidal_associator
                 (double_glued_monoidal_data dpbs k) R2 R3 R4 dr2 dr3 dr4)):
-  doublePullback_CompetitorTriangleL dP X arrL (double_glued_disp_pentagon_identity_compArrowL dpbs k dr1 dr2 dr3 dr4).
+  doublePullback_CompetitorTriangleL dP1234 X arrL double_glued_disp_pentagon_identity_compArrowL.
 Proof.
   refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
   apply maponpaths.
@@ -2281,21 +2130,7 @@ Proof.
   exact (doublePullbackArrow_PrL _ _ _ _ _ _ _).
 Qed.
 
-Lemma double_glued_disp_pentagon_identity_compTrianLM {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 dP123,,
-               doublePullbackPrM dP123) dr4)
+Lemma double_glued_disp_pentagon_identity_compTrianLM
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4))))
@@ -2315,8 +2150,8 @@ Lemma double_glued_disp_pentagon_identity_compTrianLM {E C : sym_mon_closed_cat}
                 (double_glued_tensor_product dpbs k dr3 dr4))
              (disp_monoidal_associator
                 (double_glued_monoidal_data dpbs k) R2 R3 R4 dr2 dr3 dr4)):
-  doublePullback_CompetitorTriangleM dP X arrL
-    (double_glued_disp_pentagon_identity_compArrowM dpbs k dr1 dr2 dr3 dr4).
+  doublePullback_CompetitorTriangleM dP1234 X arrL
+    double_glued_disp_pentagon_identity_compArrowM.
 Proof.
   refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
   apply maponpaths.
@@ -2336,21 +2171,7 @@ Proof.
   exact (monoidal_pentagonidentity C R1 R2 R3 R4).
 Qed.
 
-Lemma double_glued_disp_pentagon_identity_compTrianLR {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 R4 : C} (dr1 : double_glued_ob L K R1)
-  (dr2 : double_glued_ob L K R2) (dr3 : double_glued_ob L K R3)
-  (dr4 : double_glued_ob L K R4)
-  (dP12 := tensor_doublePullback dpbs k dr1 dr2)
-  (dP123 := tensor_doublePullback dpbs k
-                  ((pr11 dr1 ⊗_{ E} pr11 dr2,, pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2),,
-                     pr11 dP12,, doublePullbackPrM dP12) dr3)
-  (dP := tensor_doublePullback dpbs k
-              (((pr11 dr1 ⊗_{ E} pr11 dr2) ⊗_{ E} pr11 dr3,,
-                (pr21 dr1 ⊗^{ E} pr21 dr2 · (pr112 (pr1 L)) R1 R2) ⊗^{ E} pr21 dr3
-                · (pr112 (pr1 L)) (R1 ⊗_{ C} R2) R3),,
-               pr11 dP123,,
-               doublePullbackPrM dP123) dr4)
+Lemma double_glued_disp_pentagon_identity_compTrianLR
   (X := pr12 (double_glued_tensor_product dpbs k dr1
                 (double_glued_tensor_product dpbs k dr2
                    (double_glued_tensor_product dpbs k dr3 dr4))))
@@ -2370,8 +2191,8 @@ Lemma double_glued_disp_pentagon_identity_compTrianLR {E C : sym_mon_closed_cat}
                 (double_glued_tensor_product dpbs k dr3 dr4))
              (disp_monoidal_associator
                 (double_glued_monoidal_data dpbs k) R2 R3 R4 dr2 dr3 dr4)):
-  doublePullback_CompetitorTriangleR dP X arrL
-    (double_glued_disp_pentagon_identity_compArrowR dpbs k dr1 dr2 dr3 dr4).
+  doublePullback_CompetitorTriangleR dP1234 X arrL
+    double_glued_disp_pentagon_identity_compArrowR.
 Proof.
   refine (assoc' _ _ _ @ _ @ internal_lam_natural _ _ @ _).
   apply maponpaths.
@@ -2383,68 +2204,7 @@ Proof.
   unfold double_glued_disp_pentagon_identity_compArrowR.
   apply maponpaths.
   unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt, postcompose;
-    refine (maponpaths (λ f, f · _) (when_bifunctor_becomes_rightwhiskering E _ _) @ _).
-
-  (*
-  simpl.
-  set (pr12 (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R2 R3 dr2 dr3)).
-  set (dP23 := tensor_doublePullback dpbs k dr2 dr3).
-  set (dP23_4 := tensor_doublePullback dpbs k ((pr11 dr2 ⊗_{ E} pr11 dr3,, pr21 dr2 ⊗^{ E} pr21 dr3 · (pr112 (pr1 L)) R2 R3),,
-                                                 pr11 dP23,, doublePullbackPrM dP23) dr4).
-  set (dP1__23_4 := (tensor_doublePullback dpbs k dr1
-                       (((pr11 dr2 ⊗_{ E} pr11 dr3) ⊗_{ E} pr11 dr4,,
-                           (pr21 dr2 ⊗^{ E} pr21 dr3 · (pr112 (pr1 L)) R2 R3) ⊗^{ E} pr21 dr4 · (pr112 (pr1 L)) (R2 ⊗_{ pr211 C} R3) R4),,
-                          pr11 dP23_4,, doublePullbackPrM dP23_4))).
-  set (dP1_23 := tensor_doublePullback dpbs k dr1 ((pr11 dr2 ⊗_{ E} pr11 dr3,, pr21 dr2 ⊗^{ E} pr21 dr3 · (pr112 (pr1 L)) R2 R3),,
-                                                     pr11 dP23,, doublePullbackPrM dP23)).
-  set (dP34 := tensor_doublePullback dpbs k dr3 dr4).
-  set (dP2_34 := tensor_doublePullback dpbs k dr2 ((pr11 dr3 ⊗_{ E} pr11 dr4,, pr21 dr3 ⊗^{ E} pr21 dr4 · (pr112 (pr1 L)) R3 R4),,
-                                                     pr11 dP34,, doublePullbackPrM dP34)).
-  set (dP1__2_34 := tensor_doublePullback dpbs k dr1
-             ((pr11 dr2 ⊗_{ E} (pr11 dr3 ⊗_{ E} pr11 dr4),,
-               pr21 dr2 ⊗^{ E} (pr21 dr3 ⊗^{ E} pr21 dr4 · (pr112 (pr1 L)) R3 R4) · (pr112 (pr1 L)) R2 (R3 ⊗_{ C} R4)),,
-              pr11 dP2_34,, doublePullbackPrM dP2_34)).
-  set (comp := pr11 dP1__2_34  ⊗_{E} pr11 dr4).
-  set (left := double_glued_leftwhiskering_comp2 dpbs k dr1
-                 (double_glued_tensor_product dpbs k
-                    (double_glued_tensor_product dpbs k dr2 dr3) dr4)
-                 (double_glued_tensor_product dpbs k dr2
-                    (double_glued_tensor_product dpbs k dr3 dr4))
-                 (disp_monoidal_associator
-                    (double_glued_monoidal_data dpbs k) R2 R3 R4 dr2 dr3 dr4)
-                 ⊗^{ E}_{r} pr11 dr4
-                     · (doublePullbackArrow dP1_23 ((pr11 dP1__23_4) ⊗_{E} (pr11 dr4))
-                          ((doublePullbackPrL dP1__23_4
-                              · (internal_postcomp (pr11 dr1) (doublePullbackPrR dP23_4) ·
-                                   internal_swap_arg (pr11 dr1) (pr11 dP23) (pr11 dr4)))
-                             ⊗^{ E}_{r} pr11 dr4
-                                 · internal_eval (pr11 dr4) (internal_hom (pr11 dr1) (pr11 dP23)))
-                          (pr11 dP1__23_4 ⊗^{ E}_{l} pr21 dr4
-                                              · (doublePullbackPrM dP1__23_4
-                                                   · (compose (C:=E) (# K α^{ C }_{ R1, R2 ⊗_{ pr211 C} R3, R4}) (# K (sym_mon_braiding C R4 (R1 ⊗_{ C} (R2 ⊗_{ pr211 C} R3)))))) ⊗^{ E}_{r} L R4 · (sym_mon_braiding E (K (R4 ⊗_{ C} (R1 ⊗_{ C} (R2 ⊗_{ pr211 C} R3)))) (L R4) · pr1 k R4 (R1 ⊗_{ C} (R2 ⊗_{ pr211 C} R3))))
-       (doublePullbackPrR dP1__23_4
-          ⊗^{ E}_{r} pr11 dr4
-              · (internal_precomp (sym_mon_braiding E (pr11 dr4) (pr11 dr2 ⊗_{ E} pr11 dr3)) (pr12 dr1) ⊗^{ E}_{r} pr11 dr4
-           · (internal_curry (pr11 dr4) (pr11 dr2 ⊗_{ E} pr11 dr3) (pr12 dr1) ⊗^{ E}_{r} pr11 dr4
-              · internal_eval (pr11 dr4) (internal_hom (pr11 dr2 ⊗_{ E} pr11 dr3) (pr12 dr1)))))
-       (associator.assocdata_lemma1 dpbs k (pr21 dr1) (pr22 dr1) (pr21 dr2 ⊗^{ E} pr21 dr3 · (pr112 (pr1 L)) R2 R3)
-          (doublePullbackPrM dP23)
-          (pr21 dr4) (pr22 dr4))
-       (associator.assocdata_lemma2 dpbs k (pr21 dr1) (pr22 dr1) (pr21 dr2 ⊗^{ E} pr21 dr3 · (pr112 (pr1 L)) R2 R3)
-          (doublePullbackPrM dP23)
-          (pr21 dr4) (pr22 dr4)) · double_glued_assoc_data_comp2 dpbs k dr1 dr2 dr3)).
-  change (left = doublePullbackArrow dP123 comp
-    (double_glued_disp_pentagon_identity_compArrowRL dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRM dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRR dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRSqrL dpbs k dr1 dr2 dr3 dr4)
-    (double_glued_disp_pentagon_identity_compArrowRSqrR dpbs k dr1 dr2 dr3 dr4)).
-  About doublePullbackArrowUnique'.
-  show_id_type.
-  set (dP' := tensor_doublePullback dpbs k (disp_bifunctor_on_objects (double_glued_tensor dpbs L K k) R1 R2 dr1 dr2) dr3).*)
-
-
-  
+    refine (maponpaths (λ f, f · _) (when_bifunctor_becomes_rightwhiskering E _ _) @ _).  
   apply doublePullbackArrowUnique'.
   refine (assoc' _ _ _ @ _ @ assoc _ _ _ @ _).
   apply maponpaths.
@@ -2471,7 +2231,7 @@ Proof.
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (compose _) (internal_eval_nat _ _ _ _) @ _).
+  refine (maponpaths (compose _) (internal_eval_nat _ _) @ _).
   refine (assoc _ _ _ @ _).
   apply cancel_postcomposition.
   refine (! maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _) @ _).
@@ -2568,7 +2328,7 @@ Proof.
   apply cancel_postcomposition.
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (compose _) (internal_eval_nat _ _ _ _) @ _).
+  refine (maponpaths (compose _) (internal_eval_nat _ _) @ _).
   refine (assoc _ _ _ @ _).
   apply cancel_postcomposition.
   refine (maponpaths (λ f, f · _) (! bifunctor_rightcomp E _ _ _ _ _ _) @ _).
@@ -2919,9 +2679,10 @@ Proof.
   exact (doublePullbackArrow_PrR _ _ _ _ _ _ _).
 Qed.
 
-Lemma double_glued_disp_pentagon_identity {E C : sym_mon_closed_cat}
-  (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : 
+End PentagonIdPreparation.
+
+Lemma double_glued_disp_pentagon_identity {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
+  {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction E L K)  : 
   disp_pentagon_identity (disp_monoidal_associator (double_glued_monoidal_data dpbs k)).
 Proof.
   intros R1 R2 R3 R4.
@@ -2930,11 +2691,6 @@ Proof.
     unfold transportb, transportf;
     induction (! monoidal_pentagonidentity C R1 R2 R3 R4).
   apply (monoidal_pentagonidentity E).
-  (*
-  destruct dr1 as ((U1, l1), (X1, l1')).
-  destruct dr2 as ((U2, l2), (X2, l2')).
-  destruct dr3 as ((U3, l3), (X3, l3')).
-  destruct dr4 as ((U4, l4), (X4, l4')). *)
   set (arrR := double_glued_assoc_data_comp2 dpbs k
                  (double_glued_tensor_product dpbs k dr1 dr2) dr3 dr4
                  · double_glued_assoc_data_comp2 dpbs k dr1 dr2
@@ -2991,7 +2747,7 @@ Proof.
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (doublePullbackArrow_PrL _ _ _ _ _ _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (_ @ ! maponpaths (compose _) (internal_eval_nat _ _ _ _)).
+  refine (_ @ ! maponpaths (compose _) (internal_eval_nat _ _)).
   rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ assoc' _ _ _).
   apply cancel_postcomposition.
@@ -3105,7 +2861,7 @@ Proof.
     apply cancel_postcomposition.
     refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
     apply maponpaths.
-    refine (_ @ ! maponpaths (λ f, _ · f) (internal_eval_nat _ _ _ _)).
+    refine (_ @ ! maponpaths (λ f, _ · f) (internal_eval_nat _ _)).
     rewrite hom_onmorphisms_is_postcomp.
     rewrite (internal_postcomp_comp _).
     refine (assoc _ _ _ @ _).
@@ -3113,7 +2869,7 @@ Proof.
     refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _) (assoc _ _ _)).
     refine (! bifunctor_rightcomp E _ _ _ _ _ _).
   }
-  refine (maponpaths (compose _) (! mon_closed_adj_natural_co E _ _ _ _) @ _).
+  refine (maponpaths (compose _) (! mon_closed_adj_natural_co _ _) @ _).
   refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
   apply cancel_postcomposition.
   refine (assoc' _ _ _ @ _).
@@ -3192,7 +2948,7 @@ Proof.
     apply cancel_postcomposition.
     refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
     apply maponpaths.
-    refine (_ @ ! maponpaths (λ f, _ · f) (internal_eval_nat _ _ _ _)).
+    refine (_ @ ! maponpaths (λ f, _ · f) (internal_eval_nat _ _)).
     rewrite hom_onmorphisms_is_postcomp.
     apply assoc'.
   }
@@ -3206,7 +2962,7 @@ Proof.
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (λ f, _ · f) (! bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
   apply assoc.  
-  refine (maponpaths (compose _) (! mon_closed_adj_natural_co E _ _ _ _) @ _).
+  refine (maponpaths (compose _) (! mon_closed_adj_natural_co _ _) @ _).
   refine (assoc _ _ _ @ _ @ assoc' _ _ _ @ _).
   apply cancel_postcomposition.
   refine (assoc' _ _ _ @ _).
@@ -3276,8 +3032,8 @@ Proof.
   apply (monoidal_associatorisolaw E).
 Qed.
 
-Lemma double_glued_monoidal_laws {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E)
-  {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+Lemma double_glued_monoidal_laws {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
+  {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction E L K) :
   disp_monoidal_laws (double_glued_monoidal_data dpbs k).
 Proof.
   split5.

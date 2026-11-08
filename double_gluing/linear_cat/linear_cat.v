@@ -58,7 +58,7 @@ Require Import double_gluing.linear_cat.bang_sym_mon_fun.
 Require Import double_gluing.linear_cat.bang_comonad.
 
 Lemma double_glued_total_linear_category_comult_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) {R : ob C} (dr : double_glued_cat L K R) :
   double_glued_mor_eq1 L K (pr1 (double_glued_total_bang dpbs L k (R,, dr)))
     (pr1 (monoidal_cat_tensor_pt (double_glued_total_bang dpbs L k (R,, dr)) (double_glued_total_bang dpbs L k (R,, dr))))
     (pr2 (double_glued_total_bang dpbs L k (R,, dr)))
@@ -86,7 +86,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_linear_category_comult {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) :
   ∏ x : double_glued_total_sym_mon_closed_cat dpbs k,
       pr1 (double_glued_total_sym_mon_closed_cat dpbs k) ⟦ double_glued_total_bang dpbs L k x,
           monoidal_cat_tensor_pt (double_glued_total_bang dpbs L k x) (double_glued_total_bang dpbs L k x) ⟧.
@@ -106,7 +106,7 @@ Proof.
 Defined.
 
 Lemma double_glued_total_linear_category_counit_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) {R : ob C} (dr : double_glued_cat L K R) :
   double_glued_mor_eq1 L K (pr1 (double_glued_total_bang dpbs L k (R,, dr))) (pr1 I_{ double_glued_total_sym_mon_closed_cat dpbs k})
     (pr2 (double_glued_total_bang dpbs L k (R,, dr))) (pr2 I_{ double_glued_total_sym_mon_closed_cat dpbs k}) (linear_category_counit C R)
     (linear_category_counit E (pr11 dr)).
@@ -121,7 +121,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_linear_category_counit {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) :
   ∏ x : double_glued_total_sym_mon_closed_cat dpbs k,
       pr1 (double_glued_total_sym_mon_closed_cat dpbs k) ⟦ double_glued_total_bang dpbs L k x, I_{ double_glued_total_sym_mon_closed_cat dpbs k} ⟧.
 Proof.
@@ -138,7 +138,7 @@ Proof.
 Defined.
 
 Definition double_glued_total_linear_category_data {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : linear_category_data.
+  (k : natural_contraction E L K) : linear_category_data.
 Proof.
   exists (double_glued_total_sym_mon_closed_cat dpbs k).
   exists (double_glued_total_bang dpbs L k).
@@ -147,7 +147,7 @@ Proof.
 Defined.
 
 Lemma double_glued_total_linear_category_comult_nat {C E : linear_category} (dpbs : doublePullbacks E)
-  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K)
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K)
   {A B : double_glued_total_linear_category_data dpbs L k}
   (f : double_glued_total_linear_category_data dpbs L k ⟦ A, B ⟧) :
   # (linear_category_bang (double_glued_total_linear_category_data dpbs L k)) f
@@ -157,7 +157,7 @@ Lemma double_glued_total_linear_category_comult_nat {C E : linear_category} (dpb
       (# (linear_category_bang (double_glued_total_linear_category_data dpbs L k)) f)
       (# (linear_category_bang (double_glued_total_linear_category_data dpbs L k)) f).
 Proof.
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_nat.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_comult_nat.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (_ @ assoc (C:=E) _ _ _).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
@@ -176,7 +176,7 @@ Qed.
 
 Local Definition double_glued_total_linear_category_comult_preserves_tensor1_type
   {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K)
+  {K : functor C (E^opp)} (k : natural_contraction E L K)
   (A B : double_glued_total_linear_category_data dpbs L k):
   UU.
 Proof.
@@ -248,7 +248,7 @@ Defined.
 
 Local Lemma double_glued_total_linear_category_comult_preserves_tensor1 {C E : linear_category}
   (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data dpbs L k):
+  (k : natural_contraction E L K) (A B : double_glued_total_linear_category_data dpbs L k):
   double_glued_total_linear_category_comult_preserves_tensor1_type dpbs L k A B.
 Proof.
   unfold double_glued_total_linear_category_comult_preserves_tensor1_type.
@@ -301,7 +301,7 @@ Qed.
 Local Lemma double_glued_total_linear_category_comult_preserves_tensor_lemma1
   {C E : linear_category}
   (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data dpbs L k):
+  (k : natural_contraction E L K) (A B : double_glued_total_linear_category_data dpbs L k):
   compose (C:=E) (pr122 (monoidal_cat_tensor_mor
            (linear_category_comult (double_glued_total_linear_category_data dpbs L k) A)
            (linear_category_comult (double_glued_total_linear_category_data dpbs L k) B)
@@ -756,7 +756,7 @@ Qed.
 Local Lemma double_glued_total_linear_category_comult_preserves_tensor_lemma2
   {C E : linear_category}
   (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data dpbs L k):
+  (k : natural_contraction E L K) (A B : double_glued_total_linear_category_data dpbs L k):
   compose (C:=E) (pr122 (monoidal_cat_tensor_mor
            (linear_category_comult (double_glued_total_linear_category_data dpbs L k) A)
            (linear_category_comult (double_glued_total_linear_category_data dpbs L k) B)
@@ -864,7 +864,7 @@ Qed.
 Local Lemma double_glued_total_linear_category_comult_preserves_tensor_lemma3
   {C E : linear_category}
   (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data dpbs L k):
+  (k : natural_contraction E L K) (A B : double_glued_total_linear_category_data dpbs L k):
   compose (C:=E) (pr122 (monoidal_cat_tensor_mor
            (linear_category_comult (double_glued_total_linear_category_data dpbs L k) A)
            (linear_category_comult (double_glued_total_linear_category_data dpbs L k) B)
@@ -1139,7 +1139,7 @@ Qed.
 
 Lemma double_glued_total_linear_category_comult_preserves_tensor {C E : linear_category}
   (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data dpbs L k):
+  (k : natural_contraction E L K) (A B : double_glued_total_linear_category_data dpbs L k):
   mon_functor_tensor (linear_category_bang_functor (double_glued_total_linear_category_data dpbs L k)) A B
     · linear_category_comult (double_glued_total_linear_category_data dpbs L k)
     (monoidal_cat_tensor_pt A B) =
@@ -1156,7 +1156,7 @@ Lemma double_glued_total_linear_category_comult_preserves_tensor {C E : linear_c
          (mon_functor_tensor
             (linear_category_bang_functor (double_glued_total_linear_category_data dpbs L k)) A B)).
 Proof.
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_tensor.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_comult_preserves_tensor.
   refine (double_glued_total_linear_category_comult_preserves_tensor1 dpbs L k A B @ _).
   refine (! doublePullbackArrowUnique' _ _ _ _ _ _ _ _ _ _ _).
   exact (double_glued_total_linear_category_comult_preserves_tensor_lemma1 dpbs L k A B).
@@ -1167,7 +1167,7 @@ Qed.
 
 Lemma double_glued_total_linear_category_counit_preserves_tensor {C E : linear_category}
   (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (A B : double_glued_total_linear_category_data dpbs L k):
+  (k : natural_contraction E L K) (A B : double_glued_total_linear_category_data dpbs L k):
 mon_functor_tensor
     (linear_category_bang_functor (double_glued_total_linear_category_data dpbs L k)) A B
   · linear_category_counit (double_glued_total_linear_category_data dpbs L k)
@@ -1179,7 +1179,7 @@ mon_functor_tensor
 Proof.
   destruct A as (R1, ((U1, l1), (X1, l1'))).
   destruct B as (R2, ((U2, l2), (X2, l2'))).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_preserves_tensor.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_counit_preserves_tensor.
   refine (doublePullbackArrowUnique' _ _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique' _ _ _ _ _ _ _ _ _ _ _).
   Unshelve.
   9 : {
@@ -1505,18 +1505,18 @@ Qed.
 
 
 Lemma double_glued_total_linear_category_laws {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : linear_category_laws (double_glued_total_linear_category_data dpbs L k).
+  (k : natural_contraction E L K) : linear_category_laws (double_glued_total_linear_category_data dpbs L k).
 Proof.
   split13.
   intros A B f.
   exact (double_glued_total_linear_category_comult_nat dpbs L k f).
   intros (R1, dr1) (R2, dr2) (f, df).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_nat.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_counit_nat.
   refine (! functor_comp K _ _ @ _).
   apply (maponpaths (# K)).
   apply linear_category_counit_nat.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_coalgebra_mor.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_comult_coalgebra_mor.
   refine (assoc (C:=E) _ _ _ @ _ @ functor_comp K _ _).
   refine (assoc _ _ _ @ _).
   refine (maponpaths (compose (C:=E) _) (assoc' (C:=E) _ _ _) @ _).
@@ -1536,19 +1536,19 @@ Proof.
   apply maponpaths.
   apply linear_category_comult_coalgebra_mor.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_coalgebra_mor.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_counit_coalgebra_mor.
   simpl.
   refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
   apply maponpaths.
   apply linear_category_counit_coalgebra_mor.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_counit.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_comult_comonoid_mor_counit.
   refine (! functor_comp K _ _ @ _).
   simpl.
   apply maponpaths.
   apply linear_category_comult_comonoid_mor_counit.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_comonoid_mor_comult.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_comult_comonoid_mor_comult.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (_ @ assoc (C:=E) _ _ _).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
@@ -1565,7 +1565,7 @@ Proof.
   rewrite assoc'.
   apply linear_category_comult_comonoid_mor_comult.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_coassoc.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_coassoc.
   refine (assoc' (C:=E) _ _ _ @ _).
   refine (maponpaths (compose (C:=E) _) (assoc (C:=E) _ _ _) @ _).
   refine (maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
@@ -1601,7 +1601,7 @@ Proof.
   rewrite assoc'.
   apply linear_category_coassoc.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counitality.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_counitality.
   do 2 refine (assoc (C:=E) _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (assoc' (C:=E) _ _ _) @ _).
   refine (maponpaths (λ f, _ · f · _) (assoc' (C:=E) _ _ _) @ _).
@@ -1622,7 +1622,7 @@ Proof.
   refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
   apply linear_category_counitality.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_cocommutative.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_cocommutative.
   refine (assoc (C:=E) _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (doublePullbackArrow_PrM _ _ _ _ _ _ _) @ _).
   rewrite assoc'.
@@ -1632,7 +1632,7 @@ Proof.
   apply linear_category_cocommutative.
   exact (double_glued_total_linear_category_comult_preserves_tensor dpbs L k).
   (* linear_category_comult_preserves_unit : *)
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_comult_preserves_unit.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_comult_preserves_unit.
   refine (assoc' (C:=E) _ _ _ @ _ @ assoc (C:=E) _ _ _).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
   refine (_ @ ! maponpaths (λ f, _ · (f · _)) (doublePullbackArrow_PrL _ _ _ _ _ _ _)).
@@ -1733,7 +1733,7 @@ Proof.
   refine (_ @ maponpaths (compose _) (bifunctor_equalwhiskers C _ _ _ _ _ _)). 
   apply linear_category_comult_preserves_unit.
   exact (double_glued_total_linear_category_counit_preserves_tensor dpbs L k).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply linear_category_counit_preserves_unit.
+  apply double_glued_total_mor_eq_transp; split3; try apply linear_category_counit_preserves_unit.
   refine (! functor_comp K _ _ @ _).
   refine (_ @ functor_id K _).
   apply maponpaths.
@@ -1741,7 +1741,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_linear_category {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : linear_category.
+  (k : natural_contraction E L K) : linear_category.
 Proof.
   exists (double_glued_total_linear_category_data dpbs L k).
   exact (double_glued_total_linear_category_laws dpbs L k).

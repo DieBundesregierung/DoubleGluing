@@ -47,7 +47,7 @@ Require Import double_gluing.linear_cat.linear_functor.
 (* bang functor *)
 
 Lemma double_glued_total_bang_functor_data_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 : ob C} {dr1 : double_glued_ob L K R1} {dr2 : double_glued_ob L K R2} {f : C⟦R1, R2⟧}
+  (k : natural_contraction E L K) {R1 R2 : ob C} {dr1 : double_glued_ob L K R1} {dr2 : double_glued_ob L K R2} {f : C⟦R1, R2⟧}
   (df : double_glued_mor L K R1 R2 dr1 dr2 f):
   # (pr111 (linear_category_bang E)) (pr11 df) · (# (pr111 (linear_category_bang E)) (pr21 dr2) · (pr121 L) R2) =
   # (pr111 (linear_category_bang E)) (pr21 dr1) · (pr121 L) R1 · # L (# (pr111 (linear_category_bang C)) f).
@@ -65,7 +65,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_bang_functor_data {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : functor_data (double_glued_total_sym_mon_closed_cat dpbs k) (double_glued_total_sym_mon_closed_cat dpbs k).
+  (k : natural_contraction E L K) : functor_data (double_glued_total_sym_mon_closed_cat dpbs k) (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.
   use tpair.
   intros (R, ((U, l), (X, l'))).
@@ -89,26 +89,26 @@ Proof.
 Defined.
 
 Lemma double_glued_total_bang_is_functor {C E : linear_category} (dpbs : doublePullbacks E)
-  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
   is_functor (double_glued_total_bang_functor_data dpbs L k).
 Proof.
   split.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k).
+  apply (double_glued_total_mor_eq_transp _ _ _).
   split3; try apply (functor_id _).
   simpl.
   rewrite functor_id.
   exact (functor_id K _).
   intros (R1, dr1) (R2, dr2) (R3, dr3).
   intros (f12, df12) (f23, df23).
-  apply (double_glued_total_mor_eq_transp k); split3; try apply (functor_comp _).
+  apply (double_glued_total_mor_eq_transp _ _ _); split3; try apply (functor_comp _).
   simpl.
   rewrite functor_comp.
   exact (functor_comp K _ _).
 Qed.
 
 Definition double_glued_total_bang_functor {C E : linear_category} (dpbs : doublePullbacks E)
-  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
   functor (double_glued_total_sym_mon_closed_cat dpbs k)
     (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.

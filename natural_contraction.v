@@ -106,7 +106,8 @@ Proof.
   exact (! pr2 (pr222 (pr122 E)) (L c) (L d) (K (a ⊗_{C} S)) (K (b ⊗_{C} S))(# L fcd) (# K ((pr221 (pr12 C)) S b a fba))).
 Defined.
 
-Definition is_natural_contraction {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : ∏ (R S : C), E ⟦(L R) ⊗_{E} (K (R ⊗_{C} S)), K S⟧) : UU.
+Definition is_natural_contraction {C : sym_monoidal_cat} {E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+  (k : ∏ (R S : C), E ⟦(L R) ⊗_{E} (K (R ⊗_{C} S)), K S⟧) : UU.
 Proof.
   (* natural in S :*)
   refine ((∏ R, is_nat_trans (contraction_left_functor_data C E L K R) (functor_op K) (k R)) × _).
@@ -138,12 +139,15 @@ Proof.
   exact (pr21 (pr11 E) _ _ _ _).
 Defined.
 
-Definition natural_contraction (C E : sym_mon_closed_cat) (L : lax_monoidal_functor C E) (K : functor C (E^opp)) : UU :=
+Definition natural_contraction {C : sym_monoidal_cat} (E : sym_mon_closed_cat) (L : lax_monoidal_functor C E) (K : functor C (E^opp)) : UU :=
   ∑ k : ∏ (R S : C), E ⟦(L R) ⊗_{E} (K (R ⊗_{C} S)), K S⟧ , is_natural_contraction k.
 
 
-Lemma natural_contraction_tensor1 {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K)
-  (R1 R2 R3 : ob C) :
+Section natural_contraction_results.
+
+  Context {C : sym_monoidal_cat} {E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction E L K).
+
+Lemma natural_contraction_tensor1 (R1 R2 R3 : ob C) :
   (fmonoidal_preservestensordata L) R1 R2 ⊗^{ E}_{r} K ((R1 ⊗_{ C} R2) ⊗_{ C} R3) · pr1 k (R1 ⊗_{ C} R2) R3 =
     (L R1 ⊗_{ E} L R2) ⊗^{E}_{l} # K αinv^{ C }_{ R1, R2, R3} · sym_mon_braiding E (L R1) (L R2) ⊗^{ E}_{r} K (R1 ⊗_{ C} (R2 ⊗_{ C} R3)) ·
                                    α^{ E }_{ L R2, L R1, K (R1 ⊗_{ C} (R2 ⊗_{ C} R3))} · L R2 ⊗^{ E}_{l} pr1 k R1 (R2 ⊗_{ C} R3) · pr1 k R2 R3.
@@ -167,8 +171,7 @@ Proof.
   apply (monoidal_associatorisolaw C).
 Qed.
 
-Lemma natural_contraction_composed {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K)
-  (R1 R2 R3 : ob C) :
+Lemma natural_contraction_composed (R1 R2 R3 : ob C) :
   L R2 ⊗^{ E}_{l} pr1 k R1 (R2 ⊗_{ C} R3) · pr1 k R2 R3 =
     αinv^{ E }_{ L R2, L R1, K (R1 ⊗_{ C} (R2 ⊗_{ C} R3))} · sym_mon_braiding E (L R2) (L R1) ⊗^{ E}_{r} K (R1 ⊗_{ C} (R2 ⊗_{ C} R3))
   · (L R1 ⊗_{ E} L R2) ⊗^{ E}_{l} # K α^{ C }_{ R1, R2, R3} · (fmonoidal_preservestensordata L) R1 R2 ⊗^{ E}_{r} K ((R1 ⊗_{ C} R2) ⊗_{ C} R3) · pr1 k (R1 ⊗_{ C} R2) R3.
@@ -196,7 +199,7 @@ Proof.
   apply (monoidal_braiding_inverses E).
 Qed.
 
-Lemma natural_contraction_unit {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) (S : ob C) :
+Lemma natural_contraction_unit (S : ob C) :
   fmonoidal_preservesunit L ⊗^{ E}_{r} K (I_{ C} ⊗_{ C} S) · pr1 k I_{ C} S =
     I_{ E} ⊗^{ E}_{l} # K luinv^{ C }_{ S} · lu^{ E }_{ K S}.
 Proof.
@@ -214,19 +217,23 @@ Proof.
   apply (monoidal_leftunitorisolaw C).
 Qed.
   
-Lemma natural_contraction_extranatural {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) (R1 R2 R3 : ob C) (f23 : C⟦R2, R3⟧) :
+Lemma natural_contraction_extranatural (R1 R2 R3 : ob C) (f23 : C⟦R2, R3⟧) :
   (L R2) ⊗^{E}_{l} (# K (f23 ⊗^{C}_{r} R1)) · pr1 k R2 R1 =  (# L f23) ⊗^{E}_{r} (K (R3 ⊗_{ C} R1)) · pr1 k R3 R1.
 Proof.
   generalize (pr122 k R1 _ _ f23); simpl; rewrite 2 id_right.
   exact (idfun _).
 Qed.
 
-Definition curried_contraction {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) :=
+End natural_contraction_results.
+
+
+Definition curried_contraction {C : sym_monoidal_cat} {E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
+  (k : natural_contraction E L K) :=
   λ R S, (φ_adj (pr2 (pr2 E (L R))) ((pr121 E (K (R ⊗_{C} S)) (L R)) · (pr1 k R S))).
 
 
-Definition curried_contraction_leftfunctordata {C E : sym_mon_closed_cat} (L : lax_monoidal_functor C E) (K : functor C (E^opp)) : functor_data (precategory_binproduct C C) (E ^opp).
+Definition curried_contraction_leftfunctordata {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (L : lax_monoidal_functor C E)
+  (K : functor C (E^opp)) : functor_data (precategory_binproduct C C) (E ^opp).
 Proof.
   exists (λ RS, internal_hom (L (pr1 RS)) (K (pr2 RS))).
   intros (R1, S1) (R2, S2) (f12, g12).
@@ -234,17 +241,19 @@ Proof.
 Defined.
 
 
-Definition curried_contraction_leftfunctor {C E : sym_mon_closed_cat} (L : lax_monoidal_functor C E) (K : functor C (E^opp)) : functor (precategory_binproduct C C) (E ^opp).
+Definition curried_contraction_leftfunctor {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (L : lax_monoidal_functor C E)
+  (K : functor C (E^opp)) : functor (precategory_binproduct C C) (E ^opp).
 Proof.
   apply bifunctor_to_functorfromproductcat.
   apply (compose_bifunctor_with_functor (C:=C)).
   use tpair.
-  exact (pr121 (pr1 C)).
-  exact (pr12 (pr211 C)).
+  exact (pr121 C).
+  exact (pr12 (pr21 C)).
   exact K.
 Defined.
 
-Definition curried_contraction_rightfunctor {C E : sym_mon_closed_cat} (L : lax_monoidal_functor C E) (K : functor C (E ^opp)) : functor ((category_binproduct C C)^opp ^opp) (E^opp).
+Definition curried_contraction_rightfunctor {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (L : lax_monoidal_functor C E)
+  (K : functor C (E ^opp)) : functor ((category_binproduct C C)^opp ^opp) (E^opp).
 Proof.
   apply (functor_op).
   change (category_binproduct (C ^opp) (C ^opp) ⟶ E).
@@ -253,14 +262,16 @@ Proof.
   exact (lolli_bifunctor E).
 Defined.
 
-Definition curried_contraction_isnat_statement {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) : UU.
+Definition curried_contraction_isnat_statement {C : sym_monoidal_cat} {E : sym_mon_closed_cat} {L : lax_monoidal_functor C E}
+  {K : functor C (E^opp)} (k : natural_contraction E L K) : UU.
 Proof.
   refine (is_nat_trans (curried_contraction_rightfunctor L K) (curried_contraction_leftfunctor L K) _).
   intros (R, S).
   exact (curried_contraction k R S).
 Defined.
 
-Proposition curried_contraction_isnat {C E : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+Proposition curried_contraction_isnat {C : sym_monoidal_cat} {E : sym_mon_closed_cat} {L : lax_monoidal_functor C E}
+  {K : functor C (E^opp)} (k : natural_contraction E L K) :
   curried_contraction_isnat_statement k.
 Proof.
   intros (R1, S1) (R2, S2) (f12, g12).
@@ -274,7 +285,7 @@ Proof.
     (((pr121 E) (K (R2 ⊗_{ C} S2)) (L R2)) · (pr1 k R2 S2))
   · f12 ⊗^{ compose_functor_with_bifunctor_data (functor_op L) (functor_op K) (lolli_bifunctor E)} g12 =
   φ_adj (pr2 (pr2 E (L R1)))
-    (# (rightwhiskering_functor (pr1 E) (L R1)) (f12 ⊗^{ compose_bifunctor_with_functor_data (_,, pr122 (pr11 C)) K} g12))
+    (# (rightwhiskering_functor (pr1 E) (L R1)) (f12 ⊗^{ compose_bifunctor_with_functor_data (_,, pr122 (pr1 C)) K} g12))
   · # (pr1 (pr2 E (L R1)))
   (((pr121 E) (K (R1 ⊗_{ C} S1)) (L R1)) · (pr1 k R1 S1))).
   set (braid := pr121 E).
@@ -309,13 +320,13 @@ Proof.
 
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) righteq @ _); clear righteq.
-  set (whiskereq := pr122 (pr212 (pr211 E)) (L R1) (K (R2 ⊗_{C} S2)) _ _ (# K (R2 ⊗^{ pr11 C}_{l} g12)) (# K (f12 ⊗^{ pr11 C}_{r} S1))).
+  set (whiskereq := pr122 (pr212 (pr211 E)) (L R1) (K (R2 ⊗_{C} S2)) _ _ (# K (R2 ⊗^{C}_{l} g12)) (# K (f12 ⊗^{C}_{r} S1))).
   refine (_ @ ! maponpaths (λ f, _ · (# homLR1 f) · _) whiskereq); clear whiskereq.
   refine (_ @ ! maponpaths (λ f, _ · f · _) (functor_comp homLR1 _ _ )).
   refine (assoc _ _ _ @ _ @ maponpaths (postcompose _) (assoc' _ _ _)).
   refine (assoc _ _ _ @ _ @ assoc _ _ _).
   
-  assert (# homLR1 (braid _ _ · # L f12 ⊗^{E}_{r} _) · # homLR1 (pr1 k R2 S1) = # homLR1 (# K (f12 ⊗^{ pr11 C}_{r} S1) ⊗^{ pr121 (pr1 E)}_{r} L R1) · # homLR1 (braid (K (R1 ⊗_{ C} S1)) (L R1)· pr1 k R1 S1)) as bottomeq.
+  assert (# homLR1 (braid _ _ · # L f12 ⊗^{E}_{r} _) · # homLR1 (pr1 k R2 S1) = # homLR1 (# K (f12 ⊗^{C}_{r} S1) ⊗^{ pr121 (pr1 E)}_{r} L R1) · # homLR1 (braid (K (R1 ⊗_{ C} S1)) (L R1)· pr1 k R1 S1)) as bottomeq.
   refine (! functor_comp homLR1 _ _ @ _ @ functor_comp homLR1 _ _).
   apply maponpaths.
   refine (assoc' _ _ _ @ _ @ assoc' _ _ _).
@@ -330,7 +341,7 @@ Proof.
   apply (maponpaths (postcompose _)).
   refine (_ @ assoc _ _ _).
   assert (# homLR1 (braid _ _) · # homLR1 (# L f12 ⊗^{E}_{r} _)· # homLR1 (L R2 ⊗^{ E}_{l} # K (R2 ⊗^{ C}_{l} g12)) =
-            # homLR1 (# K (R2 ⊗^{ pr11 C}_{l} g12) ⊗^{ pr121 (pr1 E)}_{r} L R1)
+            # homLR1 (# K (R2 ⊗^{C}_{l} g12) ⊗^{ pr121 (pr1 E)}_{r} L R1)
               · # homLR1 (braid (K (R2 ⊗_{ C} S1)) (L (pr1 (R1,, S1))) · # L f12 ⊗^{ E}_{r} K (R2 ⊗_{ C} S1))) as middleq.
   refine (maponpaths (postcompose _) (! functor_comp homLR1 _ _) @ _).
   refine (! functor_comp homLR1 _ _ @ _ @ functor_comp homLR1 _ _).
@@ -360,6 +371,7 @@ Proof.
   refine (assoc _ _ _ @ _).
   apply (maponpaths (postcompose _)).
   refine (_ @ ! maponpaths (compose _) (hom_onmorphisms_is_postcomp _ _)).
-  exact (! mon_closed_adj_natural E _ _ _ _). 
+  apply pathsinv0.
+  apply mon_closed_adj_natural.
 Qed.
   

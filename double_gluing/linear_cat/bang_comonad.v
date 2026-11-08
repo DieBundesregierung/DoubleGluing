@@ -61,7 +61,7 @@ Require Import double_gluing.linear_cat.bang_sym_mon_fun.
 
 
 Lemma double_glued_total_bang_comonad_comult_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R):
+  (k : natural_contraction E L K) {R : ob C} (dr : double_glued_cat L K R):
   (pr11 (pr12 (linear_category_bang E))) (pr11 dr)
   · (# (linear_category_bang_functor E) (# (linear_category_bang_functor E) (pr21 dr) · (pr121 L) R) · (pr121 L) ((pr111 (linear_category_bang C)) R)) =
     # (linear_category_bang_functor E) (pr21 dr) · (pr121 L) R · # L ((pr11 (pr12 (linear_category_bang C))) R).
@@ -79,7 +79,7 @@ Proof.
 Qed.
 
 Lemma double_glued_total_bang_comonad_comult_is_nat_trans {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) :
   is_nat_trans (double_glued_total_bang_functor_data dpbs L k)
     (functor_composite_data (double_glued_total_bang_functor_data dpbs L k) (double_glued_total_bang_functor_data dpbs L k))
     (λ x : ∑ x : C, double_glued_ob L K x,
@@ -90,7 +90,7 @@ Lemma double_glued_total_bang_comonad_comult_is_nat_trans {C E : linear_category
 Proof.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
   intros (f, ((ϕ, eqphi), (ψ, eqpsi))).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact ((pr211 (pr12 (linear_category_bang C))) _ _ f).
   exact ((pr211 (pr12 (linear_category_bang E))) _ _ ϕ).
   refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
@@ -99,7 +99,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_bang_comonad_comult {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) :
+  (k : natural_contraction E L K) :
   double_glued_total_bang_functor dpbs L k ⟹ double_glued_total_bang_functor dpbs L k ∙ double_glued_total_bang_functor dpbs L k.
 Proof.
   use tpair.
@@ -117,7 +117,7 @@ Proof.
 Defined.
 
 Lemma double_glued_total_bang_comonad_counit_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R : ob C} (dr : double_glued_cat L K R):
+  (k : natural_contraction E L K) {R : ob C} (dr : double_glued_cat L K R):
   (pr121 (pr12 (linear_category_bang E))) (pr11 dr) · (pr21 dr) =
     # (pr111 (linear_category_bang E)) (pr21 dr) · (pr121 L) R · # L ((pr121 (pr12 (linear_category_bang C))) R).
 Proof.
@@ -128,7 +128,7 @@ Proof.
 Qed.
 
 Lemma double_glued_total_bang_comonad_counit_is_nat_trans {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K):
+  {K : functor C (E^opp)} (k : natural_contraction E L K):
   is_nat_trans (double_glued_total_bang_functor_data dpbs L k) (functor_identity_data (total_category_data (double_glued_data L K)))
     (λ x : ∑ x : C, double_glued_ob L K x,
      (pr121 (pr12 (linear_category_bang C))) (pr1 x),,
@@ -137,7 +137,7 @@ Lemma double_glued_total_bang_comonad_counit_is_nat_trans {C E : linear_category
 Proof.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
   intros (f, ((ϕ, eqphi), (ψ, eqpsi))).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact ((pr221 (pr12 (linear_category_bang C))) _ _ f).
   exact ((pr221 (pr12 (linear_category_bang E))) _ _ ϕ).
   revert eqphi eqpsi; simpl; intros eqphi eqpsi.
@@ -151,7 +151,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_bang_comonad_counit {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : double_glued_total_bang_functor dpbs L k ⟹ functor_identity (double_glued_total_sym_mon_closed_cat dpbs k).
+  (k : natural_contraction E L K) : double_glued_total_bang_functor dpbs L k ⟹ functor_identity (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.
   use tpair.
   intros (R, dr).
@@ -170,19 +170,19 @@ Defined.
 
 
 Definition double_glued_total_bang_disp_Comonad_data {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : disp_Comonad_data (double_glued_total_bang_functor dpbs L k).
+  (k : natural_contraction E L K) : disp_Comonad_data (double_glued_total_bang_functor dpbs L k).
 Proof.
   exists (double_glued_total_bang_comonad_comult dpbs L k).
   exact (double_glued_total_bang_comonad_counit dpbs L k).
 Defined.
 
 Lemma double_glued_total_bang_disp_Comonad_laws {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E){K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : disp_Comonad_laws (double_glued_total_bang_disp_Comonad_data dpbs L k).
+  (k : natural_contraction E L K) : disp_Comonad_laws (double_glued_total_bang_disp_Comonad_data dpbs L k).
 Proof.
   split.
   split.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact (Comonad_law1 (T:= linear_category_bang C) R).
   exact (Comonad_law1 (T:= linear_category_bang E) (pr11 dr)).
   simpl.
@@ -192,7 +192,7 @@ Proof.
   apply maponpaths.
   exact (Comonad_law1 (T:= linear_category_bang C) R).
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact (Comonad_law2 (T:= linear_category_bang C) R).
   exact (Comonad_law2 (T:= linear_category_bang E) (pr11 dr)).
   simpl.
@@ -201,7 +201,7 @@ Proof.
   apply maponpaths.
   exact (Comonad_law2 (T:= linear_category_bang C) R).
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact (Comonad_law3 (T:= linear_category_bang C) R).
   exact (Comonad_law3 (T:= linear_category_bang E) (pr11 dr)).
   simpl.
@@ -211,14 +211,14 @@ Proof.
 Qed.
 
 Lemma double_glued_total_bang_symmetric_monoidal_comonad_extra_laws {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) :
   symmetric_monoidal_comonads_extra_laws
     ((double_glued_total_bang_preserves_tensor dpbs L k,, double_glued_total_bang_preserves_unit dpbs L k),, double_glued_total_bang_laxlaws dpbs L k)
     (double_glued_total_bang_comonad_comult dpbs L k) (double_glued_total_bang_comonad_counit dpbs L k).
 Proof.
   split; split.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply double_glued_total_mor_eq_transp; split3.
   apply (pr122 (linear_category_bang C)).
   apply (pr122 (linear_category_bang E)).
   set (dpb := tensor_doublePullback dpbs k
@@ -509,7 +509,7 @@ Proof.
   refine (! maponpaths (λ f, f · _) (monoidal_braiding_naturality_left C _ _ _ _) @ _).
   rewrite assoc'.
   reflexivity.
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply double_glued_total_mor_eq_transp; split3.
   simpl.
   apply (pr2 (pr122 (linear_category_bang C))).
   apply (pr2 (pr122 (linear_category_bang E))).
@@ -518,7 +518,7 @@ Proof.
   apply maponpaths.
   apply (pr2 (pr122 (linear_category_bang C))). (* completes subgoal *)
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply double_glued_total_mor_eq_transp; split3.
   apply (pr1 (pr222 (linear_category_bang C))).
   apply (pr1 (pr222 (linear_category_bang E))).
   refine (_ @ ! id_right _).
@@ -678,7 +678,7 @@ Proof.
   rewrite assoc'.
   apply maponpaths.
   apply pathsinv0.
-  apply (pr11 (pr222 L)). (* again one of the things that needs to be added as axiom *)
+  apply (pr11 (pr222 L)).
   simpl; unfold postcompose.
   refine (assoc' (C:=E) _ _ _ @ _).
   rewrite (doublePullbackArrow_PrL dpb).
@@ -854,7 +854,7 @@ Proof.
   apply maponpaths.
   apply pathsinv0.
   exact (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _ ).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply double_glued_total_mor_eq_transp; split3.
   apply (pr2 (pr222 (linear_category_bang C))).
   apply (pr2 (pr222 (linear_category_bang E))).
   simpl.
@@ -866,7 +866,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_bang {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : sym_monoidal_cmd (double_glued_total_sym_mon_closed_cat dpbs k).
+  (k : natural_contraction E L K) : sym_monoidal_cmd (double_glued_total_sym_mon_closed_cat dpbs k).
 Proof.
   use tpair.
   exists (double_glued_total_bang_functor dpbs L k).

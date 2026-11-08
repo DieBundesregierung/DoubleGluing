@@ -34,11 +34,17 @@ Require Import natural_contraction.
 Require Import double_gluing.double_gluing.
 Require Import double_gluing.monoidal.tensor_unit.
 
-Local Lemma double_glued_asociator_data_eq1 {E C : sym_mon_closed_cat} {L : lax_monoidal_functor C E} {K : functor C (E^opp)} {R1 R2 R3 : ob C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) (dr3 : double_glued_cat L K R3) (U1 := pr11 dr1) (U2 := pr11 dr2) (U3 := pr11 dr3) (l1 := pr21 dr1) (l2 := pr21 dr2) (l3 := pr21 dr3) :
-  α^{ E }_{ U1, U2, U3} · (l1 ⊗^{ E} (l2 ⊗^{ E} l3 · (pr112 L) R2 R3) · (pr112 L) R1 (R2 ⊗_{ pr211 C} R3)) =
-    (l1 ⊗^{ E} l2 · (pr112 L) R1 R2) ⊗^{ E} l3 · (pr112 L) (R1 ⊗_{ pr211 C} R2) R3 · # L α^{ pr211 C }_{ R1, R2, R3}.
+
+Section Associator.
+
+  Context  {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E}
+    {K : functor C (E^opp)} (k : natural_contraction E L K).
+
+Local Lemma double_glued_asociator_data_eq1 {R1 R2 R3 : ob C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) (dr3 : double_glued_cat L K R3) (U1 := pr11 dr1) (U2 := pr11 dr2) (U3 := pr11 dr3) (l1 := pr21 dr1) (l2 := pr21 dr2) (l3 := pr21 dr3) :
+  α^{ E }_{ U1, U2, U3} · (l1 ⊗^{ E} (l2 ⊗^{ E} l3 · fmonoidal_preservestensordata L R2 R3) · fmonoidal_preservestensordata L R1 (R2 ⊗_{C} R3)) =
+    (l1 ⊗^{ E} l2 · fmonoidal_preservestensordata L R1 R2) ⊗^{ E} l3 · fmonoidal_preservestensordata L (R1 ⊗_{C} R2) R3 · # L α^{C}_{ R1, R2, R3}.
 Proof.
-  refine (maponpaths (λ f, _ · ((_ · f) · _)) (bifunctor_leftcomp E (L R1) _ _ _ (l2 ⊗^{E} l3) ((pr112 L) R2 R3)) @ _).
+  refine (maponpaths (λ f, _ · ((_ · f) · _)) (bifunctor_leftcomp E (L R1) _ _ _ (l2 ⊗^{E} l3) _) @ _).
   rewrite assoc'.
   refine (maponpaths (λ f, _ · (_ · f)) (assoc' _ _ _) @ _).
   refine (maponpaths (compose _) (assoc _ _ _) @ _).
@@ -46,38 +52,19 @@ Proof.
   refine (maponpaths (λ f, f · _) (associator_nat2 E l1 l2 l3) @ _).
   do 2 refine (_ @ assoc _ _ _).
   unfold functoronmorphisms1.
-  refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_rightcomp E U3 _ _ _ (l1 ⊗^{ E}_{r} U2 · L R1 ⊗^{ E}_{l} l2) ((pr112 L) R1 R2))).
+  refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_rightcomp E U3 _ _ _ (l1 ⊗^{ E}_{r} U2 · L R1 ⊗^{ E}_{l} l2) _)).
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   refine (assoc' _ _ _ @ _ @ maponpaths (compose _) (assoc' _ _ _)).
   apply maponpaths.
-  refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ (pr112 L R1 R2) l3)).
+  refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ l3)).
   refine (_ @ assoc _ _ _).
   apply maponpaths.
   do 2 rewrite assoc.
-  exact (! pr12 (pr222 L) R1 R2 R3).
+  apply pathsinv0, (fmonoidal_preservesassociativity L).
 Qed.
-(*
-Print is_nat_trans.
-Definition internal_swap_arg_nat3_statement {V : sym_mon_closed_cat} (x y : ob V) : UU.
-Proof.
-  set (F := functor_composite (pr1 (pr2 V x)) (pr1 (pr2 V y))).
-  refine (is_nat_trans F F _).
-  Print nat_trans_data.
-  intros z.
-  unfold F.
-  exact (identity _).
-Defined.
-
-Lemma internal_swap_arg_nat3 {V : sym_mon_closed_cat} (x y : ob V) : internal_swap_arg_nat3_statement x y.
-Proof.
-  unfold internal_swap_arg_nat3_statement.
-  intros z1 z2 f.
-  
-Qed.*)
 
 
-Local Lemma assocdata_lemma1 {C E : sym_mon_closed_cat} {L : sym_monoidal_functor C E} (dpbs : doublePullbacks E) {K : functor C (E ^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 : ob C} {U1 X1 U2 X2 U3 X3 : ob E} (l1 : E⟦U1, L R1⟧) (l1' : E⟦X1, K R1⟧) (l2 : E⟦U2, L R2⟧) (l2' : E⟦X2, K R2⟧) (l3 : E⟦U3, L R3⟧) (l3' : E⟦X3, K R3⟧) :
+Local Lemma assocdata_lemma1 {R1 R2 R3 : ob C} {U1 X1 U2 X2 U3 X3 : ob E} (l1 : E⟦U1, L R1⟧) (l1' : E⟦X1, K R1⟧) (l2 : E⟦U2, L R2⟧) (l2' : E⟦X2, K R2⟧) (l3 : E⟦U3, L R3⟧) (l3' : E⟦X3, K R3⟧) :
    (doublePullbackPrL
      (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R2 R3 ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3')))
    · (internal_postcomp U1 (doublePullbackPrR (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3'))) · internal_swap_arg U1 X2 U3))
@@ -92,7 +79,7 @@ Local Lemma assocdata_lemma1 {C E : sym_mon_closed_cat} {L : sym_monoidal_functo
   · (internal_lam (sym_mon_braiding E (K (R1 ⊗_{ C} R2)) (L R1) · pr1 k R1 R2) · internal_precomp l1 (K R2)) .
 Proof.
   rewrite assoc'.
-  refine (maponpaths (compose _) (internal_eval_nat _ _ _ _) @ _).
+  refine (maponpaths (compose _) (internal_eval_nat _ _) @ _).
   rewrite hom_onmorphisms_is_postcomp.
   refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (! bifunctor_rightcomp E U3 _ _ _ _ _ @ _) @ _).
@@ -331,9 +318,8 @@ Proof.
   apply (sym_mon_hexagon_lassociator C).
 Qed.
 
-Local Lemma assocdata_lemma2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧)
-  (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧)
+Local Lemma assocdata_lemma2 {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
+  (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧)
   (dpb23 := tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3'))
   (dpb123 := tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1')
           ((U2 ⊗_{ E} U3,, l2 ⊗^{ E} l3 · (fmonoidal_preservestensordata L) R2 R3),,
@@ -357,7 +343,7 @@ Proof.
   apply (bifunctor_rightcomp E).
   do 2 refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
   refine (_ @ assoc _ _ _).
-  refine (_ @ ! maponpaths (compose _) (internal_eval_nat _ _ _ _)).
+  refine (_ @ ! maponpaths (compose _) (internal_eval_nat _ _)).
   rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ assoc _ _ _ @ _ @ assoc' _ _ _).
   2 : {
@@ -611,26 +597,25 @@ Proof.
   apply assoc'.  
 Qed.
 
-Local Lemma assocdata_lemma3 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
+Local Lemma assocdata_lemma3 {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
   (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧) :
   doublePullbackPrL
     (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1')
-       ((U2 ⊗_{ E} U3,, l2 ⊗^{ E} l3 · (pr112 L) R2 R3),,
+       ((U2 ⊗_{ E} U3,, l2 ⊗^{ E} l3 · fmonoidal_preservestensordata L R2 R3),,
         pr11 (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3')),,
         doublePullbackPrM (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3'))))
   · (internal_postcomp U1 (doublePullbackPrL (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3'))) · internal_uncurry U1 U2 X3)
   · internal_postcomp (U1 ⊗_{ E} U2) l3' =
   doublePullbackPrM
     (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1')
-       ((U2 ⊗_{ E} U3,, l2 ⊗^{ E} l3 · (pr112 L) R2 R3),,
+       ((U2 ⊗_{ E} U3,, l2 ⊗^{ E} l3 · fmonoidal_preservestensordata L R2 R3),,
         pr11 (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3')),,
         doublePullbackPrM (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3')))) · # K α^{ C }_{ R1, R2, R3}
-  · (internal_lam (sym_mon_braiding E (K ((R1 ⊗_{ pr211 C} R2) ⊗_{ C} R3)) (L (R1 ⊗_{ pr211 C} R2)) · pr1 k (R1 ⊗_{ pr211 C} R2) R3)
-     · internal_precomp (l1 ⊗^{ E} l2 · (pr112 L) R1 R2) (K R3)).
+  · (internal_lam (sym_mon_braiding E (K ((R1 ⊗_{C} R2) ⊗_{ C} R3)) (L (R1 ⊗_{C} R2)) · pr1 k (R1 ⊗_{C} R2) R3)
+     · internal_precomp (l1 ⊗^{ E} l2 · fmonoidal_preservestensordata L R1 R2) (K R3)).
 Proof.
   set (dpb123 := tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1')
-       ((U2 ⊗_{ E} U3,, l2 ⊗^{ E} l3 · (pr112 L) R2 R3),,
+       ((U2 ⊗_{ E} U3,, l2 ⊗^{ E} l3 · fmonoidal_preservestensordata L R2 R3),,
         pr11 (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3')),,
         doublePullbackPrM (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3')))).
   set (dpb23 := tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3')).
@@ -684,7 +669,7 @@ Proof.
   refine (! maponpaths (compose _) (uncurry_nat3 (L R1) (L R2) _) @ _).
   rewrite assoc. 
   refine (maponpaths (λ f, f · _) (uncurry_unit (L R1) (L R2) _) @ _).
-  refine (_ @ ! maponpaths (λ f, f · _ · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E (L (R1 ⊗_{ pr211 C} R2))))) _ _ _)).
+  refine (_ @ ! maponpaths (λ f, f · _ · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E (L (R1 ⊗_{C} R2))))) _ _ _)).
   simpl.
   rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
@@ -692,7 +677,7 @@ Proof.
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (compose _) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _ )).
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural _ _)).
   repeat rewrite assoc'.
   apply maponpaths.
   refine (! internal_postcomp_comp (L R1 ⊗_{E} L R2) _ _ @ _ @ internal_postcomp_comp _ _ _).
@@ -752,8 +737,7 @@ Proof.
   apply (monoidal_associatorisolaw E).  
 Qed.
 
-Local Lemma assocdata_lemma4 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧)
+Local Lemma assocdata_lemma4 {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧)
   (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧)
   (dpb23 := tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3'))
   (dpb1_23 := tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1')
@@ -762,9 +746,9 @@ Local Lemma assocdata_lemma4 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks 
         doublePullbackPrM dpb23))
   (dpb12 := tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2')):
   doublePullbackPrM dpb1_23 · # K α^{ C }_{ R1, R2, R3}
-  · (compose (C:=E) (# K (sym_mon_braiding C R3 (R1 ⊗_{ pr211 C} R2)))
-     (internal_lam ((pr121 E) (K (R3 ⊗_{ C} (R1 ⊗_{ pr211 C} R2))) (L R3) · pr1 k R3 (R1 ⊗_{ pr211 C} R2))
-        · internal_precomp l3 (K (R1 ⊗_{ pr211 C} R2)))) =
+  · (compose (C:=E) (# K (sym_mon_braiding C R3 (R1 ⊗_{C} R2)))
+     (internal_lam ((pr121 E) (K (R3 ⊗_{C} (R1 ⊗_{C} R2))) (L R3) · pr1 k R3 (R1 ⊗_{C} R2))
+        · internal_precomp l3 (K (R1 ⊗_{C} R2)))) =
   internal_lam
     (doublePullbackArrow dpb12
        (pr11 dpb1_23 ⊗_{E} U3)
@@ -777,7 +761,7 @@ Local Lemma assocdata_lemma4 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks 
         · (sym_mon_braiding E (K (R3 ⊗_{ C} (R1 ⊗_{ C} R2))) (L R3) · pr1 k R3 (R1 ⊗_{ C} R2)))
        (doublePullbackPrR dpb1_23 ⊗^{ E}_{r} U3
         · (internal_precomp (sym_mon_braiding E U3 U2) X1 ⊗^{ E}_{r} U3 · (internal_curry U3 U2 X1 ⊗^{ E}_{r} U3 · internal_eval U3 (internal_hom U2 X1))))
-       (assocdata_lemma1 dpbs k l1 l1' l2 l2' l3 l3') (assocdata_lemma2 dpbs k l1 l1' l2 l2' l3 l3'))
+       (assocdata_lemma1 l1 l1' l2 l2' l3 l3') (assocdata_lemma2 l1 l1' l2 l2' l3 l3'))
   · internal_postcomp U3 (doublePullbackPrM dpb12).
 Proof.
   refine (assoc _ _ _ @ _).
@@ -795,10 +779,12 @@ Proof.
 Qed.
 
 
-Definition double_glued_assoc_data_comp2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2)
+Definition double_glued_assoc_data_comp2 {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2)
   (dr3 : double_glued_cat L K R3) :
-  double_glued_mor_comp2 L K _ _ (disp_bifunctor_on_objects (double_glued_tensor dpbs k) (R1 ⊗_{ C} R2) R3 (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 R2 dr1 dr2) dr3) (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 (R2 ⊗_{C} R3) dr1 (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R2 R3 dr2 dr3)).
+  double_glued_mor_comp2 L K _ _ (disp_bifunctor_on_objects (double_glued_tensor dpbs k) (R1 ⊗_{ C} R2) R3
+                                    (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 R2 dr1 dr2) dr3)
+    (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 (R2 ⊗_{C} R3) dr1
+       (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R2 R3 dr2 dr3)).
 Proof.
   destruct dr1 as ((U1, l1), (X1, l1')).
   destruct dr2 as ((U2, l2), (X2, l2')).
@@ -827,50 +813,48 @@ Proof.
   apply (compose (internal_curry _ _ _ ⊗^{E}_{r} U3)).
   exact (internal_eval U3 _).
   unfold postcompose.
-  exact (assocdata_lemma1 dpbs k l1 l1' l2 l2' l3 l3').
-  exact (assocdata_lemma2 dpbs k l1 l1' l2 l2' l3 l3').
-  exact (assocdata_lemma3 dpbs k l1 l1' l2 l2' l3 l3').
-  exact (assocdata_lemma4 dpbs k l1 l1' l2 l2' l3 l3').
+  exact (assocdata_lemma1 l1 l1' l2 l2' l3 l3').
+  exact (assocdata_lemma2 l1 l1' l2 l2' l3 l3').
+  exact (assocdata_lemma3 l1 l1' l2 l2' l3 l3').
+  exact (assocdata_lemma4 l1 l1' l2 l2' l3 l3').
 Defined.
 
-Lemma double_glued_assoc_data_eq2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2)
+Lemma double_glued_assoc_data_eq2 {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2)
   (dr3 : double_glued_cat L K R3) :
-  double_glued_mor_eq2 L K ((R1 ⊗_{ pr211 C} R2) ⊗_{ pr211 C} R3) (R1 ⊗_{ pr211 C} (R2 ⊗_{ pr211 C} R3))
-    (disp_bifunctor_on_objects (double_glued_tensor dpbs k) (R1 ⊗_{ pr211 C} R2) R3
+  double_glued_mor_eq2 L K ((R1 ⊗_{C} R2) ⊗_{C} R3) (R1 ⊗_{C} (R2 ⊗_{C} R3))
+    (disp_bifunctor_on_objects (double_glued_tensor dpbs k) (R1 ⊗_{C} R2) R3
        (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 R2 dr1 dr2) dr3)
-    (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 (R2 ⊗_{ pr211 C} R3) dr1
-       (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R2 R3 dr2 dr3)) α^{ pr211 C }_{ R1, R2, R3}
-                                                                                     (double_glued_assoc_data_comp2 dpbs k dr1 dr2 dr3).
+    (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 (R2 ⊗_{C} R3) dr1
+       (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R2 R3 dr2 dr3)) α^{C}_{ R1, R2, R3}
+                                                                                   (double_glued_assoc_data_comp2 dr1 dr2 dr3).
 Proof.
   unfold double_glued_mor_eq2; simpl.
   exact (! doublePullbackArrow_PrM _ _ _ _ _ _ _).
 Qed.
 
-Definition double_glued_associator_data {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) : disp_associator_data (double_glued_tensor dpbs k).
+Definition double_glued_associator_data : disp_associator_data (double_glued_tensor dpbs k).
 Proof.
   intros R1 R2 R3 dr1 dr2 dr3.
   split.
   exists (α_{E} (pr11 dr1) (pr11 dr2) (pr11 dr3)).
   exact (double_glued_asociator_data_eq1 dr1 dr2 dr3).
   (* component 2: *)
-  exists (double_glued_assoc_data_comp2 dpbs k dr1 dr2 dr3).
-  exact (double_glued_assoc_data_eq2 dpbs k dr1 dr2 dr3).
+  exists (double_glued_assoc_data_comp2 dr1 dr2 dr3).
+  exact (double_glued_assoc_data_eq2 dr1 dr2 dr3).
 Defined.
 
-Local Lemma associnvdata_lemma1 {E C : sym_mon_closed_cat} {L : sym_monoidal_functor C E} {K : C ⟶ E ^opp} {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E}
-  (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
-  αinv^{ E }_{ U1, U2, U3} · ((l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2) ⊗^{ E} l3 · (fmonoidal_preservestensordata L) (R1 ⊗_{ pr211 C} R2) R3) =
-  l1 ⊗^{ E} (l2 ⊗^{ E} l3 · (fmonoidal_preservestensordata L) R2 R3) · (fmonoidal_preservestensordata L) R1 (R2 ⊗_{ pr211 C} R3) · # L αinv^{ pr211 C }_{ R1, R2, R3} .
+Local Lemma associnvdata_lemma1 {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E}  (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
+  (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
+  αinv^{ E }_{ U1, U2, U3} · ((l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2) ⊗^{ E} l3 · (fmonoidal_preservestensordata L) (R1 ⊗_{C} R2) R3) =
+  l1 ⊗^{ E} (l2 ⊗^{ E} l3 · (fmonoidal_preservestensordata L) R2 R3) · (fmonoidal_preservestensordata L) R1 (R2 ⊗_{C} R3) · # L αinv^{C}_{ R1, R2, R3} .
 Proof.
-  simpl.
   refine (_ @ id_left _).
   rewrite <- (pr2 (monoidal_associatorisolaw E U1 U2 U3)).
   refine (_ @ assoc _ _ _).
   apply maponpaths.
   refine (_ @ assoc' _ _ _).
-  generalize (double_glued_asociator_data_eq1 ((U1,, l1),, (X1,, l1')) ((U2,, l2),, (X2,, l2')) ((U3,, l3),, (X3,, l3'))); simpl; intros eq1.
-  refine (_ @ ! maponpaths (postcompose _) eq1).
+  refine (_ @ ! maponpaths (postcompose _)
+            (double_glued_asociator_data_eq1 ((U1,, l1),, (X1,, l1')) ((U2,, l2),, (X2,, l2')) ((U3,, l3),, (X3,, l3')))).
   refine (_ @ assoc _ _ _).
   refine (! id_right _ @ _).
   apply maponpaths.
@@ -880,9 +864,8 @@ Proof.
   exact (! pr1 (monoidal_associatorisolaw C R1 R2 R3)).
 Qed.
 
-Local Lemma associnvdata_lemma21 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧)
-  (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
+Local Lemma associnvdata_lemma21 {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
+  (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
   doublePullbackPrL
     (tensor_doublePullback dpbs k
        ((U1 ⊗_{ E} U2,, l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2),,
@@ -894,8 +877,8 @@ Local Lemma associnvdata_lemma21 {E C : sym_mon_closed_cat} (dpbs : doublePullba
        ((U1 ⊗_{ E} U2,, l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2),,
         pr11 (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2')),,
         doublePullbackPrM (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) ((U3,, l3),, X3,, l3')) ⊗^{ E}_{r} U1
-  · (K ((R1 ⊗_{ pr211 C} R2) ⊗_{ C} R3) ⊗^{ E}_{l} l1
-     · (sym_mon_braiding E (K ((R1 ⊗_{ pr211 C} R2) ⊗_{ C} R3)) (L R1) · (L R1 ⊗^{ E}_{l} # K αinv^{ C }_{ R1, R2, R3} · pr1 k R1 (R2 ⊗_{ C} R3))))
+  · (K ((R1 ⊗_{C} R2) ⊗_{ C} R3) ⊗^{ E}_{l} l1
+     · (sym_mon_braiding E (K ((R1 ⊗_{C} R2) ⊗_{ C} R3)) (L R1) · (L R1 ⊗^{ E}_{l} # K αinv^{ C }_{ R1, R2, R3} · pr1 k R1 (R2 ⊗_{ C} R3))))
   · (internal_lam (sym_mon_braiding E (K (R2 ⊗_{ C} R3)) (L R2) · pr1 k R2 R3) · internal_precomp l2 (K R3)).
 Proof.
   set (dpb := tensor_doublePullback dpbs k
@@ -1078,16 +1061,15 @@ Proof.
   apply sym_mon_hexagon_rassociator1.
 Qed.
 
-Local Lemma associnvdata_lemma22 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧)
-  (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧) :
+Local Lemma associnvdata_lemma22 {R1 R2 R3 : C} {U1 U2 U3 X1 X2 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
+  (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧) :
 doublePullbackPrM
     (tensor_doublePullback dpbs k
        ((U1 ⊗_{ E} U2,, l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2),,
         pr11 (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2')),,
         doublePullbackPrM (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) ((U3,, l3),, X3,, l3')) ⊗^{ E}_{r} U1
-  · (K ((R1 ⊗_{ pr211 C} R2) ⊗_{ C} R3) ⊗^{ E}_{l} l1
-     · (sym_mon_braiding E (K ((R1 ⊗_{ pr211 C} R2) ⊗_{ C} R3)) (L R1) · (L R1 ⊗^{ E}_{l} # K αinv^{ C }_{ R1, R2, R3} · pr1 k R1 (R2 ⊗_{ C} R3))))
+  · (K ((R1 ⊗_{C} R2) ⊗_{ C} R3) ⊗^{ E}_{l} l1
+     · (sym_mon_braiding E (K ((R1 ⊗_{C} R2) ⊗_{ C} R3)) (L R1) · (L R1 ⊗^{ E}_{l} # K αinv^{ C }_{ R1, R2, R3} · pr1 k R1 (R2 ⊗_{ C} R3))))
   · (compose (C:=E) (# K (sym_mon_braiding C R3 R2)) (internal_lam ((pr121 E) (K (R3 ⊗_{ C} R2)) (L R3) · pr1 k R3 R2) · internal_precomp l3 (K R2))) =
   doublePullbackPrR
     (tensor_doublePullback dpbs k
@@ -1377,7 +1359,7 @@ Proof.
   refine (_ @ maponpaths (λ f, (_ · f · _) ⊗^{E}_{r} _ · _) (curry_swap _ _ _)).
   refine (_ @ maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _)).
   refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (mon_closed_adj_natural E _ _ _ _)).
+  refine (_ @ maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (mon_closed_adj_natural _ _)).
   refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _)).
   refine (_ @ maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _)).
   refine (_ @ ! maponpaths (λ f, (_ · f · _) ⊗^{E}_{r} _ · _) (curry_nat3 _ _ _)).
@@ -1530,9 +1512,8 @@ Proof.
   exact (! id_left _).
 Qed.
 
-Local Lemma associnvdata_lemma30 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} {U1 X1 U2 X2 U3 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧)
-  (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧) :
+Local Lemma associnvdata_lemma30 {R1 R2 R3 : C} {U1 X1 U2 X2 U3 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
+  (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧) :
    internal_lam
     (doublePullbackArrow (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3'))
        (pr11 (tensor_doublePullback dpbs k
@@ -1550,16 +1531,16 @@ Local Lemma associnvdata_lemma30 {E C : sym_mon_closed_cat} (dpbs : doublePullba
              ((U1 ⊗_{ E} U2,, l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2),,
               pr11 (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2')),,
               doublePullbackPrM (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) ((U3,, l3),, X3,, l3')) ⊗^{ E}_{r} U1
-        · (K ((R1 ⊗_{ pr211 C} R2) ⊗_{ C} R3) ⊗^{ E}_{l} l1
-           · (sym_mon_braiding E (K ((R1 ⊗_{ pr211 C} R2) ⊗_{ C} R3)) (L R1) · (L R1 ⊗^{ E}_{l} # K αinv^{ C }_{ R1, R2, R3} · pr1 k R1 (R2 ⊗_{ C} R3)))))
+        · (K ((R1 ⊗_{C} R2) ⊗_{ C} R3) ⊗^{ E}_{l} l1
+           · (sym_mon_braiding E (K ((R1 ⊗_{C} R2) ⊗_{ C} R3)) (L R1) · (L R1 ⊗^{ E}_{l} # K αinv^{ C }_{ R1, R2, R3} · pr1 k R1 (R2 ⊗_{ C} R3)))))
        (doublePullbackPrR
           (tensor_doublePullback dpbs k
              ((U1 ⊗_{ E} U2,, l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2),,
               pr11 (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2')),,
               doublePullbackPrM (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) ((U3,, l3),, X3,, l3')) ⊗^{ E}_{r} U1
         · (internal_postcomp U3 (doublePullbackPrL (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) ⊗^{ E}_{r} U1
-           · (internal_swap_arg U3 X2 U1 ⊗^{ E}_{r} U1 · internal_eval U1 (internal_hom U3 X2)))) (associnvdata_lemma21 dpbs k l1 l1' l2 l2' l3 l3')
-       (associnvdata_lemma22 dpbs k l1 l1' l2 l2' l3 l3'))
+           · (internal_swap_arg U3 X2 U1 ⊗^{ E}_{r} U1 · internal_eval U1 (internal_hom U3 X2)))) (associnvdata_lemma21 l1 l1' l2 l2' l3 l3')
+       (associnvdata_lemma22 l1 l1' l2 l2' l3 l3'))
   · internal_postcomp U1 (doublePullbackPrM (tensor_doublePullback dpbs k ((U2,, l2),, X2,, l2') ((U3,, l3),, X3,, l3'))) =
   doublePullbackPrM
     (tensor_doublePullback dpbs k
@@ -1567,8 +1548,8 @@ Local Lemma associnvdata_lemma30 {E C : sym_mon_closed_cat} (dpbs : doublePullba
         pr11 (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2')),,
         doublePullbackPrM (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) ((U3,, l3),, X3,, l3'))
   · # K αinv^{ C }_{ R1, R2, R3}
-  · (internal_lam (sym_mon_braiding E (K (R1 ⊗_{ C} (R2 ⊗_{ pr211 C} R3))) (L R1) · pr1 k R1 (R2 ⊗_{ pr211 C} R3))
-     · internal_precomp l1 (K (R2 ⊗_{ pr211 C} R3))).
+  · (internal_lam (sym_mon_braiding E (K (R1 ⊗_{ C} (R2 ⊗_{C} R3))) (L R1) · pr1 k R1 (R2 ⊗_{C} R3))
+     · internal_precomp l1 (K (R2 ⊗_{C} R3))).
 Proof.
   refine (assoc' _ _ _ @ _).
   rewrite hom_onmorphisms_is_postcomp.
@@ -1586,7 +1567,7 @@ Proof.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ maponpaths (λ f, _ · (_ · f)) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _ )).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (mon_closed_adj_natural E _ _ _ l1)).
+  refine (_ @ maponpaths (λ f, _ · (f · _)) (mon_closed_adj_natural _ l1)).
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ assoc' _ _ _).
   refine (_ @ maponpaths (compose _) (internal_postcomp_comp U1 _ _)).
@@ -1605,17 +1586,16 @@ Proof.
 Qed.
 
 
-Local Lemma associnvdata_lemma31 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : C ⟶ E ^opp}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} {U1 X1 U2 X2 U3 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧)
-  (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
+Local Lemma associnvdata_lemma31 {R1 R2 R3 : C} {U1 X1 U2 X2 U3 X3 : E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧)
+  (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
   doublePullbackPrM
     (tensor_doublePullback dpbs k
        ((U1 ⊗_{ E} U2,, l1 ⊗^{ E} l2 · (fmonoidal_preservestensordata L) R1 R2),,
         pr11 (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2')),,
         doublePullbackPrM (tensor_doublePullback dpbs k ((U1,, l1),, X1,, l1') ((U2,, l2),, X2,, l2'))) ((U3,, l3),, X3,, l3'))
   · # K αinv^{ C }_{ R1, R2, R3}
-  · (compose (C:=E) (# K (sym_mon_braiding C (R2 ⊗_{ pr211 C} R3) R1))
-       (internal_lam ((pr121 E) (K ((R2 ⊗_{ pr211 C} R3) ⊗_{ C} R1)) (L (R2 ⊗_{ pr211 C} R3)) · pr1 k (R2 ⊗_{ pr211 C} R3) R1)
+  · (compose (C:=E) (# K (sym_mon_braiding C (R2 ⊗_{C} R3) R1))
+       (internal_lam ((pr121 E) (K ((R2 ⊗_{C} R3) ⊗_{ C} R1)) (L (R2 ⊗_{C} R3)) · pr1 k (R2 ⊗_{C} R3) R1)
         · internal_precomp (l2 ⊗^{ E} l3 · (fmonoidal_preservestensordata L) R2 R3) (K R1))) =
   doublePullbackPrR
     (tensor_doublePullback dpbs k
@@ -1697,7 +1677,7 @@ Proof.
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E (L (R2 ⊗_{ pr211 C} R3))))) _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E (L (R2 ⊗_{C} R3))))) _ _ _) @ _).
   refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
   refine (_ @ assoc _ _ _).
   refine (_ @ ! maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E _))) _ _ _)).
@@ -1705,10 +1685,10 @@ Proof.
   do 3 rewrite hom_onmorphisms_is_postcomp.
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (f · _)) (internal_postcomp_comp (L (R2 ⊗_{ pr211 C} R3)) _ _) @ _).
+  refine (! maponpaths (λ f, _ · (f · _)) (internal_postcomp_comp (L (R2 ⊗_{C} R3)) _ _) @ _).
   refine (! maponpaths (compose _) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _ ) @ _).
   refine (assoc _ _ _ @ _).
-  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural _ _) @ _).
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
   refine (_ @ maponpaths (λ f, _ · (f · _)) (internal_postcomp_comp ((L R3 ⊗_{ E} L R2)) _ _)).
@@ -1716,7 +1696,7 @@ Proof.
   refine (_ @ maponpaths (λ f, _ · (f · _)) (internal_postcomp_comp ((L R3 ⊗_{ E} L R2)) _ _)).
   refine (_ @ maponpaths (compose _) (! internal_pre_post_comp_as_pre_post_comp _ _ @ internal_pre_post_comp_as_post_pre_comp _ _ )).
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural _ _)).
   refine (_ @ assoc _ _ _).
   apply maponpaths.
   refine (! internal_postcomp_comp ((L R2 ⊗_{ E} L R3)) _ _ @ _ @ internal_postcomp_comp ((L R2 ⊗_{ E} L R3)) _ _).
@@ -1730,7 +1710,7 @@ Proof.
   unfold monoidal_braiding_data_inv.
   rewrite (bifunctor_rightcomp C R1).
   rewrite (functor_comp K).
-  refine (maponpaths (λ f, _ · (f · _)) (bifunctor_leftcomp E (L (R2 ⊗_{ pr211 C} R3)) _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, _ · (f · _)) (bifunctor_leftcomp E (L (R2 ⊗_{C} R3)) _ _ _ _ _) @ _).
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   refine (assoc _ _ _ @ _).
   generalize (pr122 k R1 _ _ (sym_mon_braiding C R2 R3)); simpl;
@@ -1738,7 +1718,7 @@ Proof.
     intros keq1.
   refine (maponpaths (compose _) keq1 @ _); clear keq1.
   do 2 refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, _ · f · _ · _) (bifunctor_rightcomp E (L (R2 ⊗_{ pr211 C} R3)) _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f · _ · _) (bifunctor_rightcomp E (L (R2 ⊗_{C} R3)) _ _ _ _ _) @ _).
   refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
   refine (maponpaths (λ f, _ · f · _) (assoc' _ _ _) @ _).
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
@@ -1792,7 +1772,7 @@ Proof.
   apply (maponpaths (postcompose _)).
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (λ f, _ · (f ⊗^{E}_{r} _ · _)) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · ((_ · f) ⊗^{E}_{r} _ · _)) (pr12 k R3 _ _ ((pr121 C) R2 R1))).
+  refine (_ @ maponpaths (λ f, _ · ((_ · f) ⊗^{E}_{r} _ · _)) (pr12 k R3 _ _ _)).
   unfold monoidal_cat_tensor_pt; simpl.
   refine (_ @ maponpaths (λ f, _ · (f ⊗^{E}_{r} _ · _)) (assoc' _ _ _)).
   refine (_ @ ! maponpaths (λ f, _ · (f · _)) (bifunctor_rightcomp E _ _ _ _ _ _)).
@@ -1864,7 +1844,7 @@ Proof.
   refine (_ @ maponpaths (compose _) _).
   2 : {
     rewrite assoc.
-    apply (sym_mon_braiding_tensor_associator E).
+    apply sym_mon_braiding_tensor_associator.
   }
   refine (! id_left _ @ _).
   repeat rewrite assoc.
@@ -1873,11 +1853,12 @@ Proof.
   apply (monoidal_associatorisolaw E).  
 Qed.
 
-Definition double_glued_associnv_data_comp2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) {R1 R2 R3 : ob C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) (dr3 : double_glued_cat L K R3) :
- double_glued_mor_comp2 L K (R1 ⊗_{ pr211 C} (R2 ⊗_{ pr211 C} R3)) ((R1 ⊗_{ pr211 C} R2) ⊗_{ pr211 C} R3)
-        (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 (R2 ⊗_{ pr211 C} R3) dr1
+Definition double_glued_associnv_data_comp2 {R1 R2 R3 : ob C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2)
+  (dr3 : double_glued_cat L K R3) :
+ double_glued_mor_comp2 L K (R1 ⊗_{C} (R2 ⊗_{C} R3)) ((R1 ⊗_{C} R2) ⊗_{C} R3)
+        (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 (R2 ⊗_{C} R3) dr1
            (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R2 R3 dr2 dr3))
-        (disp_bifunctor_on_objects (double_glued_tensor dpbs k) (R1 ⊗_{ pr211 C} R2) R3
+        (disp_bifunctor_on_objects (double_glued_tensor dpbs k) (R1 ⊗_{C} R2) R3
            (disp_bifunctor_on_objects (double_glued_tensor dpbs k) R1 R2 dr1 dr2) dr3).
 Proof.
   destruct dr1 as ((U1, l1), (X1, l1')).
@@ -1899,8 +1880,8 @@ Proof.
   apply (compose (internal_postcomp U3 (doublePullbackPrL _) ⊗^{E}_{r} U1)).
   apply (compose (internal_swap_arg _ _ _ ⊗^{E}_{r} U1)).
   exact (internal_eval _ _).
-  exact (associnvdata_lemma21 dpbs k l1 l1' l2 l2' l3 l3').
-  exact (associnvdata_lemma22 dpbs k l1 l1' l2 l2' l3 l3').
+  exact (associnvdata_lemma21 l1 l1' l2 l2' l3 l3').
+  exact (associnvdata_lemma22 l1 l1' l2 l2' l3 l3').
   apply (compose (doublePullbackPrM _)).
   exact (# K (αinv_{C} R1 R2 R3)).
   apply (compose (doublePullbackPrR _)).
@@ -1908,19 +1889,19 @@ Proof.
   apply (postcompose (internal_uncurry U3 U2 X1)).
   apply (internal_postcomp U3).
   exact (doublePullbackPrR _).
-  exact (associnvdata_lemma30 dpbs k l1 l1' l2 l2' l3 l3').
-  exact (associnvdata_lemma31 dpbs k l1 l1' l2 l2' l3 l3').
+  exact (associnvdata_lemma30 l1 l1' l2 l2' l3 l3').
+  exact (associnvdata_lemma31 l1 l1' l2 l2' l3 l3').
 Defined.
 
-Lemma double_glued_associnv_data_eq2 {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 : ob C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2) (dr3 : double_glued_cat L K R3) :
-  double_glued_mor_eq2 L K _ _ _ _ (αinv^{C}_{R1, R2, R3}) (double_glued_associnv_data_comp2 dpbs k dr1 dr2 dr3).
+Lemma double_glued_associnv_data_eq2 {R1 R2 R3 : ob C} (dr1 : double_glued_cat L K R1) (dr2 : double_glued_cat L K R2)
+  (dr3 : double_glued_cat L K R3) :
+  double_glued_mor_eq2 L K _ _ _ _ (αinv^{C}_{R1, R2, R3}) (double_glued_associnv_data_comp2 dr1 dr2 dr3).
 Proof.
-  unfold double_glued_mor_eq2; simpl.
+  unfold double_glued_mor_eq2; simpl. (* necessary *)
   refine (! doublePullbackArrow_PrM _ _ _ _ _ _ _).
 Qed.
 
-Definition double_glued_associatorinv_data {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) : disp_associatorinv_data (double_glued_tensor dpbs k).
+Definition double_glued_associatorinv_data : disp_associatorinv_data (double_glued_tensor dpbs k).
 Proof.
   intros R1 R2 R3 dr1 dr2 dr3.
   split.
@@ -1930,7 +1911,9 @@ Proof.
   exists (αinv_{E} U1 U2 U3).
   exact (associnvdata_lemma1 l1 l1' l2 l2' l3 l3').
   (* component 2 :*)
-  exists (double_glued_associnv_data_comp2 dpbs k dr1 dr2 dr3).
-  exact (double_glued_associnv_data_eq2 dpbs k dr1 dr2 dr3).
+  exists (double_glued_associnv_data_comp2 dr1 dr2 dr3).
+  exact (double_glued_associnv_data_eq2 dr1 dr2 dr3).
 Defined.
+
+End Associator.
 

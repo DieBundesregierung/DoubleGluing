@@ -25,9 +25,9 @@ Require Import double_gluing.closed.internal_hom.
 Require Import double_gluing.closed.adjunction.
 
 Definition double_glued_total_sym_mon_closed_cat {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : sym_mon_closed_cat.
+  (k : natural_contraction E L K) : sym_mon_closed_cat.
 Proof.
-  exists (double_glued_total_sym_monoidal_cat dpbs L K k).
+  exists (double_glued_total_sym_monoidal_cat dpbs k).
   intros (R, dr).
   exists (double_glued_total_internal_hom dpbs k dr).
   exact (double_glued_internal_hom_isadjoint dpbs k dr).

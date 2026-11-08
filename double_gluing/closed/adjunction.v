@@ -53,7 +53,7 @@ Require Import double_gluing.closed.internal_hom.
 
 
 Local Lemma double_glued_hom_adjunction_unit_comp1_lemma1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   unit_from_are_adjoints (pr2 (pr2 E (pr11 dr))) (pr11 ds) · internal_postcomp (pr11 dr) (pr21 (double_glued_tensor_product dpbs k ds dr)) =
     (pr21 ds) · # L (unit_from_are_adjoints (pr2 (pr2 C R)) S) ·
       (internal_lam ((fmonoidal_preservestensordata L) (internal_hom R (S ⊗_{ pr211 C} R)) R · # L (internal_eval R (S ⊗_{ pr211 C} R))) ·
@@ -92,11 +92,11 @@ Proof.
   rewrite id_right.
   rewrite assoc.
   apply (maponpaths (postcompose _)).
-  exact (mon_closed_adj_natural E (L S) _ _ _).
+  exact (mon_closed_adj_natural _ _).
 Qed.
 
 Local Lemma double_glued_hom_adjunction_unit_comp1_lemma2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E}
-  {K : functor C (E^opp)} (k : natural_contraction C E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   (pr21 ds) · # L (unit_from_are_adjoints (pr2 (pr2 C R)) S) · (internal_lam (L (internal_hom R (S ⊗_{ pr211 C} R)) ⊗^{ E}_{l} # K (internal_eval R (S ⊗_{ pr211 C} R)) · pr1 k (internal_hom R (S ⊗_{ pr211 C} R)) R) · internal_precomp (pr22 (double_glued_tensor_product dpbs k ds dr)) (K R)) =
     internal_lam ((pr11 ds) ⊗^{ E}_{l} doublePullbackPrL (tensor_doublePullback dpbs k ds dr) · (sym_mon_braiding E (pr11 ds) (internal_hom (pr11 ds) (pr12 dr)) · internal_eval (pr11 ds) (pr12 dr))) · internal_postcomp (pr12 (double_glued_tensor_product dpbs k ds dr)) (pr22 dr).
 Proof.
@@ -122,7 +122,7 @@ Proof.
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   refine (maponpaths (λ f, _ · (_ · f)) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (f· _)) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, _ · (f· _)) (mon_closed_adj_natural _ _) @ _).
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   refine (assoc _ _ _ @ _).
   refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints _) _ _ _) @ _).
@@ -142,7 +142,7 @@ Proof.
   refine (_ @ maponpaths (λ f, (V ⊗^{E}_{l} f · _)) (assoc _ _ _)).
   refine (_ @ ! maponpaths (λ f, (V ⊗^{E}_{l} (_ · f) · _)) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
   refine (_ @ maponpaths (λ f, (V ⊗^{E}_{l} f · _)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (V ⊗^{E}_{l} (f · _) · _)) (mon_closed_adj_natural E _ _ _ _)).
+  refine (_ @ maponpaths (λ f, (V ⊗^{E}_{l} (f · _) · _)) (mon_closed_adj_natural _ _)).
   refine (_ @ maponpaths (λ f, (V ⊗^{E}_{l} f · _)) (assoc _ _ _)).
   refine (_ @ maponpaths (λ f, (V ⊗^{E}_{l} (_ · f) · _)) (internal_postcomp_comp V _ _)).
   refine (_ @ assoc' _ _ _).
@@ -185,7 +185,7 @@ Qed.
 
 
 Definition double_glued_hom_adjunction_unit_comp1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   double_glued_mor_comp1 L K S (pr1 (pr2 C R) (S ⊗_{ C} R)) ds (double_glued_disp_internal_hom_ob dpbs k dr (double_glued_tensor_product dpbs k ds dr)).
 Proof.
   destruct dr as ((U, l), (X, l')).
@@ -204,7 +204,7 @@ Proof.
 Defined.
 
 Lemma double_glued_hom_adjunction_unit_eq1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   double_glued_mor_eq1 L K _ _ _ _ (unit_from_are_adjoints (pr2 (pr2 C R)) S) (double_glued_hom_adjunction_unit_comp1 dpbs k dr ds).
 Proof.
   unfold double_glued_hom_adjunction_unit_comp1.
@@ -212,7 +212,7 @@ Proof.
 Qed.
 
 Lemma double_glued_hom_adjunction_unit_eq2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   # K (unit_from_are_adjoints (pr2 (pr2 C R)) S) · (pr21 dr ⊗^{ E} doublePullbackPrM (tensor_doublePullback dpbs k ds dr) ·(L R ⊗^{ E}_{l} # K (sym_mon_braiding C R (pr1 (pr2 C R) (S ⊗_{ C} R)) · internal_eval R (S ⊗_{ C} R)) · pr1 k R (pr1 (pr2 C R) (S ⊗_{ C} R)))) =
     pr22 ds · (pr11 dr ⊗^{ E}_{l} doublePullbackPrR (tensor_doublePullback dpbs k ds dr) · (sym_mon_braiding E (pr11 dr) (internal_hom (pr11 dr) (pr12 ds)) · internal_eval (pr11 dr) (pr12 ds))).
 Proof.
@@ -242,7 +242,7 @@ Proof.
   refine (_ @ ! maponpaths (λ f, U ⊗^{ E}_{l} (_ · (_ · f)) · _)
             (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
   refine (_ @ maponpaths (λ f, U ⊗^{ E}_{l} (_ · f) · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, U ⊗^{ E}_{l} (_ · (f · _)) · _) (mon_closed_adj_natural E _ _ _ l)).
+  refine (_ @ maponpaths (λ f, U ⊗^{ E}_{l} (_ · (f · _)) · _) (mon_closed_adj_natural _ l)).
   refine (_ @ maponpaths (λ f, U ⊗^{ E}_{l} (_ · f) · _) (assoc _ _ _)).
   refine (_ @ maponpaths (λ f, U ⊗^{ E}_{l} (_ · (_ · f)) · _) (internal_postcomp_comp U _ _)).
   refine (_ @ assoc' _ _ _).
@@ -292,9 +292,9 @@ Qed.
 (* Admitted. *)
 
 Definition double_glued_internal_hom_unit_data {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
- nat_trans_data (functor_identity (double_glued_total_sym_monoidal_cat dpbs L K k))
-   (rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs L K k) (R,, dr) ∙ double_glued_total_internal_hom dpbs k dr).
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+ nat_trans_data (functor_identity (double_glued_total_sym_monoidal_cat dpbs k))
+   (rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs k) (R,, dr) ∙ double_glued_total_internal_hom dpbs k dr).
 Proof.
   intros (S, ds).
   exists (unit_from_are_adjoints (pr2 (pr2 C R)) S).
@@ -309,27 +309,14 @@ Proof.
   exact (double_glued_hom_adjunction_unit_eq2 dpbs k dr ds).
 Defined.
 
-Lemma double_glued_total_mor_eq_transp {C E : sym_mon_closed_cat} {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {x y : ob (double_glued_total_cat L K)} (f g : x --> y) :
-  (pr1 f = pr1 g) × (pr112 f = pr112 g) × (pr122 f = pr122 g) → f = g.
-Proof.
-  intros (eq1, (eq2, eq3)).
-  use total2_paths_b.
-  assumption.
-  unfold transportb.
-  About double_glued_mor_eq_transp.
-  apply (pr2 (double_glued_mor_eq_transp eq1 (pr2 f) (pr2 g))).
-  exact (eq2,, eq3).
-Qed.
-
 Lemma double_glued_internal_hom_unit_is_nat_trans {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
-  is_nat_trans (functor_identity (double_glued_total_sym_monoidal_cat dpbs L K k))
-    (rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs L K k) (R,, dr) ∙ double_glued_total_internal_hom dpbs k dr)
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+  is_nat_trans (functor_identity (double_glued_total_sym_monoidal_cat dpbs k))
+    (rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs k) (R,, dr) ∙ double_glued_total_internal_hom dpbs k dr)
     (double_glued_internal_hom_unit_data dpbs k dr).
 Proof.
   intros (R1, dr1) (R2, dr2) (f12, df12).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp L K _); split3.
   exact (pr2 (unit_from_are_adjoints (pr2 (pr2 C R))) _ _ _).
   simpl.
   destruct dr1 as ((U1, l1), (X1, l1')).
@@ -421,7 +408,7 @@ Proof.
   apply pathsinv0.
   apply (monoidal_braiding_naturality_left E).
   apply maponpaths.
-  exact (mon_closed_adj_natural_co E (pr12 dr) _ _ ϕ12).
+  exact (mon_closed_adj_natural_co (pr12 dr) ϕ12).
   destruct dr1 as ((U1, l1), (X1, l1')).
   destruct dr2 as ((U2, l2), (X2, l2')).
   destruct df12 as ((ϕ12, eqphi), (ψ21, eqpsi)).
@@ -466,7 +453,7 @@ Proof.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ ! maponpaths (λ f, _ · (_ · f)) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (mon_closed_adj_natural E _ _ _ (pr21 dr))).
+  refine (_ @ maponpaths (λ f, _ · (f · _)) (mon_closed_adj_natural _ (pr21 dr))).
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ maponpaths (λ f, _ · (_ · f)) (internal_postcomp_comp (pr11 dr) _ _)).
   refine (_ @ assoc' _ _ _).
@@ -500,7 +487,7 @@ Proof.
   refine (_ @ assoc' _ _ _ @ _ @ assoc _ _ _).
   2 : {
     apply maponpaths.
-    refine (_ @ ! internal_eval_nat _ _ _ _).
+    refine (_ @ ! internal_eval_nat _ _).
     now rewrite hom_onmorphisms_is_postcomp.
   }  
   refine (_ @ assoc _ _ _ @ _).
@@ -595,16 +582,16 @@ Proof.
 Qed.
 
 Definition double_glued_internal_hom_unit {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
-  functor_identity (double_glued_total_sym_monoidal_cat dpbs L K k)
-    ⟹ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs L K k) (R,, dr) ∙ double_glued_total_internal_hom dpbs k dr.
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+  functor_identity (double_glued_total_sym_monoidal_cat dpbs k)
+    ⟹ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs k) (R,, dr) ∙ double_glued_total_internal_hom dpbs k dr.
 Proof.
   exists (double_glued_internal_hom_unit_data dpbs k dr).
   exact (double_glued_internal_hom_unit_is_nat_trans dpbs k dr).
 Defined.
 
 Definition double_glued_internal_hom_counit_data_comp1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   double_glued_mor_comp1 L K (pr1 (pr2 C R) S ⊗_{ C} R) S
     (double_glued_tensor_product dpbs k (double_glued_disp_internal_hom_ob dpbs k dr ds) dr) ds.
 Proof.
@@ -613,7 +600,7 @@ Proof.
 Defined.
 
 Lemma double_glued_internal_hom_counit_data_eq1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   double_glued_mor_eq1 L K _ _ _ _
     (counit_from_are_adjoints (pr2 (pr2 C R)) S) (double_glued_internal_hom_counit_data_comp1 dpbs k dr ds).
 Proof.
@@ -642,7 +629,7 @@ Proof.
   simpl.
   rewrite assoc.
   apply (maponpaths (postcompose _)).
-  refine (! maponpaths (λ f, f ⊗^{E}_{r} _ · _) (mon_closed_adj_natural E _ _ (L R) _) @ _).
+  refine (! maponpaths (λ f, f ⊗^{E}_{r} _ · _) (mon_closed_adj_natural _ _) @ _).
   rewrite (bifunctor_rightcomp E).
   rewrite assoc'.
   rewrite <- hom_onmorphisms_is_postcomp.  
@@ -654,7 +641,7 @@ Proof.
 Qed.
 
 Lemma double_glued_internal_hom_counit_data_comp2_lemma1 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E}
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   internal_lam
     (pr12 ds ⊗^{ E}_{l} doublePullbackPrR (internal_hom_doublePullback dpbs k dr ds)
                  · (sym_mon_braiding E (pr12 ds) (internal_hom (pr12 ds) (pr12 dr)) · internal_eval (pr12 ds) (pr12 dr)))
@@ -688,7 +675,7 @@ Proof.
   refine (_ @ ! maponpaths (λ f, _ · (f · _)) (hom_onmorphisms_is_postcomp _ _)).
   refine (_ @ ! maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural _ _)).
   refine (_ @ assoc _ _ _).
   apply maponpaths.
   refine (_ @ internal_postcomp_comp _ _ _).
@@ -706,7 +693,7 @@ Proof.
   rewrite assoc'.
   refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   rewrite assoc.
-  refine (! maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (mon_closed_adj_natural _ _) @ _).
   rewrite assoc'.
   refine (! maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (internal_postcomp_comp (pr12 ds) _ _) @ _).
   rewrite (bifunctor_rightcomp E).
@@ -722,7 +709,7 @@ Proof.
 Qed.
 
 Lemma double_glued_internal_hom_counit_data_comp2_lemma2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E}
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   compose (C:=E) (pr22 ds) (# K (internal_eval R S)) · (compose (C:=E) (# K (sym_mon_braiding C R (pr1 (pr2 C R) S)))
      (internal_lam ((pr121 E) (K (R ⊗_{ C} pr1 (pr2 C R) S)) (L R) · pr1 k R (pr1 (pr2 C R) S)) · internal_precomp (pr21 dr) (K (pr1 (pr2 C R) S)))) =
     internal_lam (sym_mon_braiding E (pr12 ds) (pr11 dr))
@@ -735,7 +722,7 @@ Proof.
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   refine (maponpaths (λ f, _ · (_ · f)) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (f · _)) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, _ · (f · _)) (mon_closed_adj_natural _ _) @ _).
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   rewrite assoc.
   refine (maponpaths (λ f, f · _) (pr2 (unit_from_are_adjoints (pr2 (pr2 E (pr11 dr)))) _ _ _) @ _).
@@ -766,7 +753,7 @@ Proof.
 Qed.
 
 Definition double_glued_internal_hom_counit_data_comp2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   double_glued_mor_comp2 L K (pr1 (pr2 C R) S ⊗_{ C} R) S
     (double_glued_tensor_product dpbs k (double_glued_disp_internal_hom_ob dpbs k dr ds) dr) ds.
 Proof.
@@ -787,7 +774,7 @@ Proof.
 Defined.
 
 Lemma double_glued_internal_hom_counit_data_eq2 {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : lax_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
+  (k : natural_contraction E L K)  {R S : C} (dr : double_glued_cat L K R) (ds : double_glued_cat L K S) :
   double_glued_mor_eq2 L K _ _ _ _
     (counit_from_are_adjoints (pr2 (pr2 C R)) S) (double_glued_internal_hom_counit_data_comp2 dpbs k dr ds).
 Proof.
@@ -795,9 +782,9 @@ Proof.
 Qed.
 
 Definition double_glued_internal_hom_counit_data {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
-  nat_trans_data (double_glued_total_internal_hom dpbs k dr ∙ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs L K k) (R,, dr))
-    (functor_identity (double_glued_total_sym_monoidal_cat dpbs L K k)).
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+  nat_trans_data (double_glued_total_internal_hom dpbs k dr ∙ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs k) (R,, dr))
+    (functor_identity (double_glued_total_sym_monoidal_cat dpbs k)).
 Proof.
   intros (S, ds).
   exists (counit_from_are_adjoints (pr2 (pr2 C R)) S).
@@ -810,12 +797,12 @@ Defined.
 
 
 Lemma double_glued_internal_hom_counit_is_nat_trans {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
-  is_nat_trans (double_glued_total_internal_hom dpbs k dr ∙ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs L K k) (R,, dr))
-    (functor_identity (double_glued_total_sym_monoidal_cat dpbs L K k)) (double_glued_internal_hom_counit_data dpbs k dr).
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+  is_nat_trans (double_glued_total_internal_hom dpbs k dr ∙ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs k) (R,, dr))
+    (functor_identity (double_glued_total_sym_monoidal_cat dpbs k)) (double_glued_internal_hom_counit_data dpbs k dr).
 Proof.
   intros (R1, dr1) (R2, dr2) (f12, df12).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact (pr2 (counit_from_are_adjoints (pr2 (pr2 C R))) _ _ _).
   simpl.
   destruct dr1 as ((U1, l1), (X1, l1')).
@@ -854,7 +841,7 @@ Proof.
   refine (maponpaths (λ f, _ · (f · _)) (hom_onmorphisms_is_postcomp _ _) @ _).
   refine (maponpaths (λ f, _ · f) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   rewrite assoc.
-  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural _ _) @ _).
   rewrite assoc'.
   apply maponpaths.
   refine (! internal_postcomp_comp _ _ _ @ _).
@@ -876,7 +863,7 @@ Proof.
   rewrite <- (monoidal_braiding_naturality_right E).
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   apply maponpaths.
-  exact (mon_closed_adj_natural_co E _ _ _ _).
+  exact (mon_closed_adj_natural_co _ _).
   refine (assoc' _ _ _ @ _).
   simpl.
   unfold arr2, double_glued_rightwhiskering_comp2, double_glued_internal_hom_counit_data_comp2.
@@ -937,7 +924,7 @@ Proof.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ ! maponpaths (λ f, (_ · (_ · f))) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · (f · _))) (mon_closed_adj_natural E _ _ _ _)).
+  refine (_ @ maponpaths (λ f, (_ · (f · _))) (mon_closed_adj_natural _ _)).
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ maponpaths (λ f, (_ · (_ · f))) (internal_postcomp_comp _ _ _)).
   refine (_ @ assoc' _ _ _).
@@ -974,7 +961,7 @@ Proof.
   rewrite assoc'.
   refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   rewrite assoc.
-  refine (! maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (mon_closed_adj_natural _ _) @ _).
   rewrite assoc'.
   refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (! internal_postcomp_comp _ _ _) @ _).
   rewrite (bifunctor_rightcomp E).
@@ -1006,7 +993,7 @@ Proof.
   apply (maponpaths (postcompose _)).
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (compose _) (internal_postcomp_comp _ _ _)).
-  refine (! maponpaths (λ f, _ · f · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, _ · f · _) (mon_closed_adj_natural _ _) @ _).
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
   rewrite assoc'.
   refine (! maponpaths (compose _) (internal_postcomp_comp _ _ _) @ _).
@@ -1035,22 +1022,22 @@ Proof.
 Qed.
 
 Definition double_glued_internal_hom_counit {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
-  double_glued_total_internal_hom dpbs k dr ∙ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs L K k) (R,, dr)
-    ⟹ functor_identity (double_glued_total_sym_monoidal_cat dpbs L K k).
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+  double_glued_total_internal_hom dpbs k dr ∙ rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs k) (R,, dr)
+    ⟹ functor_identity (double_glued_total_sym_monoidal_cat dpbs k).
 Proof.
   exists (double_glued_internal_hom_counit_data dpbs k dr).
   exact (double_glued_internal_hom_counit_is_nat_trans dpbs k dr).
 Defined.
 
 Lemma double_glued_internal_hom_form_adjunction {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
-  form_adjunction (rightwhiskering_functor (double_glued_total_monoidal dpbs L K k) (R,, dr)) (double_glued_total_internal_hom dpbs k dr)
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+  form_adjunction (rightwhiskering_functor (double_glued_total_monoidal dpbs L k) (R,, dr)) (double_glued_total_internal_hom dpbs k dr)
     (double_glued_internal_hom_unit dpbs k dr) (double_glued_internal_hom_counit dpbs k dr).
 Proof.
   split.
   intros (S, ds).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact (triangle_id_left_ad (pr2 (pr2 C R)) _).
   simpl.
   unfold double_glued_hom_adjunction_unit_comp1, double_glued_internal_hom_counit_data_comp1; simpl.
@@ -1075,7 +1062,7 @@ Proof.
   refine (maponpaths (λ f, _ · (f · _)) (hom_onmorphisms_is_postcomp _ _) @ _).
   refine (maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural _ _) @ _).
   refine (assoc' _ _ _ @ _).
   refine (! maponpaths (compose _) (internal_postcomp_comp _ _ _) @ _).
   refine (maponpaths (λ f, _ · internal_postcomp _ f) (assoc _ _ _) @ _).
@@ -1175,7 +1162,7 @@ Proof.
   exact (id_left _).
   exact (id_left _).
   intros (S, ds).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact (triangle_id_right_ad (pr2 (pr2 C _)) _).
   set (hom_dpb := internal_hom_doublePullback dpbs k dr ds).
   refine (pathscomp0 (b:= doublePullbackArrow hom_dpb _ (doublePullbackPrL hom_dpb) (doublePullbackPrM hom_dpb) (doublePullbackPrR hom_dpb)
@@ -1218,7 +1205,7 @@ Proof.
   rewrite hom_onmorphisms_is_postcomp.
   refine (maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural _ _) @ _).
   refine (assoc' _ _ _ @ _).
   refine (maponpaths (compose _) (! internal_postcomp_comp _ _ _) @ _).
   refine (maponpaths (λ f, _ · internal_postcomp _ f) (assoc _ _ _) @ _).
@@ -1279,8 +1266,8 @@ Qed.
 
 Definition double_glued_internal_hom_isadjoint {C E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
   {L : sym_monoidal_functor C E} {K : functor C (E^opp)}
-  (k : natural_contraction C E L K)  {R : C} (dr : double_glued_cat L K R) :
-  are_adjoints (rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs L K k) (R,, dr)) (double_glued_total_internal_hom dpbs k dr).
+  (k : natural_contraction E L K)  {R : C} (dr : double_glued_cat L K R) :
+  are_adjoints (rightwhiskering_functor (double_glued_total_sym_monoidal_cat dpbs k) (R,, dr)) (double_glued_total_internal_hom dpbs k dr).
 Proof.
   use tpair.
   exists (double_glued_internal_hom_unit dpbs k dr).

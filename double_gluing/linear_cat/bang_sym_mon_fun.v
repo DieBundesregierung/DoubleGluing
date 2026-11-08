@@ -55,7 +55,7 @@ Require Import double_gluing.linear_cat.bang.
 
 
 Local Lemma double_glued_total_bang_preserves_tensor_lemma1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) {R1 R2 : C} (dr1 : double_glued_ob L K R1) (dr2 : double_glued_ob L K R2) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) {R1 R2 : C} (dr1 : double_glued_ob L K R1) (dr2 : double_glued_ob L K R2) :
   compose (C:=E) (# K (fmonoidal_preservestensordata (lax_monoidal_from_symmetric_monoidal_comonad C (linear_category_bang C)) R1 R2))
   (internal_lam
       (sym_mon_braiding E (K ((pr111 (linear_category_bang C)) R1 ⊗_{ C} (pr111 (linear_category_bang C)) R2)) ((pr111 (linear_category_bang E)) (pr11 dr1))
@@ -78,7 +78,7 @@ Proof.
   refine (_ @ assoc _ _ _).
   refine (_ @ ! maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _)).
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (mon_closed_adj_natural _ _)).
   refine (_ @ assoc _ _ _).
   apply maponpaths.
   refine (_ @ internal_postcomp_comp _ _ _).
@@ -89,7 +89,7 @@ Proof.
 Qed.
 
 Local Lemma double_glued_total_bang_preserves_tensor_lemma2 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) {R1 R2 : C} (dr1 : double_glued_ob L K R1) (dr2 : double_glued_ob L K R2) :
+  {K : functor C (E^opp)} (k : natural_contraction E L K) {R1 R2 : C} (dr1 : double_glued_ob L K R1) (dr2 : double_glued_ob L K R2) :
   compose (C:=E) (# K (fmonoidal_preservestensordata (lax_monoidal_from_symmetric_monoidal_comonad C (linear_category_bang C)) R1 R2))
    (compose (C:=E) (# K (sym_mon_braiding C ((pr111 (linear_category_bang C)) R2) ((pr111 (linear_category_bang C)) R1)))
      (internal_lam
@@ -115,7 +115,7 @@ Proof.
   rewrite assoc'.
   refine (maponpaths (compose _) (! internal_pre_post_comp_as_post_pre_comp _ _ @ internal_pre_post_comp_as_pre_post_comp _ _) @ _).
   rewrite assoc.
-  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural E _ _ _ _) @ _).
+  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural _ _) @ _).
   rewrite assoc'.
   apply maponpaths.
   refine (! internal_postcomp_comp _ _ _ @ _).
@@ -126,7 +126,7 @@ Proof.
 Qed.
 
 Lemma double_glued_total_bang_preserves_tensor_eq1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 : C} (dr1 : double_glued_ob L K R1) (dr2 : double_glued_ob L K R2):
+  (k : natural_contraction E L K) {R1 R2 : C} (dr1 : double_glued_ob L K R1) (dr2 : double_glued_ob L K R2):
   fmonoidal_preservestensordata (lax_monoidal_from_symmetric_monoidal_comonad E (linear_category_bang E)) (pr11 dr1) (pr11 dr2)
   · (# (pr111 (linear_category_bang E)) (pr21 dr1 ⊗^{ E} pr21 dr2 · fmonoidal_preservestensordata L R1 R2) · (pr121 L) (R1 ⊗_{ C} R2)) =
   (# (pr111 (linear_category_bang E)) (pr21 dr1) · (pr121 L) R1) ⊗^{ E} (# (pr111 (linear_category_bang E)) (pr21 dr2) · (pr121 L) R2)
@@ -159,7 +159,7 @@ Proof.
 Qed.
 
 Definition double_glued_total_bang_preserves_tensor {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : preserves_tensordata (double_glued_total_monoidal dpbs L K k) (double_glued_total_monoidal dpbs L K k)
+  (k : natural_contraction E L K) : preserves_tensordata (double_glued_total_monoidal dpbs L k) (double_glued_total_monoidal dpbs L k)
   (double_glued_total_bang_functor dpbs L k).
 Proof.
   intros (R1, dr1) (R2, dr2).
@@ -192,7 +192,7 @@ Proof.
 Defined.
 
 Definition double_glued_total_bang_preserves_unit {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : 
+  (k : natural_contraction E L K) : 
   preserves_unit (pr1 (double_glued_total_sym_mon_closed_cat dpbs k)) (pr1 (double_glued_total_sym_mon_closed_cat dpbs k))
     (double_glued_total_bang_functor dpbs L k).
 Proof.
@@ -210,7 +210,7 @@ Proof.
   exact (! id_right _).
 Defined.
 
-Local Lemma double_glued_total_bang_laxlaws_lemma1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) {R1 R2 R3 : ob C} {U1 U2 U3 X1 X2 X3 : ob E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
+Local Lemma double_glued_total_bang_laxlaws_lemma1 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) {R1 R2 R3 : ob C} {U1 U2 U3 X1 X2 X3 : ob E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
   internal_lam
     (sym_mon_braiding E (K ((linear_category_bang C) (R1 ⊗_{ C} (R2 ⊗_{ C} R3))) ⊗_{E} (linear_category_bang E) U3)
        ((linear_category_bang E) U1)
@@ -515,7 +515,7 @@ Proof.
     apply (sym_mon_hexagon_lassociator C).
 Qed.
 
-Local Lemma double_glued_total_bang_laxlaws_lemma2 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) {R1 R2 R3 : ob C} {U1 U2 U3 X1 X2 X3 : ob E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
+Local Lemma double_glued_total_bang_laxlaws_lemma2 {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) {R1 R2 R3 : ob C} {U1 U2 U3 X1 X2 X3 : ob E} (l1 : E ⟦ U1, L R1 ⟧) (l1' : E ^opp ⟦ K R1, X1 ⟧) (l2 : E ⟦ U2, L R2 ⟧) (l2' : E ^opp ⟦ K R2, X2 ⟧) (l3 : E ⟦ U3, L R3 ⟧) (l3' : E ^opp ⟦ K R3, X3 ⟧):
 # K
     (sym_mon_braiding C ((linear_category_bang C) R3) ((linear_category_bang C) (R1 ⊗_{ C} R2))
      · fmonoidal_preservestensordata (lax_monoidal_from_symmetric_monoidal_comonad C (linear_category_bang C)) (R1 ⊗_{ C} R2) R3
@@ -590,14 +590,14 @@ Qed.
 
 
 Lemma double_glued_total_bang_preserves_tensor_nat_left {C E : linear_category} (dpbs : doublePullbacks E)
-  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) : 
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) : 
 preserves_tensor_nat_left (fmonoidal_preservestensordata
                              (double_glued_total_bang_preserves_tensor dpbs L k,,
                                 double_glued_total_bang_preserves_unit dpbs L k)).
 Proof.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))) (R3, ((U3, l3), (X3, l3'))).
   intros (f23, ((ϕ23, eqphi),(ψ32, eqpsi))).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   apply (fmonoidal_preservestensornatleft). (* completes subgoal *)
   apply (fmonoidal_preservestensornatleft). (* completes subgoal *)
   apply arrows_into_doublePullback_equal.
@@ -741,14 +741,14 @@ Proof.
 Qed.
 
 Lemma double_glued_total_bang_preserves_tensor_nat_right {C E : linear_category} (dpbs : doublePullbacks E)
-  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) : 
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) : 
 preserves_tensor_nat_right (fmonoidal_preservestensordata
                              (double_glued_total_bang_preserves_tensor dpbs L k,,
                                 double_glued_total_bang_preserves_unit dpbs L k)).
 Proof.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))) (R3, ((U3, l3), (X3, l3'))).
   intros (f12, ((ϕ12, eqphi),(ψ21, eqpsi))).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   apply fmonoidal_preservestensornatright. (* completes subgoal *)
   apply fmonoidal_preservestensornatright. (* completes subgoal *)
   set (dpb := tensor_doublePullback dpbs k
@@ -1037,7 +1037,7 @@ Proof.
   apply fmonoidal_preservestensornatright. (* completes subgoal *)
 Qed.
 
-Lemma double_glued_total_bang_preserves_leftunitality {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+Lemma double_glued_total_bang_preserves_leftunitality {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
   preserves_leftunitality (fmonoidal_preservestensordata
                              (double_glued_total_bang_preserves_tensor dpbs L k,,
                                 double_glued_total_bang_preserves_unit dpbs L k))
@@ -1046,7 +1046,7 @@ Lemma double_glued_total_bang_preserves_leftunitality {C E : linear_category} (d
           double_glued_total_bang_preserves_unit dpbs L k)).
 Proof.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k);
+  apply (double_glued_total_mor_eq_transp _ _ _);
     split3; try apply fmonoidal_preservesleftunitality.
   apply doublePullbackArrowUnique'.
   refine (assoc' (C:=E) _ _ _ @ _).
@@ -1188,7 +1188,7 @@ Proof.
   apply fmonoidal_preservesleftunitality.
 Qed.
 
-Lemma double_glued_total_bang_preserves_rightunitality {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+Lemma double_glued_total_bang_preserves_rightunitality {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
   preserves_rightunitality (fmonoidal_preservestensordata
                              (double_glued_total_bang_preserves_tensor dpbs L k,,
                                 double_glued_total_bang_preserves_unit dpbs L k))
@@ -1197,7 +1197,7 @@ Lemma double_glued_total_bang_preserves_rightunitality {C E : linear_category} (
           double_glued_total_bang_preserves_unit dpbs L k)).
 Proof.
   intros (R, dr).
-  apply (double_glued_total_mor_eq_transp k);
+  apply (double_glued_total_mor_eq_transp _ _ _);
     split3; try apply fmonoidal_preservesrightunitality.
   apply doublePullbackArrowUnique'.
   refine (assoc' (C:=E) _ _ _ @ _).
@@ -1355,7 +1355,7 @@ Qed.
 Section total_bang_preserves_associativity_helperLemmata.
 Context {C E : linear_category}
   (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1)
+  (k : natural_contraction E L K) {R1 R2 R3 : C} (dr1 : double_glued_cat L K R1)
   (dr2 : double_glued_cat L K R2) (dr3 : double_glued_cat L K R3)
   (dP := tensor_doublePullback dpbs k
            ((linear_category_bang_functor E (pr11 dr1)
@@ -1698,15 +1698,15 @@ Lemma double_glued_total_bang_preserves_associativity_compTrianLL
            (double_glued_total_bang_preserves_tensor dpbs L k,,
             double_glued_total_bang_preserves_unit dpbs L k)
            (R1,, dr1) (R2,, dr2)
-         ⊗^{ double_glued_total_monoidal dpbs L K k}_{r} double_glued_total_bang_functor dpbs L k
+         ⊗^{ double_glued_total_monoidal dpbs L k}_{r} double_glued_total_bang_functor dpbs L k
                                                            (R3,, dr3)
          · fmonoidal_preservestensordata
              (double_glued_total_bang_preserves_tensor dpbs L k,,
               double_glued_total_bang_preserves_unit dpbs L k)
-             ((R1,, dr1) ⊗_{ double_glued_total_monoidal dpbs L K k} (R2,, dr2)) 
+             ((R1,, dr1) ⊗_{ double_glued_total_monoidal dpbs L k} (R2,, dr2)) 
              (R3,, dr3)
          · # (double_glued_total_bang_functor dpbs L k)
-             α^{ double_glued_total_monoidal dpbs L K k }_{ R1,, dr1, R2,, dr2, R3,, dr3})):
+             α^{ double_glued_total_monoidal dpbs L k }_{ R1,, dr1, R2,, dr2, R3,, dr3})):
   doublePullback_CompetitorTriangleL dP _ arrL
     double_glued_total_bang_preserves_associativity_compArrL.
 Proof.
@@ -1959,15 +1959,15 @@ Lemma double_glued_total_bang_preserves_associativity_compTrianLM
            (double_glued_total_bang_preserves_tensor dpbs L k,,
             double_glued_total_bang_preserves_unit dpbs L k)
            (R1,, dr1) (R2,, dr2)
-         ⊗^{ double_glued_total_monoidal dpbs L K k}_{r} double_glued_total_bang_functor dpbs L k
+         ⊗^{ double_glued_total_monoidal dpbs L k}_{r} double_glued_total_bang_functor dpbs L k
                                                            (R3,, dr3)
          · fmonoidal_preservestensordata
              (double_glued_total_bang_preserves_tensor dpbs L k,,
               double_glued_total_bang_preserves_unit dpbs L k)
-             ((R1,, dr1) ⊗_{ double_glued_total_monoidal dpbs L K k} (R2,, dr2)) 
+             ((R1,, dr1) ⊗_{ double_glued_total_monoidal dpbs L k} (R2,, dr2)) 
              (R3,, dr3)
          · # (double_glued_total_bang_functor dpbs L k)
-             α^{ double_glued_total_monoidal dpbs L K k }_{ R1,, dr1, R2,, dr2, R3,, dr3})):
+             α^{ double_glued_total_monoidal dpbs L k }_{ R1,, dr1, R2,, dr2, R3,, dr3})):
   doublePullback_CompetitorTriangleM dP _ arrL
     double_glued_total_bang_preserves_associativity_compArrM.
 Proof.
@@ -1987,15 +1987,15 @@ Lemma double_glued_total_bang_preserves_associativity_compTrianLR
                     (double_glued_total_bang_preserves_tensor dpbs L k,,
                        double_glued_total_bang_preserves_unit dpbs L k)
                     (R1,, dr1) (R2,, dr2)
-                    ⊗^{ double_glued_total_monoidal dpbs L K k}_{r}
+                    ⊗^{ double_glued_total_monoidal dpbs L k}_{r}
                         double_glued_total_bang_functor dpbs L k (R3,, dr3)
                         · fmonoidal_preservestensordata
                         (double_glued_total_bang_preserves_tensor dpbs L k,,
                            double_glued_total_bang_preserves_unit dpbs L k)
-                        ((R1,, dr1) ⊗_{ double_glued_total_monoidal dpbs L K k} (R2,, dr2)) 
+                        ((R1,, dr1) ⊗_{ double_glued_total_monoidal dpbs L k} (R2,, dr2)) 
                         (R3,, dr3)
                         · # (double_glued_total_bang_functor dpbs L k)
-                        α^{ double_glued_total_monoidal dpbs L K k }_{ R1,, dr1, R2,, dr2, R3,, dr3}))
+                        α^{ double_glued_total_monoidal dpbs L k }_{ R1,, dr1, R2,, dr2, R3,, dr3}))
      : doublePullback_CompetitorTriangleR dP _ arrL
          double_glued_total_bang_preserves_associativity_compArrR.
 Proof.
@@ -2640,12 +2640,12 @@ Qed.
 
 
 Lemma double_glued_total_bang_preserves_associativity_compTrianRL
-  (arrR := pr122 (α^{ double_glued_total_monoidal dpbs L K k
+  (arrR := pr122 (α^{ double_glued_total_monoidal dpbs L k
          }_{ double_glued_total_bang_functor dpbs L k (R1,, dr1),
          double_glued_total_bang_functor dpbs L k (R2,, dr2),
          double_glued_total_bang_functor dpbs L k (R3,, dr3)}
          · double_glued_total_bang_functor dpbs L k (R1,, dr1)
-           ⊗^{ double_glued_total_monoidal dpbs L K k}_{l} fmonoidal_preservestensordata
+           ⊗^{ double_glued_total_monoidal dpbs L k}_{l} fmonoidal_preservestensordata
                                                              (double_glued_total_bang_preserves_tensor
                                                                 dpbs L k,,
                                                               double_glued_total_bang_preserves_unit
@@ -2654,7 +2654,7 @@ Lemma double_glued_total_bang_preserves_associativity_compTrianRL
          · fmonoidal_preservestensordata
              (double_glued_total_bang_preserves_tensor dpbs L k,,
               double_glued_total_bang_preserves_unit dpbs L k)
-             (R1,, dr1) ((R2,, dr2) ⊗_{ double_glued_total_monoidal dpbs L K k} (R3,, dr3)))):
+             (R1,, dr1) ((R2,, dr2) ⊗_{ double_glued_total_monoidal dpbs L k} (R3,, dr3)))):
   doublePullback_CompetitorTriangleL dP _ arrR
     double_glued_total_bang_preserves_associativity_compArrL.
 Proof using Type.
@@ -2715,12 +2715,12 @@ Proof using Type.
 Qed.
 
 Lemma double_glued_total_bang_preserves_associativity_compTrianRM
-  (arrR := pr122 (α^{ double_glued_total_monoidal dpbs L K k
+  (arrR := pr122 (α^{ double_glued_total_monoidal dpbs L k
          }_{ double_glued_total_bang_functor dpbs L k (R1,, dr1),
          double_glued_total_bang_functor dpbs L k (R2,, dr2),
          double_glued_total_bang_functor dpbs L k (R3,, dr3)}
          · double_glued_total_bang_functor dpbs L k (R1,, dr1)
-           ⊗^{ double_glued_total_monoidal dpbs L K k}_{l} fmonoidal_preservestensordata
+           ⊗^{ double_glued_total_monoidal dpbs L k}_{l} fmonoidal_preservestensordata
                                                              (double_glued_total_bang_preserves_tensor
                                                                 dpbs L k,,
                                                               double_glued_total_bang_preserves_unit
@@ -2729,7 +2729,7 @@ Lemma double_glued_total_bang_preserves_associativity_compTrianRM
          · fmonoidal_preservestensordata
              (double_glued_total_bang_preserves_tensor dpbs L k,,
               double_glued_total_bang_preserves_unit dpbs L k)
-             (R1,, dr1) ((R2,, dr2) ⊗_{ double_glued_total_monoidal dpbs L K k} (R3,, dr3)))):
+             (R1,, dr1) ((R2,, dr2) ⊗_{ double_glued_total_monoidal dpbs L k} (R3,, dr3)))):
   doublePullback_CompetitorTriangleM dP _ arrR
     double_glued_total_bang_preserves_associativity_compArrM.
 Proof using Type.
@@ -2750,12 +2750,12 @@ Proof using Type.
 Qed.
 
 Lemma double_glued_total_bang_preserves_associativity_compTrianRR
-  (arrR := pr122 (α^{ double_glued_total_monoidal dpbs L K k
+  (arrR := pr122 (α^{ double_glued_total_monoidal dpbs L k
          }_{ double_glued_total_bang_functor dpbs L k (R1,, dr1),
          double_glued_total_bang_functor dpbs L k (R2,, dr2),
          double_glued_total_bang_functor dpbs L k (R3,, dr3)}
          · double_glued_total_bang_functor dpbs L k (R1,, dr1)
-           ⊗^{ double_glued_total_monoidal dpbs L K k}_{l} fmonoidal_preservestensordata
+           ⊗^{ double_glued_total_monoidal dpbs L k}_{l} fmonoidal_preservestensordata
                                                              (double_glued_total_bang_preserves_tensor
                                                                 dpbs L k,,
                                                               double_glued_total_bang_preserves_unit
@@ -2764,7 +2764,7 @@ Lemma double_glued_total_bang_preserves_associativity_compTrianRR
          · fmonoidal_preservestensordata
              (double_glued_total_bang_preserves_tensor dpbs L k,,
               double_glued_total_bang_preserves_unit dpbs L k)
-             (R1,, dr1) ((R2,, dr2) ⊗_{ double_glued_total_monoidal dpbs L K k} (R3,, dr3)))):
+             (R1,, dr1) ((R2,, dr2) ⊗_{ double_glued_total_monoidal dpbs L k} (R3,, dr3)))):
   doublePullback_CompetitorTriangleR dP _ arrR
     double_glued_total_bang_preserves_associativity_compArrR.
 Proof.
@@ -3258,7 +3258,7 @@ End total_bang_preserves_associativity_helperLemmata.
 
 
 Lemma double_glued_total_bang_preserves_associativity {C E : linear_category} (dpbs : doublePullbacks E)
-  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction C E L K) :
+  (L : linear_distributive_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
   preserves_associativity (fmonoidal_preservestensordata
                              (double_glued_total_bang_preserves_tensor dpbs L k,,
                                 double_glued_total_bang_preserves_unit dpbs L k)).
@@ -3267,7 +3267,7 @@ Proof.
   intros (R1, dr1) (R2, dr2) (R3, dr3).
   (*
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))) (R3, ((U3, l3), (X3, l3'))). *)
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   apply fmonoidal_preservesassociativity. (* completes subgoal *)
   apply fmonoidal_preservesassociativity. (* completes subgoal *)
   refine (doublePullbackArrowUnique' _ _ _ _ _ _ _ _ _ _ _  @ ! doublePullbackArrowUnique' _ _ _ _ _ _ _ _ _ _ _).
@@ -3294,7 +3294,7 @@ Qed.
 Admitted. *)
 
 Lemma double_glued_total_bang_laxlaws {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E) {K : functor C (E^opp)}
-  (k : natural_contraction C E L K) : fmonoidal_laxlaws (double_glued_total_bang_preserves_tensor dpbs L k,, double_glued_total_bang_preserves_unit dpbs L k).
+  (k : natural_contraction E L K) : fmonoidal_laxlaws (double_glued_total_bang_preserves_tensor dpbs L k,, double_glued_total_bang_preserves_unit dpbs L k).
 Proof.
   split5.
   exact (double_glued_total_bang_preserves_tensor_nat_left dpbs L k).
@@ -3305,12 +3305,12 @@ Proof.
 Qed.
 
 Lemma double_glued_total_bang_is_symmetric_monoidal_functor {C E : linear_category} (dpbs : doublePullbacks E) (L : linear_distributive_functor C E)
-  {K : functor C (E^opp)} (k : natural_contraction C E L K) :
-  is_symmetric_monoidal_functor (double_glued_total_symmetric dpbs L K k) (double_glued_total_symmetric dpbs L K k)
+  {K : functor C (E^opp)} (k : natural_contraction E L K) :
+  is_symmetric_monoidal_functor (double_glued_total_symmetric dpbs k) (double_glued_total_symmetric dpbs k)
     ((double_glued_total_bang_preserves_tensor dpbs L k,, double_glued_total_bang_preserves_unit dpbs L k),, double_glued_total_bang_laxlaws dpbs L k).
 Proof.
   intros (R1, ((U1, l1), (X1, l1'))) (R2, ((U2, l2), (X2, l2'))).
-  apply (double_glued_total_mor_eq_transp k); split3.
+  apply (double_glued_total_mor_eq_transp _ _ _); split3.
   exact (pr221 (linear_category_bang C) R1 R2).
   exact (pr221 (linear_category_bang E) _ _).
   set (dpb := tensor_doublePullback dpbs k

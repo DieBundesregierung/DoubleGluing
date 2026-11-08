@@ -28,7 +28,8 @@ Require Import double_gluing.monoidal.right_unitor.
 Require Import double_gluing.monoidal.associator.
 
 
-Definition double_glued_monoidal_data {E C : sym_mon_closed_cat} (dpbs : doublePullbacks E) {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction C E L K) : disp_monoidal_data (double_glued_cat L K) C .
+Definition double_glued_monoidal_data {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
+  {L : sym_monoidal_functor C E} {K : functor C (E^opp)} (k : natural_contraction E L K) : disp_monoidal_data (double_glued_cat L K) C .
 Proof.
   exists (double_glued_tensor dpbs k).
   exists (double_glued_monoidal_unit L K).
