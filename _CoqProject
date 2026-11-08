@@ -9,6 +9,7 @@ double_pullbacks.v
 natural_contraction.v
 
 double_gluing/double_gluing.v
+double_gluing/Freyd_indecomposability.v
 
 double_gluing/monoidal/tensor_unit.v
 double_gluing/monoidal/left_unitor.v
