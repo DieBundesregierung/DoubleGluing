@@ -30,3 +30,7 @@ double_gluing/linear_cat/bang.v
 double_gluing/linear_cat/bang_sym_mon_fun.v
 double_gluing/linear_cat/bang_comonad.v
 double_gluing/linear_cat/linear_cat.v
+
+double_gluing/additive_structure/coproducts.v
+double_gluing/additive_structure/products.v
+
