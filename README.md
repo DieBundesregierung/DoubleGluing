@@ -1,5 +1,5 @@
 This folder contains artifacts accompanying the paper **A Formalization of the Double Gluing Construction in UniMath**.
-All contents can also be found on the following (anonymous) Github: https://github.com/DieBundesregierung/DoubleGluing
+All contents can also be found on the following Github: https://github.com/DieBundesregierung/DoubleGluing
 
 
 Installation:
@@ -26,4 +26,6 @@ Documentation:
 - double_gluing/monoidal  contains files defining the symmetric monoidal structure of the double glued category as defined during section 4. In particular the file symmetry.v contains the (displayed) symmetric monoidal structure, that the other files work towards to.
 - double_gluing/closed  contains files defining the closedness structure for the symmetric monoidal double glued category. In particular the file closed.v contains the bundled symmetric monoidal closed double-glued category that the other files work towards to.
 - double_gluing/linear_cat  contains files defining the bang-exponential as a comonad and the linear structure of the double-glued category. In particular the file contains the bundled linear double-glued category that this whole project works towards to.
-- double_gluing/linear_cat/linear_cat.v  is the main result of this project. It depends on all other files.
+- double_gluing/linear_cat/linear_cat.v  is the main result of this project. It depends on all files referenced above.
+- double_gluing/additive_structure contains the definitions of products and coproducts of the double glued category.
+- double_gluing/Freyd_incecomposability.v contains an application of the double gluing construction, namely a proof of (co)indecomposability in the free symmetric monoidal category with (co)products.

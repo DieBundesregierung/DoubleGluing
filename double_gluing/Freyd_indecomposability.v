@@ -1,3 +1,15 @@
+(****************************
+
+This file contains Freyd's argument for indecomposability using the double gluing construction.
+Content:
+1) Symmetric lax monoidal structure of hom-functors of smc's and natural contraction of covariant with contravariant hom-functor
+2) Results about functors preserving coproducts strongly
+3) An indecomposability result with minimal assumptions (for any category)
+4) Indecomposability for the free symmetric monoidal category with coproducts
+5) Co-indecomposability for the free symmetric monoidal category with products
+
+
+*******************************)
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
@@ -5,25 +17,17 @@ Require Import UniMath.CategoryTheory.Core.Categories.
 Require Import UniMath.CategoryTheory.Core.Functors.
 Require Import UniMath.CategoryTheory.Core.Isos.
 Require Import UniMath.CategoryTheory.Core.NaturalTransformations.
-Require Import UniMath.CategoryTheory.Core.Univalence.
-Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
 Require Import UniMath.CategoryTheory.Categories.HSET.Core.
 Require Import UniMath.CategoryTheory.Categories.HSET.Colimits.
 Require Import UniMath.CategoryTheory.Categories.HSET.Limits.
 Require Import UniMath.CategoryTheory.Categories.HSET.Structures.
-Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.Limits.BinProducts.
 Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
-Require Import UniMath.CategoryTheory.Limits.Pullbacks.
-Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.Monoidal.Categories.
 Require Import UniMath.CategoryTheory.Monoidal.Functors.
-Require Import UniMath.CategoryTheory.Monoidal.Structure.Cartesian.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Closed.
 Require Import UniMath.CategoryTheory.Monoidal.Structure.Symmetric.
 Require Import UniMath.CategoryTheory.Monoidal.WhiskeredBifunctors.
-Require Import UniMath.CategoryTheory.CategoryEquality.
-Require Import UniMath.CategoryTheory.catiso.
 Require Import UniMath.CategoryTheory.OppositeCategory.Core.
 Require Import UniMath.CategoryTheory.opp_precat.
 
@@ -32,6 +36,7 @@ Require Import double_pullbacks.
 Require Import natural_contraction.
 Require Import double_gluing.double_gluing.
 
+Require Import double_gluing.monoidal.monoidal.
 Require Import double_gluing.monoidal.symmetry.
 Require Import double_gluing.additive_structure.coproducts.
 Require Import double_gluing.additive_structure.products.
@@ -778,7 +783,7 @@ Proof.
 Defined.
 
 
-Section indecomposability.
+Section indecomposability_general.
 
   Context (FC : sym_monoidal_cat) (cop_fc : BinCoproducts FC).
   
@@ -1294,8 +1299,174 @@ Section indecomposability.
     2 : apply indecomposability_invmor_isinverse.
   Defined.
   
-End indecomposability.
+End indecomposability_general.
 
+
+Definition mon_nat_z_iso {C D : monoidal_cat} (F G : lax_monoidal_functor C D) : UU := ∑ (α : nat_z_iso F G), is_mon_nat_trans F G α.
+
+
+Definition is_free_smc_with_bincoprod (obj : UU) (FC : sym_monoidal_cat) (cop_fc : BinCoproducts FC) : UU.
+Proof.
+  refine (∑ incl : obj → ob FC, _).
+  refine (∏ V : sym_monoidal_cat, _).
+  refine (∏ bcV : BinCoproducts V, _).
+  refine (∏ objfun : obj → ob V, _).
+  (*existence of functor *)
+  refine (∑ bF : (∑ F : symmetric_strong_monoidal_functor FC V, bincoprod_distributor cop_fc bcV F × objfun = funcomp incl (pr1 F)), _).
+  (* uniqueness *)  
+  refine (∏ (comp : ∑ F' : symmetric_strong_monoidal_functor FC V,
+                  bincoprod_distributor cop_fc bcV F' × objfun = funcomp incl (pr1 F')), _).
+  exact (mon_nat_z_iso (pr1 bF) (pr1 comp)).
+Defined.
+
+Definition is_free_smc_with_binprod (obj : UU) (FC : sym_monoidal_cat) (prod_fc : BinProducts FC) : UU.
+Proof.
+  use (is_free_smc_with_bincoprod obj).
+  apply (sym_monoidal_opp_cat FC).
+  apply prod_fc.
+Defined.
+
+(*
+Definition is_free (obj : UU) (FC : sym_monoidal_cat) (cop_fc : BinCoproducts FC) : UU.
+Proof.
+  refine (∑ incl : obj → ob FC, _).
+  refine (∏ V : sym_monoidal_cat, _).
+  refine (∏ bcV : BinCoproducts V, _).
+  refine (∏ objfun : obj → ob V, _).
+  refine (∃! F : symmetric_strong_monoidal_functor FC V, bincoprod_distributor cop_fc bcV F × _).
+  refine (objfun = funcomp incl (pr1 F)).
+Defined.*)
+
+Definition identity_sym_strong_monoidal_functor (C : sym_monoidal_cat) : symmetric_strong_monoidal_functor C C.
+Proof.
+  exists (_,, identity_fmonoidal C).
+  apply is_symmetric_monoidal_identity.
+Defined.
+
+
+Section indecomposability_free.
+
+  Context (obj : UU) (FC : sym_monoidal_cat) (cop_fc : BinCoproducts FC) (fcfree : is_free_smc_with_bincoprod obj FC cop_fc).
+
+  Definition dg_cat_fc_bincop : BinCoproducts (dg_cat FC).
+  Proof.
+    apply double_glued_BinCoproducts.
+    assumption.
+    apply BinCoproductsHSET.
+    apply dpbs_set.
+  Defined.
+
+  Definition incl_dg_cat_fc : obj → dg_cat FC.
+  Proof.
+    intros R.
+    exists (pr1 fcfree R).
+    use tpair.
+    exists (sym_mon_cov_homSet_functor FC (pr1 fcfree R)).
+    apply (@identity HSET _).
+    exists (alt_contra_functor (contra_homSet_functor I_{ FC}) (pr1 fcfree R)).
+    apply (@identity HSET _).
+  Defined.
+
+  Definition functor_free_dg : ∑ F : symmetric_strong_monoidal_functor FC (dg_cat FC),
+      bincoprod_distributor cop_fc dg_cat_fc_bincop F × incl_dg_cat_fc = funcomp (pr1 fcfree) (pr1 F).
+  Proof.
+    apply fcfree.
+  Defined.
+
+  Lemma free_indecomposability_lemma1 :
+    pr1 fcfree = ((λ a : FC, pr1 (pr1 (pr1 functor_free_dg) a)) ∘ pr1 fcfree)%functions.
+  Proof.
+    apply funextfun.
+    intros x.
+    apply (maponpaths pr1 (toforallpaths _ _ _ (pr22 functor_free_dg) x)).
+  Qed.
+
+  Lemma bincoprod_distributor_iso_law_identity :
+    bincoprod_distributor_iso_law cop_fc cop_fc (functor_identity FC) (λ A B : FC, identity (cop_fc A B)).
+  Proof.
+    split; [refine (id_left _ @ _) | refine (id_right _ @ _)];
+      apply pathsinv0, BinCoproductArrowUnique;
+      apply id_right.
+  Qed.
+
+  Definition identity_preserving_functor :
+    ∑ F : symmetric_strong_monoidal_functor FC FC,
+        bincoprod_distributor cop_fc cop_fc F × pr1 fcfree = (pr1 F ∘ pr1 fcfree)%functions.
+  Proof.
+    exists (identity_sym_strong_monoidal_functor FC).
+    exists (_,, bincoprod_distributor_iso_law_identity).
+    apply idpath.
+  Defined.
+
+  Definition freeforgetful_sym_strong_monoidal_functor : symmetric_strong_monoidal_functor FC FC.
+  Proof.
+    use tpair.
+    exists ((pr1 functor_free_dg) ∙ forgetful_functor_dg_cat FC).
+    use comp_fmonoidal.
+    apply double_glued_total_monoidal.
+    apply dpbs_set.
+    apply natural_contraction_hom_functors.
+    apply (pr211 functor_free_dg).
+    apply forgetful_functor_fmonoidal.
+    use is_symmetric_monoidal_comp.
+    apply double_glued_total_symmetric.
+    apply (pr21 functor_free_dg).
+    apply forgetful_functor_issymmetric.
+  Defined.
+
+  Definition freeforgetful_preserving_functor :
+    ∑ F : symmetric_strong_monoidal_functor FC FC,
+        bincoprod_distributor cop_fc cop_fc F × pr1 fcfree = (pr1 F ∘ pr1 fcfree)%functions.
+  Proof.
+    exists (freeforgetful_sym_strong_monoidal_functor).
+    split.
+    use tpair.
+    intros A B.
+    apply (pr12 functor_free_dg).
+    intros A B.
+    split.
+    exact (maponpaths pr1 (pr1 (pr212 functor_free_dg A B))).
+    exact (maponpaths pr1 (pr2 (pr212 functor_free_dg A B))).
+    apply free_indecomposability_lemma1.
+  Defined.
+  
+  Lemma free_indecomposability_lemma (F := pr2 fcfree FC cop_fc (pr1 fcfree)) :
+    pr1 (fmonoidal_preservesunit (pr121 (pr1 functor_free_dg))) =
+      is_z_isomorphism_mor ((pr21 (pr2 F identity_preserving_functor)) (I_{FC})) · pr1 (pr2 F freeforgetful_preserving_functor) (I_{FC}).
+  Proof.
+    refine (_ @ maponpaths (λ f, f · _) _).
+    2 : {
+      refine (_ @ id_left _).
+      refine (_ @ assoc _ _ _ @ _).
+      2 : {
+        apply cancel_postcomposition.
+        apply (pr22 (pr2 F identity_preserving_functor)).
+      }
+      refine (! id_right _ @ _).
+      apply maponpaths.
+      apply pathsinv0, ((pr21 (pr2 F identity_preserving_functor)) _).
+    }
+    refine (! id_left _ @ _).
+    apply pathsinv0, (pr22 (pr2 F freeforgetful_preserving_functor)).
+  Qed.
+  
+  Definition free_indecomposability (X Y : FC) : 
+    z_iso (BinCoproductsHSET (cov_homSet_functor (monoidal_unit FC) X) (cov_homSet_functor (monoidal_unit FC) Y)) (cov_homSet_functor (monoidal_unit FC) (cop_fc X Y)).
+  Proof.
+    set (F := pr2 fcfree FC cop_fc (pr1 fcfree)).
+    use indecomposability.
+    apply functor_free_dg.
+    apply functor_free_dg.
+    use (@nat_z_iso_comp FC).
+    apply F.
+    apply nat_z_iso_inv.
+    apply (pr1 (pr2 F freeforgetful_preserving_functor)).
+    apply (pr1 (pr2 F identity_preserving_functor)).
+    apply free_indecomposability_lemma.
+  Defined.
+
+End indecomposability_free.
+(*
 Lemma fully_faithful_comp {C D E : category} (F : catiso C D) (G : catiso D E) : fully_faithful (F ∙ G).
 Proof.
   intros x y.
@@ -1312,22 +1483,21 @@ Proof.
   apply twooutof3c.
   apply F.
   apply G.
-Defined.
+Defined.*)
 
 
-(* (* Incomplete : *)
-Section coindecomposability.
+Section coindecomposability_free.
   
+  Context (obj : UU) (FC : sym_monoidal_cat) (prod_fc : BinProducts FC) (fcfree : is_free_smc_with_binprod obj FC prod_fc).
+  
+  Definition free_coindecomposability (X Y : FC) :
+    z_iso (BinCoproductsHSET (contra_homSet_functor (monoidal_unit FC) X) (contra_homSet_functor (monoidal_unit FC) Y))
+      (contra_homSet_functor (monoidal_unit FC) (prod_fc X Y)) :=
+    free_indecomposability obj (sym_monoidal_opp_cat FC) prod_fc fcfree X Y.
+  
+End coindecomposability_free.
 
-  Context (FC : sym_monoidal_cat) (pfc : BinProducts FC).
-
-  Context (functor_FC_DG : symmetric_strong_monoidal_functor FC (dg_cat FC)).
-
-  (*
-    (distributor_functor_FC_DG : bincoprod_distributor cop_fc
-                                            (double_glued_BinCoproducts cop_fc BinCoproductsHSET dpbs_set _ _) functor_FC_DG)
-    (functor_comp_is_id : nat_z_iso (functor_composite functor_FC_DG forgetful_functor_dg_cat) (functor_identity FC)).*)
-
+(*
   Definition dg_cat_op : sym_monoidal_cat.
   Proof.
     use double_glued_total_sym_monoidal_cat.
@@ -1424,7 +1594,7 @@ Section coindecomposability.
     use catiso_comp.
     2 : apply symcataltop_iso.
     apply double_glued_general_opp_iso.
-  Defined.
+  Defined. *)
   (*
   Definition symcatop_fmonoidal_data : fmonoidal_data dg_cat_op (sym_monoidal_opp_cat (dg_cat FC)) symcatop_iso.
   Proof.
@@ -1469,20 +1639,3 @@ Section coindecomposability.
   Qed.
   
   Definition functor_FC_DG_op : symmetric_strong_monoidal_functor (sym_monoidal_opp_cat FC) . *)
-  
-  Definition coindecomposability (X Y : FC) :
-    z_iso (BinCoproductsHSET (contra_homSet_functor (monoidal_unit FC) X) (contra_homSet_functor (monoidal_unit FC) Y))
-      (contra_homSet_functor (monoidal_unit FC) (pfc X Y)).
-  Proof.
-    use (indecomposability (sym_monoidal_opp_cat FC) pfc).
-    
-  Defined.
-
-  
-
-  Context (functor_FC_DG : symmetric_strong_monoidal_functor FC (dg_cat FC))
-    (distributor_functor_FC_DG : bincoprod_distributor cop_fc
-                                            (double_glued_BinCoproducts cop_fc BinCoproductsHSET dpbs_set _ _) functor_FC_DG)
-    (functor_comp_is_id : nat_z_iso (functor_composite functor_FC_DG forgetful_functor_dg_cat) (functor_identity FC)).
-
-End coindecomposability. *)

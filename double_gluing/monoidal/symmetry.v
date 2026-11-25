@@ -2728,4 +2728,17 @@ Proof.
   exact double_glued_total_symmetric.
 Defined.
 
+Lemma forgetful_functor_issymmetric :
+  is_symmetric_monoidal_functor double_glued_total_symmetric (pr2 C) (forgetful_functor_fmonoidal dpbs L k).
+Proof.
+  exact (projection_is_symmetric double_glued_symmetric).
+Qed.
+
+Definition forgetful_symmetric_strong_monoidal_functor : symmetric_strong_monoidal_functor double_glued_total_sym_monoidal_cat C.
+Proof.
+  use tpair.
+  apply forgetful_strong_monoidal_functor.
+  apply forgetful_functor_issymmetric.
+Defined.
+
 End braiding_bundled.

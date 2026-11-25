@@ -46,69 +46,18 @@ Definition double_glued_total_monoidal_cat {C : sym_monoidal_cat} {E : sym_mon_c
   (L : sym_monoidal_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) : monoidal_cat :=
   _ ,, double_glued_total_monoidal dpbs L k.
 
-Definition forgetful_functor_fmonoidal_data {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
-  (L : sym_monoidal_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
-  fmonoidal_data (double_glued_total_monoidal dpbs L k) C (double_glued_forgetful_functor L K).
-Proof.
-  split.
-  intros (R, dr) (S, ds).
-  apply identity.
-  apply identity.
-Defined.
-
-Lemma forgetful_functor_fmonoidal_laxlaws {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
-  (L : sym_monoidal_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
-  fmonoidal_laxlaws (forgetful_functor_fmonoidal_data dpbs L k).
-Proof.
-  split5.
-  intros (R1, dr1) (R2, dr2) (S, ds) (f, df).
-  apply (id_right _ @ ! id_left _).
-  intros (R1, dr1) (R2, dr2) (S, ds) (f, df).
-  apply (id_right _ @ ! id_left _).
-  intros (R1, dr1) (R2, dr2) (R3, dr3).
-  rewrite 2 id_right.
-  refine (_ @ id_left _  @ ! id_right _ @ _).
-  apply cancel_postcomposition.
-  apply (bifunctor_rightid C).
-  apply maponpaths.
-  apply pathsinv0, (bifunctor_leftid C).
-  intros (R, dr).
-  rewrite id_right.
-  refine (_ @ id_left _).
-  apply cancel_postcomposition.
-  apply (bifunctor_rightid C).
-  intros (R, dr).
-  rewrite id_right.
-  refine (_ @ id_left _).
-  apply cancel_postcomposition.
-  apply (bifunctor_leftid C).  
-Qed.
-
-Definition forgetful_functor_fmonoidal_lax {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
-  (L : sym_monoidal_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
-  fmonoidal_lax (double_glued_total_monoidal dpbs L k) C (double_glued_forgetful_functor L K).
-Proof.
-  exists (forgetful_functor_fmonoidal_data dpbs L k).
-  apply forgetful_functor_fmonoidal_laxlaws.
-Defined.
-
-Lemma forgetful_functor_fmonoidal_stronglaws {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
-  (L : sym_monoidal_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
-  fmonoidal_stronglaws (fmonoidal_preservestensordata (forgetful_functor_fmonoidal_lax dpbs L k))
-    (fmonoidal_preservesunit (forgetful_functor_fmonoidal_lax dpbs L k)).
-Proof.
-  split.
-  intros (R1, dr1) (R2, dr2).
-  apply is_z_isomorphism_identity.
-  apply is_z_isomorphism_identity.
-Defined.
-
 Definition forgetful_functor_fmonoidal {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
   (L : sym_monoidal_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
   fmonoidal (double_glued_total_monoidal dpbs L k) C (double_glued_forgetful_functor L K).
 Proof.
-  exists (forgetful_functor_fmonoidal_lax dpbs L k).
-  apply forgetful_functor_fmonoidal_stronglaws.
+  apply projection_fmonoidal.
+Defined.
+
+Definition forgetful_strong_monoidal_functor {C : sym_monoidal_cat} {E : sym_mon_closed_cat} (dpbs : doublePullbacks E)
+  (L : sym_monoidal_functor C E) {K : functor C (E^opp)} (k : natural_contraction E L K) :
+  strong_monoidal_functor (double_glued_total_monoidal_cat dpbs L k) C.
+Proof.
+  exact (_,, forgetful_functor_fmonoidal dpbs L k).
 Defined.
 
 

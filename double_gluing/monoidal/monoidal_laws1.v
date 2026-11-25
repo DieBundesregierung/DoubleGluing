@@ -61,29 +61,34 @@ Section monoidallaws.
   · (internal_lam (sym_mon_braiding E (K (R1 ⊗_{ C} R2)) (L R1) · pr1 k R1 R2) · internal_precomp l1 (K R2)).
 Proof.
   rewrite assoc'.
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (_ · (_ · f))) (hom_onmorphisms_is_postcomp _ _) @ _).
-  refine (! maponpaths (λ f, _ · (_ · f)) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (compose _) _ @ _). 
+  refine (! maponpaths (λ f, _ · f) (hom_onmorphisms_is_postcomp _ _) @ _).
+  refine (! pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _).
+  apply assoc.
   refine (assoc _ _ _ @ _).
-  refine (! maponpaths (λ f, _ · f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (! maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  apply assoc.
   rewrite assoc'.
-  refine (! maponpaths (λ f, f · _) (bifunctor_rightcomp E U3 _ _ _ _ _) @ _).
+  
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (! bifunctor_rightcomp E U3 _ _ _ _ _ @ _).
   rewrite hom_onmorphisms_is_postcomp.
-  refine (maponpaths (λ f, (_ · internal_postcomp U4 f) ⊗^{E}_{r} U3 · _) (hom_onmorphisms_is_postcomp U1 l2') @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} U3 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} U3 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · (_ · f)) ⊗^{E}_{r} U3 · _) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} U3 · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} U3) _ @ _).
+  refine (maponpaths (λ f, _ · internal_postcomp U4 f) (hom_onmorphisms_is_postcomp U1 l2') @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (λ f, _ · f) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ · f) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
+  refine (assoc _ _ _ @ _).
   rewrite <- (internal_postcomp_comp U1).
-  refine (! maponpaths (λ f, (_ · (internal_postcomp U1 f · _)) ⊗^{E}_{r} U3 · _) (doublePullbackSqrRCommutes _) @ _).
+  refine (! maponpaths (λ f, internal_postcomp U1 f · _) (doublePullbackSqrRCommutes _) @ _).
   rewrite (internal_postcomp_comp U1).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} U3 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} U3 · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} U3 · _) (doublePullbackSqrLCommutes _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} U3 · _) (assoc' _ _ _) @ _).
-  rewrite (bifunctor_rightcomp E U3).
+  apply assoc'.
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackSqrLCommutes _) @ _).
+  apply assoc'.
+  now rewrite (bifunctor_rightcomp E U3).
   refine (assoc' _ _ _ @ _ @ assoc _ _ _).
   refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
   refine (_ @ assoc _ _ _).
@@ -91,120 +96,153 @@ Proof.
   rewrite 3 internal_lam_precomp.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, _ · (_ · internal_lam f)) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (compose _) (internal_lam_natural _ _)).
-  unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt.
-  rewrite (when_bifunctor_becomes_rightwhiskering E).
-  rewrite <- (monoidal_braiding_naturality_left E).
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (f · _)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (f · _ · _)) (monoidal_braiding_naturality_right E _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (f · _)) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (f · _)) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · internal_lam (_ · f · _)) (bifunctor_leftcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (f · _)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (id_left _)).
-  rewrite <- (pr2 (monoidal_associatorisolaw E _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (id_left _)).
-  rewrite <- (bifunctor_rightid E).
-  rewrite <- (pr2 (monoidal_braiding_inverses E _ _)).
-  rewrite (bifunctor_rightcomp E (K (R4 ⊗_{C} (R1 ⊗_{ C} R2)))).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
-  do 2 refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (pr2 (pr222 k) R4 R1 R2)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (_ · f))) (id_left _)).
-  rewrite <- (bifunctor_rightid E).
-  rewrite <- (functor_id L).
-  rewrite <- (pr2 (monoidal_braiding_inverses C _ _)).
-  rewrite (functor_comp L).
-  rewrite (bifunctor_rightcomp E (K ((R4 ⊗_{C} R1) ⊗_{ C} R2))).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (_ · f))) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc' _ _ _)).
-  generalize (pr122 k R2 _ _ (sym_mon_braiding C R1 R4)); simpl; rewrite 2 id_right; intros keq.
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (_ · f))) keq); clear keq.
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (f · _ · _))) (assoc _ _ _)).
-  rewrite <- (bifunctor_rightcomp E (K ((R4 ⊗_{C} R1) ⊗_{ C} R2))).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (f · _))) (assoc _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · internal_lam (_ · (_ · f · _))) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (f · _))) (assoc' _ _ _)).
-  rewrite <- (bifunctor_leftcomp E).
-  unfold monoidal_cat_tensor_pt, monoidal_braiding_data_inv.
-  rewrite <- (fsym_respects_braiding L).
-  rewrite (bifunctor_rightcomp E (K ((R1 ⊗_{C} R4) ⊗_{ C} R2))).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (f · _))) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (id_left _)).
-  rewrite <- (bifunctor_leftid E).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · (_ ⊗^{E}_{l} f · _))) (functor_id K _)).
-  rewrite <- (pr1 (monoidal_associatorisolaw C _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · internal_lam (_ · (_ ⊗^{E}_{l} f · _))) (functor_comp K _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · internal_lam (_ · (compose (C:=E) f _))) (bifunctor_leftcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · internal_lam (_ · f)) (assoc' _ _ _)).
-  generalize (pr2 (pr222 k) R1 R4 R2); simpl; unfold postcompose; intros keq.
-  refine (_ @ ! maponpaths (λ f, _ · internal_lam (_ · f)) keq); clear keq.
+  refine (_ @ maponpaths (compose _) _).
+  2 : {
+    refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
+    refine (_ @ ! internal_lam_natural _ _).
+    unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt.
+    rewrite (when_bifunctor_becomes_rightwhiskering E).
+    rewrite <- (monoidal_braiding_naturality_left E).
+    refine (maponpaths (λ f, internal_lam f) (_ @ assoc' _ _ _)).
+    refine (_ @ maponpaths (λ f, f · _) (_ @ assoc' _ _ _)).
+    2 : {
+      refine (_ @ maponpaths (λ f, f · _) (monoidal_braiding_naturality_right E _ _ _ _)).
+      refine (_ @ assoc _ _ _).
+      refine (_ @ maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+      refine (_ @ assoc' _ _ _).
+      refine (_ @ ! maponpaths (λ f, _ · f) (bifunctor_leftcomp E _ _ _ _ _ _)).
+      refine (assoc' _ _ _).
+    }
+    refine (_ @ assoc _ _ _).
+    refine (_ @ maponpaths (λ f, _ · f) (_ @ id_left _)).
+    2 : {
+      rewrite <- (pr2 (monoidal_associatorisolaw E _ _ _)).
+      apply assoc.
+    }
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (compose _) (_ @ id_left _)).
+    2 : {
+      rewrite <- (bifunctor_rightid E).
+      rewrite <- (pr2 (monoidal_braiding_inverses E _ _)).
+      rewrite (bifunctor_rightcomp E (K (R4 ⊗_{C} (R1 ⊗_{ C} R2)))).
+      apply assoc.
+    }
+    refine (_ @ assoc' _ _ _).
+    do 2 refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+    refine (_ @ maponpaths (compose _) (_ @ pr2 (pr222 k) R4 R1 R2)).
+    2 : {
+      refine (_ @ maponpaths (λ f, _ · f) (_ @ id_left _)).
+      2 : {
+        rewrite <- (bifunctor_rightid E).
+        rewrite <- (functor_id L).
+        rewrite <- (pr2 (monoidal_braiding_inverses C _ _)).
+        rewrite (functor_comp L).
+        rewrite (bifunctor_rightcomp E (K ((R4 ⊗_{C} R1) ⊗_{ C} R2))).
+        apply assoc.
+      }
+      refine (_ @ assoc' _ _ _).
+      generalize (pr122 k R2 _ _ (sym_mon_braiding C R1 R4)); simpl; rewrite 2 id_right; intros keq.
+      refine (_ @ maponpaths (λ f, _ · f) keq); clear keq.
+      refine (_ @ assoc' _ _ _).
+      refine (_ @ maponpaths (λ f, f · _) _).
+      2 : {
+        refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
+        rewrite <- (bifunctor_rightcomp E (K ((R4 ⊗_{C} R1) ⊗_{ C} R2))).
+        refine (_ @ assoc _ _ _).
+        refine (_ @ ! maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+        refine (_ @ assoc' _ _ _).
+        rewrite <- (bifunctor_leftcomp E).
+        unfold monoidal_cat_tensor_pt, monoidal_braiding_data_inv.
+        rewrite <- (fsym_respects_braiding L).
+        rewrite (bifunctor_rightcomp E (K ((R1 ⊗_{C} R4) ⊗_{ C} R2))).
+        apply assoc'.
+      }
+      apply assoc.
+    }
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (λ f, _ · f) (_ @ id_left _)).
+    2 : {
+      rewrite <- (bifunctor_leftid E).
+      refine (_ @ maponpaths (λ f, _ ⊗^{E}_{l} f · _) (functor_id K _)).
+      rewrite <- (pr1 (monoidal_associatorisolaw C _ _ _)).
+      refine (_ @ ! maponpaths (λ f, _ ⊗^{E}_{l} f · _) (functor_comp K _ _)).
+      refine (_ @ ! maponpaths (λ f, compose (C:=E) f _) (bifunctor_leftcomp E _ _ _ _ _ _)).
+      apply assoc.
+    }
+    refine (_ @ assoc' _ _ _).
+    refine (maponpaths (λ f, _ · f) (_ @ assoc' _ _ _)).
+    generalize (pr2 (pr222 k) R1 R4 R2); simpl; unfold postcompose; intros keq.
+    refine (! keq); clear keq.
+  }
   rewrite assoc.
   refine (maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, _ · ((_ · (internal_postcomp _ (_ · internal_lam f) · _)) ⊗^{E}_{r} _ · _))
-            (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · ((_ · (internal_postcomp _ (_ · f) · _)) ⊗^{E}_{r} _ · _))
-            (internal_lam_postcomp _ _) @ _).
-  refine (maponpaths (λ f, _ · ((_ · (internal_postcomp _ f · _)) ⊗^{E}_{r} _ · _)) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _) _ @ _).
+  refine (maponpaths (λ f, _ · f) _ @ _).
+  refine (maponpaths (λ f, internal_postcomp _ f · _) _ @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths internal_lam (assoc _ _ _) @ _).
+  refine (! internal_lam_postcomp _ _).
+  apply assoc.
   rewrite (internal_postcomp_comp U1).
-  refine (maponpaths (λ f, _ · ((_ · f) ⊗^{E}_{r} _ · _)) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f ⊗^{E}_{r} _ · _)) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · ((_ · f) ⊗^{E}_{r} _ · _)) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f ⊗^{E}_{r} _ · _)) (assoc _ _ _) @ _).
+  apply assoc'.
+  refine (assoc _ _ _ @ _).
+  refine (! maponpaths (λ f, _ · f) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
+  refine (assoc _ _ _).  
   rewrite (bifunctor_rightcomp E U4).
+  now rewrite <- (hom_onmorphisms_is_postcomp U4).
   rewrite assoc'.
-  rewrite assoc.
-  rewrite <- (hom_onmorphisms_is_postcomp U4).
-  refine (maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
-  rewrite assoc.
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
-  refine (_ @ maponpaths (compose _) (internal_lam_postcomp _ _)).
+  refine (maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _)).
+  rewrite 2 assoc.
+  refine (_ @ maponpaths (compose _) _).
+  2 : {
+    refine (_ @ maponpaths internal_lam (assoc' _ _ _)).
+    refine (internal_lam_postcomp _ _).
+  }
   refine (_ @ assoc' _ _ _).
   apply (maponpaths (postcompose _)).
-  refine (maponpaths (λ f, _ · (internal_lam f · _ · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (f · _ · _) ⊗^{E}_{r} _ · _) (internal_lam_postcomp _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _) _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (maponpaths internal_lam (assoc _ _ _) @ _).
+  refine (! internal_lam_postcomp _ _).
+  refine (assoc' _ _ _ @ _).
   rewrite <- (internal_postcomp_comp U1).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (_ · internal_postcomp U1 (f · _) · _) ⊗^{E}_{r} _ · _) (pr12 k R1 _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 f · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 (_ · f) · _) ⊗^{E}_{r} _ · _) (internal_lam_natural _ _) @ _).
+  refine (maponpaths (λ f, _ · internal_postcomp U1 f) _ @ _).
+  refine (assoc _ _ _ @ _).
+  refine (! maponpaths (λ f, f · _) (pr12 k R1 _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (compose _) (internal_lam_natural _ _) @ _).
   unfold monoidal_cat_tensor_mor.
   rewrite (when_bifunctor_becomes_rightwhiskering E).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 (_ · internal_lam f) · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 (_ · internal_lam (f · _)) · _) ⊗^{E}_{r} _ · _)
-            (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 (_ · internal_lam f) · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths internal_lam _ @ _).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
   rewrite <- (monoidal_braiding_naturality_right E).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 (_ · internal_lam f) · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (_ · internal_postcomp U1 (_ · f) · _) ⊗^{E}_{r} _ · _) (internal_lam_postcomp _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · internal_postcomp U1 f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
+  apply assoc.
+  refine (! internal_lam_postcomp _ _).
+  apply assoc.
   rewrite (internal_postcomp_comp U1).
-  refine (maponpaths (λ f, _ · (f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (_ · f) ⊗^{E}_{r} _ · _) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  rewrite (bifunctor_rightcomp E).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  apply assoc.
+  refine (assoc' _ _ _ @ _).
+  refine (! maponpaths (λ f, _ · f) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
+  apply assoc.
+  now rewrite (bifunctor_rightcomp E).
+  apply assoc.
   rewrite assoc'.
   rewrite <- (hom_onmorphisms_is_postcomp U4).
   refine (maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
   rewrite assoc.
-  refine (_ @ maponpaths (λ f, _ · internal_lam f) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f) (internal_lam_postcomp _ _)).
+  refine (_ @ maponpaths (λ f, _ · f) (internal_lam_postcomp _ _ @ _)).
+  2 : {
+    refine (maponpaths internal_lam (assoc' _ _ _)).
+  }
   refine (_ @ assoc' _ _ _).
   apply (maponpaths (postcompose _)).
   refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
@@ -229,32 +267,35 @@ Proof.
   refine (maponpaths (λ f, (_ · internal_postcomp _ (internal_postcomp U4 f) · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
   rewrite (internal_postcomp_comp U4).
   rewrite (internal_postcomp_comp U1).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (curry_unit _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · (f · _)) ⊗^{E}_{r} _ · _) (curry_nat3 _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (curry_swap _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _) _ @ _).
+  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (curry_unit _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  
+  refine (maponpaths (λ f, _ · f) (assoc _ _ _) @ _).
+  refine (! maponpaths (λ f, _ · (f · _)) (curry_nat3 _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f) (assoc' _ _ _) @ _).
+  refine (assoc _ _ _ @ _).
+  refine (! maponpaths (λ f, _ · f) (curry_swap _ _ _) @ _).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
   rewrite <- internal_pre_post_comp_as_post_pre_comp.
   rewrite internal_pre_post_comp_as_pre_post_comp.
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, (f · _ · _) ⊗^{E}_{r} _ · _) (mon_closed_adj_natural _ _) @ _).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · f · _) ⊗^{E}_{r} _ · _) (internal_postcomp_comp _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (curry_nat3 _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (curry_unit _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (internal_postcomp_comp U4 _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (internal_postcomp_comp U4 _ _) @ _).
-  rewrite (bifunctor_rightcomp E).
+  refine (maponpaths (λ f, f · _) (assoc _ _ _ @ _) @ _).
+  refine (! maponpaths (λ f, f · _) (mon_closed_adj_natural _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (! maponpaths (λ f, _ · f) (internal_postcomp_comp _ _ _)).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (λ f, _ · f) (curry_nat3 _ _ _) @ _).
+  refine (assoc _ _ _ @ _).
+  refine (! maponpaths (λ f, f · _) (curry_unit _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (! maponpaths (λ f, _ · f) (internal_postcomp_comp U4 _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (! maponpaths (λ f, _ · f) (internal_postcomp_comp U4 _ _)).
+  now rewrite (bifunctor_rightcomp E).
   rewrite assoc'.
   rewrite <- (hom_onmorphisms_is_postcomp U4).
   refine (maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
@@ -267,24 +308,32 @@ Proof.
   apply maponpaths.
   rewrite (maponpaths (λ f, f ⊗^{E}_{r} U4) (assoc' _ _ _)).
   rewrite (bifunctor_rightcomp E).
-  refine (maponpaths (λ f, _ · (_ · (_ · f))) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f)) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths (λ f, _ · f) (assoc' _ _ _) @ _).
+  refine (assoc _ _ _ @ _).
   rewrite <- (monoidal_associatorinvnatleftright E).
-  refine (maponpaths (λ f, _ · (_ · f)) (assoc' _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  apply assoc'.
+  refine (assoc _ _ _ @ _).
   rewrite <- (bifunctor_leftcomp E).
   rewrite (monoidal_braiding_naturality_left E U4 U1).
   rewrite (bifunctor_leftcomp E).
-  refine (maponpaths (λ f, _ · f) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
   rewrite (monoidal_associatornatleft E).
   rewrite assoc'.
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, _ · (f · _) · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (assoc _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (_ · f) · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) _).
+  2 : {
+    refine (_ @ maponpaths (compose _) _).
+    2 : {
+      refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+      refine (_ @ assoc _ _ _).
+      refine (_ @ ! maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+      apply assoc'.
+    }
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
   rewrite <- (bifunctor_rightcomp E).
@@ -299,17 +348,20 @@ Proof.
   refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
   refine (_ @ assoc _ _ _).
   apply maponpaths.
-  refine (maponpaths (λ f, _ · (_ · (_ · f))) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · (_ · (f · _)))) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · (_ · f))) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ · f)) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (assoc _ _ _ @ _ @ assoc' _ _ _).
+  apply cancel_postcomposition.
+  apply (bifunctor_equalwhiskers E).
+  refine (assoc _ _ _ @ _).
   rewrite <- (monoidal_associatorinvnatleft E).
-  refine (maponpaths (λ f, _ · (_ · f)) (assoc' _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  apply assoc'.
+  refine (assoc _ _ _ @ _).
   rewrite <- (bifunctor_leftcomp E).
   rewrite (monoidal_braiding_naturality_right E U4).
   rewrite (bifunctor_leftcomp E).
-  refine (maponpaths (λ f, _ · f) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
   rewrite (monoidal_associatornatleftright E).
   rewrite assoc'.
@@ -319,23 +371,36 @@ Proof.
   refine (_ @ assoc' _ _ _).
   rewrite <- (monoidal_braiding_naturality_right E _ _ (L R1)).
   refine (_ @ assoc _ _ _).
+
+  
   refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
   rewrite <- (bifunctor_leftcomp E).
   do 2 rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ ! maponpaths (λ f, _ · (f · _)) (bifunctor_leftcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (assoc _ _ _ @ _)).
+  2 : {
+    refine (! maponpaths (λ f, f · _) (bifunctor_leftcomp E _ _ _ _ _ _)).
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite (monoidal_associatorinvnatleft E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) _).
+  2 : {
+    refine (_ @ assoc' _ _ _).
+    rewrite (monoidal_associatorinvnatleft E).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) _).
+  2 : {
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_leftcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (compose _) _).
+  2 : {
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (λ f, f · _) (bifunctor_leftcomp E _ _ _ _ _ _)).
+    apply assoc'.
+  }
   refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_leftcomp E _ _ _ _ _ _)).
   rewrite <- (monoidal_associatornatleft E).
   refine (_ @ assoc' _ _ _).
@@ -349,8 +414,8 @@ Proof.
   refine (_ @ id_right _).
   rewrite 2 assoc'.
   apply maponpaths.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (pr1 (monoidal_associatorisolaw E _ _ _)) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, f · _) (pr1 (monoidal_associatorisolaw E _ _ _))).
   rewrite id_left.
   apply (monoidal_braiding_inverses E). (* completes subgoal *)
   do 2 refine (_ @ assoc _ _ _).
@@ -372,8 +437,10 @@ Proof.
   refine (! id_left _ @ _).
   repeat rewrite assoc.
   apply (maponpaths (postcompose _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · f · _) (pr2 (monoidal_associatorisolaw E _ _ _))).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    refine (! maponpaths (compose _) (pr2 (monoidal_associatorisolaw E _ _ _))).
+  }
   rewrite id_right.
   apply pathsinv0.
   apply (monoidal_braiding_inverses E). (* completes subgoal *)
@@ -384,18 +451,22 @@ Proof.
   apply maponpaths.
   refine (_ @ maponpaths (compose _) (assoc _ _ _)).
   rewrite assoc.
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (compose _) (sym_mon_hexagon_lassociator C _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    apply pathsinv0, (sym_mon_hexagon_lassociator C).
+  }
   unfold monoidal_cat_tensor_mor.
   rewrite (when_bifunctor_becomes_rightwhiskering C).
   rewrite (when_bifunctor_becomes_leftwhiskering C).
   refine (! id_left _ @ _).
   repeat rewrite assoc.
   apply (maponpaths (postcompose _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (bifunctor_rightcomp C _ _ _ _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · f ⊗^{C}_{r} _ · _) (pr2 (monoidal_braiding_inverses C _ _))).
-  refine (_ @ ! maponpaths (λ f, _ · f · _) (bifunctor_rightid C _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    refine (maponpaths (compose _) (_ @ bifunctor_rightcomp C _ _ _ _ _ _)).
+    refine (_ @ ! maponpaths (λ f, f ⊗^{C}_{r} _) (pr2 (monoidal_braiding_inverses C _ _))).
+    apply pathsinv0, (bifunctor_rightid C _ _).
+  }
   rewrite id_right.
   apply pathsinv0.
   apply (monoidal_associatorisolaw C). (* completes subgoal *)
@@ -713,34 +784,38 @@ Local Lemma double_glued_monoidal_laws_lemma3 {R1 R2 R3 R4: C} {U1 X1 U2 X2 U3 X
      · (sym_mon_braiding E (K (monoidal_cat_tensor_pt R4 (R1 ⊗_{ C} R3))) (L R4) · pr1 k R4 (R1 ⊗_{ C} R3)))
   · (internal_lam (sym_mon_braiding E (K (R1 ⊗_{ C} R3)) (L R1) · pr1 k R1 R3) · internal_precomp l1 (K R3)).
 Proof.
-  rewrite assoc'.
-  refine (! maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
-  simpl.
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (compose _ ) _ @ _).
+  refine (! pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _ @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} U4 · _) _).
+  refine (maponpaths (λ f, # _ f) _ @ _).
   rewrite (functor_comp (pr1 (pr2 E U1))).
-  refine (maponpaths (λ f, _ · ((# _ f) ⊗^{E}_{r} U4 · _)) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · ((# _ (f · _)) ⊗^{E}_{r} U4 · _)) (triangle_id_right_ad (pr2 (pr2 E _)) _) @ _).
-  rewrite id_left.
-  rewrite hom_onmorphisms_is_postcomp.
-  refine (maponpaths (λ f, _ · (f ⊗^{E}_{r} U4 · _)) (hom_onmorphisms_is_postcomp _ _) @ _).
   refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (triangle_id_right_ad (pr2 (pr2 E _)) _) @ _).
+  rewrite id_left.
+  apply hom_onmorphisms_is_postcomp.
+  apply hom_onmorphisms_is_postcomp.
+  refine (assoc _ _ _ @ _).
+  simpl.
   rewrite <- (bifunctor_rightcomp E).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} U4 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} U4 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · (_ · f)) ⊗^{E}_{r} U4 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · (_ · (_ · f))) ⊗^{E}_{r} U4 · _) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · (_ · f)) ⊗^{E}_{r} U4 · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} U4 · _) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ · f) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ · f) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ · f) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
+  refine (assoc _ _ _ @ _).
   rewrite <- internal_pre_post_comp_as_pre_post_comp.
   rewrite internal_pre_post_comp_as_post_pre_comp.
-  refine (maponpaths (λ f, (_ · (_ · f)) ⊗^{E}_{r} U4 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} U4 · _) (assoc _ _ _) @ _).
-  rewrite <- (internal_postcomp_comp U2).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} U4 · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · internal_postcomp _ f · _) ⊗^{E}_{r} U4 · _) (doublePullbackSqrRCommutes dpb34) @ _).
+  apply assoc'.
+  refine (assoc _ _ _ @ _).
+  now rewrite <- (internal_postcomp_comp U2).
+  refine (assoc _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (! maponpaths (λ f, _ · internal_postcomp _ f) (doublePullbackSqrRCommutes dpb34) @ _).
   rewrite (internal_postcomp_comp U2).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} U4 · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} U4 · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} U4 · _) (doublePullbackSqrLCommutes dpb234) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} U4 · _) (assoc' _ _ _) @ _).
+  apply assoc.
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (λ f, f · _) (doublePullbackSqrLCommutes dpb234) @ _).
+  apply assoc'.
   rewrite (bifunctor_rightcomp E).
   refine (_ @ assoc _ _ _).
   refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
@@ -749,38 +824,44 @@ Proof.
   repeat rewrite internal_lam_precomp.
   refine (_ @ assoc' _ _ _).
   refine (_ @ ! internal_lam_natural _ _).
-  do 2 refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) _ @ _).
+  do 2 refine (assoc _ _ _ @ _).
   rewrite internal_lam_natural.
   rewrite internal_lam_postcomp.
   rewrite internal_lam_precomp.
-  refine (maponpaths (λ f, (internal_lam f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, internal_lam f · _) (assoc _ _ _ @ _) @ _).
   rewrite internal_lam_natural.
-  unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt; rewrite 3 (when_bifunctor_becomes_rightwhiskering E).
-  refine (maponpaths (λ f, (internal_lam (internal_lam (f ⊗^{E}_{r} _ · _)) · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, (internal_lam (internal_lam ((f · _) ⊗^{E}_{r} _ · _)) · _) ⊗^{E}_{r} _ · _) (bifunctor_leftcomp E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, (internal_lam (internal_lam f) · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, (internal_lam (internal_lam (f · _)) · _) ⊗^{E}_{r} _ · _) (bifunctor_rightcomp E _ _ _ _ _ _) @ _).
+  refine (maponpaths internal_lam _).
+  unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt; rewrite 2 (when_bifunctor_becomes_rightwhiskering E).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _ @ _) @ _).
+  refine (! maponpaths (λ f, f · _) (bifunctor_leftcomp E _ _ _ _ _ _)).
+  refine (assoc _ _ _ @ _).
+  refine (! maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
   unfold internal_lam.
-  rewrite 3 hom_onmorphisms_is_postcomp.
+  rewrite 2 hom_onmorphisms_is_postcomp.
   rewrite (internal_postcomp_comp U1).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · (_ · f)) ⊗^{E}_{r} _ · _) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (λ f, _ · f) (assoc' _ _ _ @ _) @ _).
+  refine (! maponpaths (λ f, _ · f) (internal_swap_arg_nat3 _ _ _ _ _) @ _).
+  apply assoc.
+  apply assoc.
   rewrite (bifunctor_rightcomp E U4).
+  unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt; rewrite (when_bifunctor_becomes_rightwhiskering E).
+  unfold internal_lam.
+  rewrite hom_onmorphisms_is_postcomp.
   refine (assoc' _ _ _ @ _).
   rewrite <- (hom_onmorphisms_is_postcomp U4).
   refine (maponpaths (compose _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
   refine (assoc _ _ _ @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _ · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _ · _) (internal_swap_arg_unit _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) _ @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _ @ _) @ _).
+  apply internal_swap_arg_unit.
   unfold monoidal_cat_tensor_pt; simpl.
   rewrite (bifunctor_rightcomp E U4).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
   rewrite <- (hom_onmorphisms_is_postcomp U4).
-  refine (maponpaths (λ f, _ · f · _) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f) (pr2 (counit_from_are_adjoints (pr2 (pr2 E U4))) _ _ _) @ _).
+  apply assoc.
   rewrite assoc'.
   refine (maponpaths (λ f, f · _) (triangle_id_left_ad (pr2 (pr2 E _)) _) @ _).
   rewrite id_left.
@@ -789,55 +870,67 @@ Proof.
   apply (maponpaths (compose _)).
   apply maponpaths.
   repeat rewrite assoc.
-  refine (maponpaths (λ f, _ · f ⊗^{E}_{r} _ · _ · _ · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (_ · f) ⊗^{E}_{r} _ · _ · _ · _) (pr12 k R2 _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f ⊗^{E}_{r} _ · _ · _ · _) (assoc _ _ _) @ _).
-  rewrite (bifunctor_rightcomp E U4).
-  refine (maponpaths (λ f, f · _ · _ · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f · _ · _ · _) (_ @ assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f ⊗^{E}_{r} _ ) (assoc' _ _ _ @ _) @ _).
+  refine (! maponpaths (λ f, _ · f) (pr12 k R2 _ _ _) @ _).
+  apply assoc.
+  now rewrite (bifunctor_rightcomp E U4).
   rewrite 3 assoc'.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
   rewrite <- (monoidal_braiding_naturality_right E).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  refine (maponpaths (compose _) (! id_left _) @ _).
+  refine (maponpaths (compose _) (! id_left _ @ _) @ _).
   simpl.
   rewrite <- (pr2 (monoidal_associatorisolaw E _ _ _)).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  refine (maponpaths (compose _) (! id_left _) @ _).
+  refine (maponpaths (compose _) (! id_left _ @ _) @ _).
   rewrite <- (bifunctor_rightid E).
   rewrite <- (pr2 (monoidal_braiding_inverses E _ _)).
   rewrite (bifunctor_rightcomp E (K (R2 ⊗_{ C} (R4 ⊗_{ C} R3)))).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  do 2 refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (compose _) (pr2 (pr222 k) R2 R4 R3) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (assoc _ _ _ @ _).
+  apply (! pr2 (pr222 k) R2 R4 R3).
   rewrite (bifunctor_rightcomp E U1).
   do 3 refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (monoidal_braiding_naturality_right E).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (id_left _)).
-  rewrite <- (pr2 (monoidal_associatorisolaw E _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ id_left _)).
+  2 : {
+    rewrite <- (pr2 (monoidal_associatorisolaw E _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (id_left _)).
-  rewrite <- (bifunctor_rightid E).
-  rewrite <- (pr2 (monoidal_braiding_inverses E _ _)).
-  rewrite (bifunctor_rightcomp E (K (R4 ⊗_{C} (R1 ⊗_{ C} R3)))).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ id_left _)).
+  2 : {
+    rewrite <- (bifunctor_rightid E).
+    rewrite <- (pr2 (monoidal_braiding_inverses E _ _)).
+    rewrite (bifunctor_rightcomp E (K (R4 ⊗_{C} (R1 ⊗_{ C} R3)))).
+    apply assoc.
+  }  
   refine (_ @ assoc' _ _ _).
-  do 2 refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (compose _) (pr2 (pr222 k) R4 R1 R3)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (_ @ assoc' _ _ _).
+    apply (pr2 (pr222 k) R4 R1 R3).
+  }
   rewrite (assoc' (C:=C)).
   rewrite (monoidal_associatornatright C).
   rewrite (assoc (C:=C)).
@@ -845,62 +938,86 @@ Proof.
   rewrite (assoc' (C:=C)).
   rewrite (functor_comp K).
   repeat refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} U1 · _) (assoc _ _ _)).
-  refine (_ @ ! maponpaths (λ f, (f · _) ⊗^{E}_{r} U1 · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} U1 · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) ⊗^{E}_{r} U1 · _) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (λ f, (_ · (f · _)) ⊗^{E}_{r} U1 · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) ⊗^{E}_{r} U1 · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} U1 · _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} U1 · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} U1 · _) (_ @ assoc _ _ _)).
+  2 : {
+    refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
+    refine (_ @ assoc _ _ _).
+    refine (_ @ maponpaths (λ f, _ · f) (_ @ assoc' _ _ _)).
+    2 : {
+      refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+      apply assoc.
+    }
+    refine (_ @ assoc' _ _ _).
+    rewrite <- (monoidal_braiding_naturality_right E).
+    apply assoc'.
+  }
   rewrite (bifunctor_rightcomp E U1).
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (monoidal_braiding_naturality_right E).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite (monoidal_associatorinvnatleft E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite (monoidal_associatorinvnatleft E).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  unfold monoidal_braiding_data_inv.
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (_ · f)) (assoc _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    unfold monoidal_braiding_data_inv.
+    refine (_ @ maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    refine (_ @ maponpaths (λ f, _ · f) (assoc _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (bifunctor_leftcomp E).
-  refine (_ @ maponpaths (λ f, _ · (_ ⊗^{E}_{l} f · _)) (functor_comp K _ _)).
-  rewrite (monoidal_associatornatleftright C).
-  refine (_ @ ! maponpaths (λ f, _ · (_ ⊗^{E}_{l} f · _)) (functor_comp K _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (f · _)) (bifunctor_leftcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (bifunctor_leftcomp E).
+    refine (_ @ maponpaths (λ f, _ ⊗^{E}_{l} f · _) (_ @ functor_comp K _ _)).
+    2 : {
+      rewrite (monoidal_associatornatleftright C).
+      apply pathsinv0, (functor_comp K).
+    }
+    refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_leftcomp E _ _ _ _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (_ @ maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
   generalize (pr122 k R3 _ _ (R4 ⊗^{ C}_{l} f12)); simpl; rewrite 2 id_right; intros keq.
   refine (_ @ ! maponpaths (compose _) keq); clear keq.
   do 3 refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (bifunctor_rightcomp E).
-  rewrite (fsym_respects_braiding L).
-  rewrite (bifunctor_rightcomp E (K ((R4 ⊗_{ C} R2) ⊗_{ C} R3))).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (bifunctor_rightcomp E).
+    rewrite (fsym_respects_braiding L).
+    rewrite (bifunctor_rightcomp E (K ((R4 ⊗_{ C} R2) ⊗_{ C} R3))).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (bifunctor_rightcomp E _ _ _ _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
+  }
   rewrite <- (functor_comp L).
   rewrite (monoidal_braiding_naturality_right C).
   rewrite (functor_comp L).
@@ -912,110 +1029,125 @@ Proof.
   repeat rewrite assoc.
   apply (maponpaths (postcompose _)).
   do 2 refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (bifunctor_rightcomp E).
-  (* apply naturality of preservestensordata *)
-  rewrite <- fmonoidal_preservestensornatright.
-  rewrite (bifunctor_rightcomp E (K ((R4 ⊗_{ C} R2) ⊗_{ C} R3))).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (bifunctor_rightcomp E).
+    rewrite <- fmonoidal_preservestensornatright.
+    rewrite (bifunctor_rightcomp E (K ((R4 ⊗_{ C} R2) ⊗_{ C} R3))).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
   refine (_ @ ! maponpaths (compose _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
   refine (_ @ assoc' _ _ _).
   apply (maponpaths (postcompose _)).
   rewrite eqphi.
   do 4 refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, _ · f ⊗^{ E}_{r} U4 · _) (assoc' _ _ _) @ _).
-  rewrite (bifunctor_rightcomp E U4).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (_ @ assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f ⊗^{ E}_{r} U4) (assoc' _ _ _) @ _).
+  now rewrite (bifunctor_rightcomp E U4).
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
   rewrite <- (monoidal_associatorinvnatleftright E).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  apply assoc.
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
   rewrite <- (bifunctor_leftcomp E).
   rewrite (monoidal_braiding_naturality_left E).
-  refine (maponpaths (λ f, _ · f · _) (bifunctor_leftcomp E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, _ · f) (bifunctor_leftcomp E _ _ _ _ _ _) @ _).
+  apply assoc.
   refine (assoc' _ _ _ @ _).
   rewrite (monoidal_associatornatleft E).
   refine (assoc' _ _ _ @ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    refine (_ @ maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
   rewrite <- (bifunctor_leftcomp E _ _ _ _ _ _).
   rewrite <- (monoidal_associatorinvnatright E).
   refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  rewrite (monoidal_braiding_naturality_left E).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    rewrite (monoidal_braiding_naturality_left E).
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  rewrite <- (bifunctor_leftcomp E).
-  refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    rewrite <- (bifunctor_leftcomp E).
+    apply pathsinv0, (bifunctor_equalwhiskers E).
+  }
   refine (_ @ assoc _ _ _).
   apply maponpaths.
   rewrite (bifunctor_rightcomp E U4).
   rewrite 3 assoc.
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
   rewrite assoc'.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
   rewrite <- (monoidal_braiding_naturality_right E).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
   rewrite (monoidal_associatorinvnatleft E).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
   rewrite <- (bifunctor_leftcomp E).
-  refine (_ @ ! maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f ⊗^{E}_{r} _ · _) _).
+  2 : {
+    refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    refine (_ @ assoc _ _ _).
+    rewrite <- (monoidal_braiding_naturality_right E).
+    apply assoc'.
+  }
   rewrite (bifunctor_rightcomp E (L R2)).
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (monoidal_braiding_naturality_right E).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite (monoidal_associatorinvnatleft E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite (monoidal_associatorinvnatleft E).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
   rewrite <- (bifunctor_leftcomp E).
   apply map_on_two_paths.
   rewrite 2 assoc'.
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  apply assoc.
   rewrite assoc'.
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
   rewrite <- (monoidal_associatorinvnatleft E).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  apply assoc.
   rewrite assoc'.
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
   rewrite <- (bifunctor_leftcomp E).
   rewrite (monoidal_braiding_naturality_right E).
   rewrite (bifunctor_leftcomp E (K (R2 ⊗_{ C} (R3 ⊗_{ C} R4)))).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  apply assoc.
   rewrite assoc'.
   rewrite (monoidal_associatornatleftright E).
   rewrite (bifunctor_rightcomp E (L R2)).
   rewrite assoc'.
   do 2 refine (_ @ assoc _ _ _).
   apply maponpaths.
-  repeat refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  now rewrite 4 assoc.
   use pathscomp0.
   apply (compose (α^{E}_{_,_,_})).
   exact (sym_mon_braiding E _ _ · (sym_mon_braiding E _ _ ⊗^{E}_{r} _)).
@@ -1037,8 +1169,8 @@ Proof.
   refine (_ @ id_left _).
   repeat rewrite assoc.
   repeat apply (maponpaths (postcompose _)).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ · f · _) (pr2 (monoidal_associatorisolaw E _ _ _)) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ · f) (pr2 (monoidal_associatorisolaw E _ _ _))).
   rewrite id_right.
   refine (! bifunctor_leftcomp E _ _ _ _ _ _ @ _).
   rewrite <- (bifunctor_leftid E).
@@ -1048,7 +1180,8 @@ Proof.
   unfold monoidal_cat_tensor_mor.
   rewrite (when_bifunctor_becomes_leftwhiskering E).
   rewrite (when_bifunctor_becomes_rightwhiskering E).
-  do 4 refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  now rewrite 4 assoc'.
   rewrite assoc.
   refine (maponpaths (λ f, f · _) (pr1 (monoidal_associatorisolaw E _ _ _)) @ _).
   rewrite id_left.
@@ -1067,14 +1200,14 @@ Proof.
   rewrite (when_bifunctor_becomes_leftwhiskering E).
   rewrite (when_bifunctor_becomes_rightwhiskering E).
   rewrite 3 assoc.
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · f · _) (bifunctor_leftcomp E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · _ ⊗^{E}_{l} f · _) (pr1 (monoidal_braiding_inverses E _ _)) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ · f) (! bifunctor_leftcomp E _ _ _ _ _ _ @ _)).
+  refine (maponpaths (λ f, _ ⊗^{E}_{l} f) (pr1 (monoidal_braiding_inverses E _ _))).
   rewrite (bifunctor_leftid E).
   rewrite id_right.
   rewrite assoc.
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
-  refine (maponpaths (λ f, _ ·  f · _) (pr1 (monoidal_associatorisolaw E _ _ _)) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ ·  f) (pr1 (monoidal_associatorisolaw E _ _ _))).
   rewrite id_right.
   refine (! bifunctor_rightcomp E _ _ _ _ _ _ @ _).
   rewrite <- (bifunctor_rightid E).
@@ -1085,8 +1218,8 @@ Proof.
   refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
   apply maponpaths.
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (compose _)  (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (compose _) (sym_mon_hexagon_lassociator C _ _ _)).
+  refine (_ @ maponpaths (compose _)  (_ @ assoc' _ _ _)).
+  2 : apply pathsinv0, (sym_mon_hexagon_lassociator C).
   unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt.
   rewrite (when_bifunctor_becomes_leftwhiskering C).
   rewrite (when_bifunctor_becomes_rightwhiskering C).
@@ -1120,25 +1253,36 @@ Proof.
   refine (_ @ ! maponpaths (compose _) (internal_eval_nat _ _)).
   rewrite hom_onmorphisms_is_postcomp.
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (bifunctor_rightcomp E U4 _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · (f · _)) ⊗^{ E}_{r} U4 · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · (_ · f)) ⊗^{ E}_{r} U4 · _) (curry_nat3 _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) ⊗^{ E}_{r} U4 · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · (f · _)) ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  rewrite <- internal_pre_post_comp_as_pre_post_comp.
-  rewrite internal_pre_post_comp_as_post_pre_comp.
-  refine (_ @ maponpaths (λ f, (_ · (f · _)) ⊗^{ E}_{r} U4 · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  rewrite <- internal_postcomp_comp.
-  refine (_ @ maponpaths (λ f, (_ · (internal_postcomp _ f · _)) ⊗^{ E}_{r} U4 · _) eqpsi).
-  refine (_ @ ! maponpaths (λ f, (_ · (compose (C:=E) f _)) ⊗^{ E}_{r} U4 · _) (internal_postcomp_comp _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (f · _) ⊗^{ E}_{r} U4 · _) (doublePullbackSqrRCommutes dpb234)).
-  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  rewrite 2 (bifunctor_rightcomp E).
+  
+  refine (_ @ maponpaths (λ f, f · _) (_ @ bifunctor_rightcomp E U4 _ _ _ _ _)).
+  2 : {
+    refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4) (_ @ assoc _ _ _)).
+    2 : {
+      refine (_ @ maponpaths (λ f, compose (C:=E) (doublePullbackPrR dpb234) f) _).
+      2 : {
+        refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+        refine (_ @ assoc _ _ _).
+        refine (_ @ maponpaths (λ f, _ · f) (curry_nat3 _ _ _)).
+        refine (_ @ assoc' _ _ _).
+        refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+        2 : {
+          rewrite <- internal_pre_post_comp_as_pre_post_comp.
+          rewrite internal_pre_post_comp_as_post_pre_comp.
+          apply assoc'.
+        }
+        refine (_ @ assoc _ _ _).
+        rewrite <- internal_postcomp_comp.
+        refine (_ @ maponpaths (λ f, compose (C:=E) f _) (! internal_postcomp_comp _ _ _ @ _)).
+        2 : refine (maponpaths (λ f, internal_postcomp _ f) eqpsi).
+        apply assoc.
+      }
+      refine (_ @ assoc' _ _ _).
+      refine (_ @ maponpaths (λ f, f · _) (doublePullbackSqrRCommutes dpb234)).
+      apply assoc.
+    }
+    now rewrite (bifunctor_rightcomp E U4).
+  }
+  rewrite (bifunctor_rightcomp E U4).
   refine (_ @ assoc _ _ _).
   rewrite 2 assoc'.
   apply maponpaths.
@@ -1154,18 +1298,21 @@ Proof.
   rewrite 2 internal_lam_natural.
   unfold monoidal_cat_tensor_mor, monoidal_cat_tensor_pt.
   rewrite 2 (when_bifunctor_becomes_rightwhiskering E).
-  rewrite internal_lam_postcomp.
-  rewrite internal_lam_precomp.
-  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  rewrite hom_onmorphisms_is_postcomp.
-  refine (_ @ ! maponpaths (λ f, (_ · f) ⊗^{ E}_{r} U4 · _) (curry_nat3 _ _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, (f · _) ⊗^{ E}_{r} U4 · _) (curry_unit _ _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  rewrite <- (internal_postcomp_comp U4).
-  refine (_ @ maponpaths (λ f, (_ · internal_postcomp _ f) ⊗^{ E}_{r} U4 · _) (internal_postcomp_comp U3 _ _)).
-  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, (_ · f) ⊗^{ E}_{r} U4 · _) (internal_postcomp_comp U4 _ _)).
+  refine (_ @ maponpaths (λ f, f ⊗^{ E}_{r} U4 · _) _).
+  2 : {
+    rewrite internal_lam_postcomp.
+    rewrite internal_lam_precomp.
+    refine (_ @ assoc _ _ _).
+    rewrite hom_onmorphisms_is_postcomp.
+    refine (_ @ ! maponpaths (λ f, _ · f) (curry_nat3 _ _ _)).
+    refine (_ @ assoc' _ _ _).
+    refine (_ @ maponpaths (λ f, f · _) (curry_unit _ _ _)).
+    refine (_ @ assoc _ _ _).
+    rewrite <- (internal_postcomp_comp U4).
+    refine (_ @ maponpaths (λ f, _ · internal_postcomp _ f) (internal_postcomp_comp U3 _ _)).
+    refine (_ @ assoc _ _ _).
+    refine (maponpaths (λ f, _ · f) (internal_postcomp_comp U4 _ _)).
+  }
   rewrite (bifunctor_rightcomp E U4).
   refine (_ @ assoc _ _ _).
   rewrite <- hom_onmorphisms_is_postcomp.
@@ -1176,53 +1323,64 @@ Proof.
   apply (maponpaths (compose _)).
   rewrite <- hom_onmorphisms_is_postcomp.
   apply maponpaths.
-  do 2 refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
-  refine (! maponpaths (λ f, (_ · f) ⊗^{E}_{r} _ · _) (pr12 k R4 _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) _ @ _).
+  refine (maponpaths (λ f, f · _) (assoc _ _ _ @ assoc _ _ _) @ _).
+  refine (assoc' _ _ _ @ _).
+  refine (maponpaths (compose _) (! pr12 k R4 _ _ _) @ _).
+  apply assoc.
   rewrite (bifunctor_rightcomp E).
   rewrite assoc'.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
   rewrite <- (monoidal_braiding_naturality_right E).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
   refine (maponpaths (λ f, f · _ · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
   do 2 refine (assoc' _ _ _ @ _).
   simpl.
   rewrite (bifunctor_leftcomp E).
-  refine (_ @ maponpaths (λ f, _ · f) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (_ · f · _)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (_ · (f · _) · _)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (_ · f · _)) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · (f · _)) (assoc' _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f) (assoc _ _ _)).
+  refine (_ @ maponpaths (λ f, _ · f) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _ @ _)).
+    2 : {
+      refine (maponpaths (λ f, _ · f) (assoc _ _ _ @ _ @ assoc' _ _ _)).
+      refine (maponpaths (λ f, f · _) (assoc' _ _ _)).
+    }
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc' _ _ _)).
+  2 : {
+    refine (_ @ ! maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  rewrite <- (bifunctor_leftcomp E).
-  refine (_ @ maponpaths (λ f, _ · _ ⊗^{ E}_{l} f · _) (tensor_sym_mon_braiding _ _ _)).
-  unfold monoidal_cat_tensor_mor.
-  rewrite (bifunctor_equalwhiskers E).
-  unfold functoronmorphisms2.
-  rewrite 2 (bifunctor_leftcomp E).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    rewrite <- (bifunctor_leftcomp E).
+    refine (_ @ maponpaths (λ f, _ · _ ⊗^{ E}_{l} f) (tensor_sym_mon_braiding _ _ _)).
+    unfold monoidal_cat_tensor_mor.
+    rewrite (bifunctor_equalwhiskers E).
+    unfold functoronmorphisms2.
+    rewrite 2 (bifunctor_leftcomp E).
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
-  rewrite (monoidal_associatornatleft E).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ ! maponpaths (λ f, _ · f · _) (monoidal_associatornatleftright E _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite (monoidal_associatornatleft E).
+    apply assoc.
+  }
+  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _ @ _)).
+  2 : refine (maponpaths (λ f, _ · f) (! monoidal_associatornatleftright E _ _ _ _ _)).
   do 2 refine (_ @ assoc _ _ _).
   apply maponpaths.
-  refine (maponpaths (λ f, (f · _ · _) ⊗^{E}_{r} _ · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
-  do 2 refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) _ @ _).
+  refine (maponpaths (λ f, f · _ · _) (bifunctor_equalwhiskers E _ _ _ _ _ _) @ _).
+  refine (assoc' _ _ _ @ assoc' _ _ _).
   rewrite (bifunctor_rightcomp E).
   rewrite assoc'.
   apply maponpaths.
@@ -1243,51 +1401,65 @@ Proof.
   rewrite (bifunctor_rightcomp E (K (R4 ⊗_{ C} (R3 ⊗_{C} R1)))). 
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   rewrite assoc.
-  do 2 refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (compose _) (pr2 (pr222 k) R4 R3 R1) @ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  rewrite 2 (monoidal_braiding_naturality_right E).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (maponpaths (compose _) _ @ _).
+  do 2 refine (assoc _ _ _ @ _).
+  apply pathsinv0, (pr2 (pr222 k) R4 R3 R1).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    rewrite (monoidal_braiding_naturality_right E).
+    apply assoc'.
+  }
+  rewrite (monoidal_braiding_naturality_right E).
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    refine (_ @ maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f ⊗^{E}_{r} _ · _) (functor_comp K _ _)).
-  rewrite <- (monoidal_braiding_naturality_left C).
-  refine (_ @ ! maponpaths (λ f, _ · f ⊗^{E}_{r} _ · _) (functor_comp K _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    refine (_ @ maponpaths (λ f, _ · f) (_ @ bifunctor_rightcomp E _ _ _ _ _ _)).
+    2 : {
+      refine (maponpaths (λ f, f ⊗^{E}_{r} _) (_ @ functor_comp K _ _)).
+      rewrite <- (monoidal_braiding_naturality_left C).
+      apply pathsinv0, (functor_comp K).
+    }
+    refine (_ @ assoc _ _ _).
+    refine (_ @ maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
   rewrite (monoidal_associatornatright E).
   refine (_ @ assoc _ _ _).
-  refine (_ @ ! maponpaths (λ f, f ⊗^{E}_{r} _ · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
-  refine (_ @ ! maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (! bifunctor_rightcomp E _ _ _ _ _ _ @ _)).
+  2 : refine (! maponpaths (λ f, f ⊗^{E}_{r} _) (bifunctor_rightcomp E _ _ _ _ _ _)).
   refine (_ @ assoc _ _ _).
   do 3 refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _ @ _) @ _).
   rewrite <- (bifunctor_rightcomp E (L R4)).
-  refine (! maponpaths (λ f, (f ⊗^{E}_{r} _ · _) ⊗^{E}_{r} _ · _) (functor_comp K _ _) @ _).
+  refine (! maponpaths (λ f, f ⊗^{E}_{r} _ · _) (functor_comp K _ _)).
   rewrite (assoc (C:=C)).  
   rewrite (functor_comp K).
-  refine (maponpaths (λ f, (f · _) ⊗^{E}_{r} _ · _) (bifunctor_rightcomp E _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (_ @ assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (bifunctor_rightcomp E _ _ _ _ _ _)).
   rewrite (bifunctor_rightcomp E (L R3)).
   refine (assoc' _ _ _ @ _).
   apply maponpaths.
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (bifunctor_leftcomp E).
-  rewrite (fsym_respects_braiding L).
-  rewrite (bifunctor_leftcomp E (K ((R3 ⊗_{ C} R4) ⊗_{ C} R1))).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (bifunctor_leftcomp E).
+    refine (_ @ maponpaths (λ f, _ ⊗^{E}_{l} f · _) (! fsym_respects_braiding L _ _)).
+    rewrite (bifunctor_leftcomp E (K ((R3 ⊗_{ C} R4) ⊗_{ C} R1))).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (compose _) (assoc' _ _ _)).
-  rewrite <- (monoidal_braiding_naturality_left E).
-  refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ assoc' _ _ _)).
+  2 : {
+    rewrite <- (monoidal_braiding_naturality_left E).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
   generalize (pr122 k R1 _ _ (sym_mon_braiding C R4 R3)); simpl; rewrite 2 id_right; intros keq.
   refine (_ @ maponpaths (compose _) keq).
@@ -1296,9 +1468,11 @@ Proof.
   refine (_ @ assoc _ _ _).
   refine (_ @ ! maponpaths (compose _) (monoidal_braiding_naturality_right E _ _ _ _)).
   refine (_ @ assoc' _ _ _).
-  refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
-  refine (_ @ maponpaths (λ f, _ · f · _) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
-  refine (_ @ maponpaths (λ f, f · _) (assoc' _ _ _)).
+  refine (_ @ maponpaths (λ f, f · _) (_ @ assoc _ _ _)).
+  2 : {
+    refine (_ @ maponpaths (λ f, _ · f) (bifunctor_equalwhiskers E _ _ _ _ _ _)).
+    apply assoc'.
+  }
   refine (_ @ assoc _ _ _).
   refine (_ @ maponpaths (λ f, f · _) (assoc _ _ _)).
   rewrite <- (monoidal_braiding_naturality_left E).
@@ -1315,14 +1489,14 @@ Proof.
   rewrite <- (monoidal_associatorinvnatleft E).
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
   refine (assoc' _ _ _ @ _).
-  refine (maponpaths (λ f, f · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f · _) (assoc' _ _ _ @ _) @ _).
   rewrite (monoidal_braiding_naturality_right E).
-  refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
+  apply assoc.
   refine (assoc' _ _ _ @ _).
   rewrite <- (bifunctor_rightcomp E).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc' _ _ _ @ _) @ _).
   rewrite (monoidal_braiding_naturality_right E).
-  refine (maponpaths (λ f, f ⊗^{E}_{r} _ · _) (assoc _ _ _) @ _).
+  apply assoc.
   rewrite (bifunctor_rightcomp E).
   refine (assoc' _ _ _ @ _).
   apply map_on_two_paths.
@@ -1332,11 +1506,12 @@ Proof.
   refine (! functor_comp K _ _ @ _ @ functor_comp K _ _).
   apply maponpaths.
   rewrite <- (monoidal_braiding_naturality_right C).
-  refine (maponpaths (λ f, _ · (_ · f · _)) (sym_mon_tensor_lassociator C _ _ _) @ _).
+  refine (maponpaths (compose _) _ @ _).
+  refine (maponpaths (λ f, _ · f · _) (sym_mon_tensor_lassociator C _ _ _) @ _).
   unfold monoidal_cat_tensor_mor.
   rewrite (when_bifunctor_becomes_rightwhiskering C).
   rewrite (when_bifunctor_becomes_leftwhiskering C).
-  refine (maponpaths (compose _) (assoc' _ _ _) @ _).
+  apply assoc'.
   rewrite assoc.
   refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   rewrite assoc.
@@ -1357,32 +1532,35 @@ Proof.
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
   do 3 refine (maponpaths (compose _) (assoc' _ _ _) @ _).
   rewrite assoc'.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (pr1 (monoidal_associatorisolaw C _ _ _)) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, f · _) (pr1 (monoidal_associatorisolaw C _ _ _))).
   rewrite id_left.
   refine (maponpaths (λ f, f · _) (assoc _ _ _) @ _).
   rewrite assoc'.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (f · _)) (bifunctor_rightcomp C R3 _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f ⊗^{C}_{r} _ · _)) (pr1 (monoidal_braiding_inverses C _ _)) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (! maponpaths (λ f, f · _) (bifunctor_rightcomp C R3 _ _ _ _ _) @ _).
+  refine (maponpaths (λ f, f ⊗^{C}_{r} _ · _) (pr1 (monoidal_braiding_inverses C _ _))).
   rewrite (bifunctor_rightid C).
   rewrite id_left.
   rewrite assoc'.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (f · _)) (pr2 (monoidal_associatorisolaw C _ _ _)) @ _).
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, f · _) (pr2 (monoidal_associatorisolaw C _ _ _))).
   rewrite id_left.
   rewrite assoc'.
-  refine (maponpaths (compose _) (assoc _ _ _) @ _).
-  refine (! maponpaths (λ f, _ · (f · _)) (bifunctor_leftcomp C _ _ _ _ _ _) @ _).
-  refine (maponpaths (λ f, _ · (_ ⊗^{C}_{l} f · _)) (pr1 (monoidal_braiding_inverses C _ _)) @ _).
-  rewrite (bifunctor_leftid C).
-  rewrite id_left.
+  refine (maponpaths (compose _) (assoc _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, f · _) (! bifunctor_leftcomp C _ _ _ _ _ _ @ _) @ _).
+  refine (maponpaths (λ f, _ ⊗^{C}_{l} f) (pr1 (monoidal_braiding_inverses C _ _)) @ _).
+  now rewrite (bifunctor_leftid C).
+  apply id_left.
   exact (pr1 (monoidal_associatorisolaw C _ _ _)).
-  refine (_ @ ! maponpaths (compose _) (sym_mon_tensor_lassociator E _ _ _)).
-  unfold monoidal_cat_tensor_mor.
-  rewrite (when_bifunctor_becomes_rightwhiskering E).
-  rewrite (when_bifunctor_becomes_leftwhiskering E).
-  do 3 refine (_ @ maponpaths (compose _) (assoc _ _ _)).
+  refine (_ @ maponpaths (compose _) (_ @ ! sym_mon_tensor_lassociator E _ _ _)).
+  2 : {
+    unfold monoidal_cat_tensor_mor.
+    rewrite (when_bifunctor_becomes_rightwhiskering E).
+    rewrite (when_bifunctor_becomes_leftwhiskering E).
+    do 2 refine (_ @ assoc _ _ _).
+    apply assoc.
+  }
   refine (_ @ assoc' _ _ _).
   refine (_ @ ! maponpaths (λ f, f · _) (pr1 (monoidal_associatorisolaw E _ _ _))).
   rewrite id_left.

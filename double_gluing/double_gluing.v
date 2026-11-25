@@ -392,10 +392,14 @@ Defined.
 (* the total double glued category *)
 Definition double_glued_general_total_cat {C E E' : category} (L : functor C E) (K : functor C E') : category
   := total_category (double_glued_cat L K).
+(*
+(* the total double glued category for intutionistic linear logic *)
+Definition double_glued_total_cat {C E : category} (L : functor C E) (K : functor C (E^opp)) : category
+  := total_category (double_glued_cat L K).*)
 
 (* the total double glued category for intutionistic linear logic *)
 Definition double_glued_total_cat {C E : category} (L : functor C E) (K : functor C (E^opp)) : category
-  := total_category (double_glued_cat L K).
+  := double_glued_general_total_cat L K.
 
 
 Lemma double_glued_total_mor_eq_transp {C E E' : category} (L : functor C E) (K : functor C E')
@@ -428,7 +432,7 @@ Definition double_glued_forgetful_functor {C E E' : category} (L : functor C E) 
   functor (double_glued_general_total_cat L K) C := pr1_category (double_glued_cat L K).
   
 (* opposite category : *)
-Definition double_glued_total_altopp {C E : category} (L : functor C E) (K : functor C (E^opp)) : category :=
+(*Definition double_glued_total_altopp {C E : category} (L : functor C E) (K : functor C (E^opp)) : category :=
   double_glued_total_cat (functor_op K) (functor_op L).
 
 Definition double_glued_altopp_to_opp_data  {C E : category} (L : functor C E) (K : functor C (E^opp)) :
@@ -537,26 +541,17 @@ Proof.
   apply catiso_is_path_cat.
   apply double_glued_general_opp_iso.
 Defined.
+ *)
 
-(*
-Definition double_glued_total_altopp' {C E : category} (L : functor C E) (K : functor (C^opp) E) : category.
-Proof.
-  use double_glued_total_cat.
-  exact C.
-  exact (E^opp).
-  exact (functor_op K).
-  exact L.
-Defined.
+Definition double_glued_total_altopp {C E E' : category} (L : functor C E) (K : functor C E') : category :=
+  double_glued_general_total_cat (functor_op K) (functor_op L).
 
-Definition double_glued_altopp_to_opp_data'  {C E : category} (L : functor C E) (K : functor C (E^opp)) :
-  functor_data (double_glued_total_altopp' L K) (double_glued_total_altopp L K).
+Definition double_glued_altopp_to_opp_data  {C E E' : category} (L : functor C E) (K : functor C E') :
+  functor_data (double_glued_total_altopp L K) (double_glued_general_total_cat L K)^op.
 Proof.
   use tpair.
-  intros (R, ((X, l'), (U, l))).
+  intros (R, ((U, l), (X, l'))).
   exists R.
-  use tpair.
-  exists X.
-  apply l'.
   exists (X,,l').
   exact (U,,l).
   intros (R1, ((U1, l1), (X1, l1'))).
@@ -571,8 +566,79 @@ Proof.
   apply pathsinv0, eqphi.
 Defined.
 
-Definition double_glued_general_opp_iso' {C E : category} (L : functor C E) (K : functor C (E^opp)) :
-  catiso (double_glued_total_altopp' L K) (double_glued_total_altopp L K).
+Lemma double_glued_altopp_to_opp_isfunctor  {C E E' : category} (L : functor C E) (K : functor C E') :
+  is_functor (double_glued_altopp_to_opp_data L K).
+Proof.
+  use tpair.
+  intros A.
+  apply pair_path_in2.
+  apply dirprod_paths;
+    apply subtypePath_prop;
+    reflexivity.
+  intros A1 A2 A3 ff12 ff23.
+  apply pair_path_in2.
+  apply dirprod_paths;
+    apply subtypePath_prop;
+    reflexivity.
+Qed.
+
+Definition double_glued_altopp_to_opp  {C E E' : category} (L : functor C E) (K : functor C E') :
+  double_glued_total_altopp L K ⟶ (double_glued_general_total_cat L K)^op.
+Proof.
+  exists (double_glued_altopp_to_opp_data L K).
+  apply double_glued_altopp_to_opp_isfunctor.
+Defined.
+
+Definition double_glued_altopp_to_opp_fully_faithful {C E E' : category} (L : functor C E) (K : functor C E') :
+  fully_faithful (double_glued_altopp_to_opp L K).
+Proof.
+  intros (R, dr) (S, ds).
+  intros F.
+  use tpair.
+  use tpair.
+  exists (pr1 F).
+  use tpair;
+    use tpair.
+  apply (pr122 F).
+  apply pathsinv0, (pr222 F).
+  apply (pr112 F).
+  apply pathsinv0, (pr212 F).
+  apply pair_path_in2.
+  apply dirprod_paths;
+    apply subtypePath_prop;
+    reflexivity.
+  intros (F', eq).
+  induction eq.
+  use subtypePath.
+  intros x.
+  apply homset_property.
+  apply pair_path_in2.
+  apply dirprod_paths;
+    use total2_paths_f.
+  apply idpath.
+  apply pathsinv0, pathsinv0inv0.
+  apply idpath.
+  apply pathsinv0, pathsinv0inv0.
+Qed.
+
+Lemma double_glued_altopp_to_opp_isweq {C E E': category} (L : functor C E) (K : functor C E') :
+  isweq (double_glued_altopp_to_opp L K).
+Proof.
+  intros A.
+  use tpair.
+  use tpair.
+  exists (pr1 A).
+  exists (pr22 A).
+  exact (pr12 A).
+  apply idpath.
+  simpl.
+  intros (B, eq).
+  induction eq.
+  apply idpath.
+Qed.
+
+Definition double_glued_opp_iso {C E E' : category} (L : functor C E) (K : functor C E') :
+  catiso (double_glued_total_altopp L K) (double_glued_general_total_cat L K)^op.
 Proof.
   exists (double_glued_altopp_to_opp L K).
   use tpair.
@@ -580,10 +646,15 @@ Proof.
   apply double_glued_altopp_to_opp_isweq.
 Defined.
 
-Lemma double_glued_opp_is_opp' {C E : category} (L : functor C E) (K : functor C (E^opp)) :
-  double_glued_total_altopp' L K = (double_glued_total_cat L K)^op.
+(*Definition double_glued_opp_iso {C E : category} (L : functor C E) (K : functor C (E^opp)) :
+  catiso (double_glued_total_altopp L K) (double_glued_total_cat L K)^op.
 Proof.
-  refine (_ @ double_glued_opp_is_opp L K).
-  apply catiso_is_path_cat.
   apply double_glued_general_opp_iso.
-Defined. *)
+Defined.*)
+
+Lemma double_glued_opp_is_opp {C E E': category} (L : functor C E) (K : functor C E') :
+  double_glued_total_altopp L K = (double_glued_general_total_cat L K)^op.
+Proof.
+  apply catiso_is_path_cat.
+  apply double_glued_opp_iso.
+Defined.

@@ -1,3 +1,9 @@
+(*********************************
+
+This file contains the definition of Binary Coproducts in the (total) double glued category
+
+*********************************)
+
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.Notations.
 Require Import UniMath.MoreFoundations.Tactics.
@@ -14,8 +20,6 @@ Require Import double_pullbacks.
 Require Import natural_contraction.
 
 Require Import double_gluing.double_gluing.
-(*
-Require Import double_gluing.closed.adjunction. (* there is a lemma here that should be moved to double_gluing.v *) *)
 
 
 
@@ -221,18 +225,6 @@ Proof.
   apply (doublePullbackArrow_PrR (BinCoproduct_doublePullback copc cope dpb A A')).
 Qed.
 
-Lemma double_glued_total_mor_eq_transp {C E : category} {L : functor C E} {K : functor C (E^opp)}
-  {x y : ob (double_glued_total_cat L K)} (f g : x --> y) :
-  (pr1 f = pr1 g) × (pr112 f = pr112 g) × (pr122 f = pr122 g) → f = g.
-Proof.
-  intros (eq1, (eq2, eq3)).
-  use total2_paths_b.
-  assumption.
-  unfold transportb.
-  apply (pr2 (double_glued_mor_eq_transp eq1 (pr2 f) (pr2 g))).
-  exact (eq2,, eq3).
-Qed.
-
 Definition double_glued_CoprodisBinCoproduct {C E : category} (copc : BinCoproducts C) (cope : BinCoproducts E)
   (dpb : doublePullbacks E) {L : functor C E} {K : functor C (E ^opp)} (A A' : double_glued_total_cat L K) :
   isBinCoproduct (double_glued_total_cat L K) A A' (double_glued_BinCoproductObj copc cope dpb A A')
@@ -245,25 +237,20 @@ Proof.
   split.
   apply double_glued_BinCoproductArrowIn1Commutes.
   apply double_glued_BinCoproductArrowIn2Commutes.
-  simpl.
-  simpl.
   intros (t, (teq1, teq2)).
   apply subtypePath.
   intros t'.
   use isofhleveldirprod.
   apply (pr2 (double_glued_total_cat L K) _ _ _ tf1).
   apply (pr2 (double_glued_total_cat L K) _ _ _ tf2).
-  simpl.
-  apply (double_glued_total_mor_eq_transp (L:=L) (K:=K) (x:= double_glued_BinCoproductObj copc cope dpb A A') t _).
+  use (@double_glued_total_mor_eq_transp C E _ L K (double_glued_BinCoproductObj copc cope dpb A A') _ _).
   assert (baseeq : pr1 t = pr1 (double_glued_BinCoproductArrow copc cope dpb tf1 tf2)).
   apply BinCoproductArrowUnique.
-  simpl.
   apply (maponpaths pr1 teq1).
   apply (maponpaths pr1 teq2).
   split3.
   assumption.
   apply BinCoproductArrowUnique.
-  simpl.
   refine (maponpaths (λ x, pr112 x) teq1).
   refine (maponpaths (λ x, pr112 x) teq2).  
   apply doublePullbackArrowUnique'.
@@ -275,7 +262,7 @@ Proof.
   apply (cancel_precomposition E).
   apply maponpaths.
   assumption.
-Qed.
+Defined.
 
 Definition double_glued_BinCoproduct {C E : category} (copc : BinCoproducts C) (cope : BinCoproducts E) (dpb : doublePullbacks E)
   (L : functor C E) (K : functor C (E ^opp)) (A B : double_glued_total_cat L K) : BinCoproduct A B.

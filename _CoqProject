@@ -2,8 +2,6 @@
 
 -arg "-w -notation-overridden"
 
--R UniMath/UniMath UniMath
-
 preliminaries.v
 double_pullbacks.v
 natural_contraction.v
