@@ -1,0 +1,11 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Andreou"
+  given-names: "Ioannis"
+  orcid: "https://orcid.org/0009-0004-3323-5102"
+title: "DoubleGluing"
+version: 1.0.0
+doi: 10.5281/zenodo.1234
+date-released: 2026-11-26
+url: "https://github.com/DieBundesregierung/DoubleGluing"
